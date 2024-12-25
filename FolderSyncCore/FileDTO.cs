@@ -7,7 +7,7 @@ namespace FolderSyncCore
         {
             完整路徑 = source?.FullName ?? target?.FullName ?? path;
             相對路徑 = path;
-            差異 = GetState(source?.LastWriteTime, target?.LastWriteTime);
+            狀態 = GetState(source?.LastWriteTime, target?.LastWriteTime);
             檔名 = Path.GetFileName(path);
             來源時間 = source?.LastWriteTime;
             目標時間 = target?.LastWriteTime;
@@ -24,7 +24,7 @@ namespace FolderSyncCore
             };
         }
 
-        public CompareState 差異 { get; }
+        public CompareState 狀態 { get; }
         public string 檔名 { get; }
         public DateTime? 來源時間 { get; }
         public DateTime? 目標時間 { get; }
