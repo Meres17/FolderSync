@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderSyncCore", "FolderSyncCore\FolderSyncCore.csproj", "{F839C741-0C06-458B-A005-6DDF8EAD6B11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderSyncForm", "FolderSyncForm\FolderSyncForm.csproj", "{B9F45001-4DB0-4D39-8298-1A95C50B7FC7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F839C741-0C06-458B-A005-6DDF8EAD6B11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F839C741-0C06-458B-A005-6DDF8EAD6B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F839C741-0C06-458B-A005-6DDF8EAD6B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F839C741-0C06-458B-A005-6DDF8EAD6B11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9F45001-4DB0-4D39-8298-1A95C50B7FC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9F45001-4DB0-4D39-8298-1A95C50B7FC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9F45001-4DB0-4D39-8298-1A95C50B7FC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9F45001-4DB0-4D39-8298-1A95C50B7FC7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {54587096-073A-4130-B5F4-6CB701ADC2B3}
+	EndGlobalSection
+EndGlobal
