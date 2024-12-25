@@ -9,8 +9,8 @@ namespace FolderSyncForm
         public MainForm()
         {
             InitializeComponent();
-            txtSource.Text = "D:\\海巡\\Bk\\Source";
-            txtTarget.Text = "D:\\海巡\\Bk\\Target";
+            //txtSource.Text = "D:\\海巡\\Bk\\20241224.2";
+            //txtTarget.Text = "D:\\海巡\\Bk\\20241223.3";
         }
 
         private void btnSource_Click(object sender, EventArgs e)
@@ -25,14 +25,14 @@ namespace FolderSyncForm
 
         private void btnCompare_Click(object sender, EventArgs e)
         {
-            gvDiff.DataSource = new FolderComparer(txtSource.Text, txtTarget.Text).GetDiff();
+            gvDiff.DataSource = new FolderComparer(txtSource.Text, txtTarget.Text).GetDiffFiles();
         }
 
         private void btnCopy_Click(object sender, EventArgs e)
         {
             var comparer = new FolderComparer(txtSource.Text, txtTarget.Text);
             comparer.Backup();
-            gvDiff.DataSource = comparer.GetDiff();
+            gvDiff.DataSource = comparer.GetDiffFiles();
         }
 
         private void btnBackupList_Click(object sender, EventArgs e)
@@ -57,8 +57,7 @@ namespace FolderSyncForm
             // 取得選取的 FolderDTO 物件
             var dto = (FolderDTO)gvDiff.SelectedRows[0].DataBoundItem;
 
-            var comparer = new FolderComparer(txtSource.Text, txtTarget.Text);
-            comparer.Restore(dto.完整路徑);
+            new FolderComparer(txtSource.Text, txtTarget.Text).Restore(dto.完整路徑);
 
             MessageBox.Show("還原成功");
         }

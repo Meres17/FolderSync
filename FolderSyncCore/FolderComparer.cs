@@ -5,12 +5,7 @@ namespace FolderSyncCore
 {
     public class FolderComparer
     {
-        private const string Format = "yyyyMMdd_HHmmss";
-        private static readonly HashSet<CompareState> _backupStates =
-            new() { CompareState.刪除檔案, CompareState.時間不同 };
-        private static readonly HashSet<CompareState> _copyStates =
-            new() { CompareState.新增檔案, CompareState.時間不同 };
-
+        private const string Format = "yyyyMMdd_HHmm";
         private readonly string _sourceFolder;
         private readonly string _targetFolder;
 
@@ -20,7 +15,7 @@ namespace FolderSyncCore
             _targetFolder = targetFolder;
         }
 
-        public List<FileDTO> GetDiff()
+        public List<FileDTO> GetDiffFiles()
         {
             return GetDiff(_sourceFolder, _targetFolder);
         }
@@ -30,7 +25,6 @@ namespace FolderSyncCore
             List<FileDTO> result = new();
 
             var sourceDic = GetDictionary(sourceFolder);
-
             var targetDic = GetDictionary(targetFolder);
 
             // 比較檔案
@@ -44,7 +38,7 @@ namespace FolderSyncCore
                 {
                     var targetFile = new FileInfo(targetFullPath);
                     result.Add(new FileDTO(sourcePath, sourceFile, targetFile));
-                    targetDic.Remove(sourcePath);// 移除已經比對過的檔案
+                    targetDic.Remove(sourcePath); // 移除已經比對過的檔案
                 }
                 else
                 {
@@ -52,7 +46,7 @@ namespace FolderSyncCore
                 }
             }
 
-            // 剩下的檔案是 path2 中多出的檔案
+            // 剩下的檔案是 targetFolder 中多出的檔案
             foreach (var target in targetDic)
             {
                 var targetPath = target.Key;
@@ -77,22 +71,30 @@ namespace FolderSyncCore
 
         public void Backup()
         {
-            var diff = GetDiff();
-            Backup(diff, _sourceFolder, _targetFolder);
+            var diff = GetDiffFiles();
+            BackupBy(diff, _targetFolder, x => x.目標路徑, CompareState.刪除檔案, CompareState.時間不同);
+            BackupBy(diff, _sourceFolder, x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同);
+            Overwrite(diff);
         }
 
-        private static void Backup(IEnumerable<FileDTO> sourceDTOs, string sourceFolder, string targetFolder)
+        private static void BackupBy(IEnumerable<FileDTO> sourceDTOs, string folder, Func<FileDTO, string> func, params CompareState[] states)
         {
-            var backupFolder = BuildBackupFolder(sourceFolder);
+            var backupFolder = BuildBackupFolder(folder);
+            var backupSource = sourceDTOs
+                .Where(x => states.Contains(x.狀態))
+                .ToList();
+            Copy(backupSource, backupFolder, func);
+        }
 
-            var backoutDTOs = sourceDTOs.Where(x => _backupStates.Contains(x.狀態)).ToList();
-            Copy(backoutDTOs, backupFolder, false);
+        private void Overwrite(IEnumerable<FileDTO> diffDTOs)
+        {
+            var copyDTOs = diffDTOs
+                .Where(x => x.狀態 == CompareState.新增檔案 || x.狀態 == CompareState.時間不同)
+                .ToList();
+            Copy(copyDTOs, _targetFolder, x => x.來源路徑);
 
-            var copyDTOs = sourceDTOs.Where(x => _copyStates.Contains(x.狀態)).ToList();
-            Copy(copyDTOs, targetFolder, true);
-
-            var deleteDTOs = sourceDTOs.Where(x => x.狀態 == CompareState.刪除檔案).ToList();
-            Delete(deleteDTOs);
+            var deleteDTOs = diffDTOs.Where(x => x.狀態 == CompareState.刪除檔案).ToList();
+            Delete(deleteDTOs, x => x.目標路徑);
         }
 
         private static string BuildBackupFolder(string sourceFolder)
@@ -119,29 +121,30 @@ namespace FolderSyncCore
             }
         }
 
-        private static void Copy(IEnumerable<FileDTO> dtos, string folder, bool overwrite = false)
+        private static void Copy(IEnumerable<FileDTO> dtos, string folder, Func<FileDTO, string> func)
         {
             foreach (var dto in dtos)
             {
-                var sourcePath = dto.完整路徑;
+                var sourcePath = func.Invoke(dto);
                 var targetPath = Path.Combine(folder, dto.相對路徑);
                 var targetFolder = Path.GetDirectoryName(targetPath);
                 CreateFolder(targetFolder);
-                File.Copy(sourcePath, targetPath, overwrite);
+                File.Copy(sourcePath, targetPath, true);
             }
         }
 
-        private static void Delete(IEnumerable<FileDTO> dtos)
+        private static void Delete(IEnumerable<FileDTO> dtos, Func<FileDTO, string> func)
         {
             foreach (var dto in dtos)
             {
-                File.Delete(dto.完整路徑);
+                var path = func.Invoke(dto);
+                File.Delete(path);
             }
         }
 
         public List<FolderDTO> GetBackupFolders()
         {
-            return GetBackupFolders(_sourceFolder);
+            return GetBackupFolders(_targetFolder);
         }
 
         private static List<FolderDTO> GetBackupFolders(string sourceFolder)
@@ -164,7 +167,7 @@ namespace FolderSyncCore
             var dtos = GetDictionary(backupFolder)
                 .Select(x => new FileDTO(x.Key, new FileInfo(x.Value), null))
                 .ToList();
-            Copy(dtos, targetFolder, true);
+            Copy(dtos, targetFolder, x => x.來源路徑);
         }
     }
 }
