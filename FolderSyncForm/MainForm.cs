@@ -33,7 +33,6 @@ namespace FolderSyncForm
             var comparer = new FolderComparer(txtSource.Text, txtTarget.Text);
             comparer.Backup();
             MessageBox.Show("複製成功，已將 新檔案 及 被覆蓋檔案 的差異檔案 均備份至本目錄底下backup/時間標記");
-            gvDiff.DataSource = comparer.GetDiffFiles();
         }
 
         private void btnUpdateSite_Click(object sender, EventArgs e)
