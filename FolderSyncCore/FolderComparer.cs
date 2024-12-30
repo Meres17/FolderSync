@@ -66,6 +66,8 @@ namespace FolderSyncCore
         {
             return Directory
                 .EnumerateFiles(source, "*", SearchOption.AllDirectories)
+                .Where(path => !path.Contains("logs", StringComparison.InvariantCultureIgnoreCase))
+                .Where(path => !path.EndsWith("appsettings.json"))
                 .ToDictionary(path => Path.GetRelativePath(source, path), path => path);
         }
 
