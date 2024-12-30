@@ -9,8 +9,8 @@ namespace FolderSyncForm
         public MainForm()
         {
             InitializeComponent();
-            txtSource.Text = "D:\\®ü¨µ\\Bk\\20241224.2";
-            txtTarget.Text = "D:\\®ü¨µ\\Bk\\20241223.3";
+            txtSource.Text = FolderComparer.Source;
+            txtTarget.Text = FolderComparer.Target;
         }
 
         private void btnSource_Click(object sender, EventArgs e)

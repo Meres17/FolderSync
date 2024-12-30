@@ -1,5 +1,6 @@
 ﻿
 using System.Globalization;
+using System.Text.Json;
 
 namespace FolderSyncCore
 {
@@ -8,6 +9,24 @@ namespace FolderSyncCore
         private const string Format = "yyyyMMdd_HHmm";
         private readonly string _sourceFolder;
         private readonly string _targetFolder;
+        private static string _appsettingsPath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
+
+        private static AppSettings _appSettings = GetAppSettings();
+        public static string Source => _appSettings.Source;
+        public static string Target => _appSettings.Target;
+
+        private static AppSettings GetAppSettings()
+        {
+            try
+            {
+                var text = File.ReadAllText(_appsettingsPath);
+                return JsonSerializer.Deserialize<AppSettings>(text) ?? new AppSettings();
+            }
+            catch (Exception)
+            {
+                return new AppSettings();
+            }
+        }
 
         public FolderComparer(string sourceFolder, string targetFolder)
         {
@@ -66,28 +85,37 @@ namespace FolderSyncCore
         {
             return Directory
                 .EnumerateFiles(source, "*", SearchOption.AllDirectories)
-                .Where(path => !path.EndsWith("appsettings.json"))
-                .Where(path => !path.EndsWith("web.config"))
                 .Select(path => new
                 {
-                    path,
+                    Path = path,
                     RelativePath = Path.GetRelativePath(source, path)
                 })
                 .ToList()
-                .Where(x => !IsInFolder(x.RelativePath, "logs"))
-                .ToDictionary(x => x.RelativePath, x => x.path);
+                .Where(x => !IsIgnoreFile(x.Path, _appSettings.IgnoreFiles))
+                .Where(x => !IsInFolder(x.RelativePath, _appSettings.IgnoreFolders))
+                .ToDictionary(x => x.RelativePath, x => x.Path);
         }
 
-        private static bool IsInFolder(string relativePath, string dir)
+        private static bool IsIgnoreFile(string path, params string[] excludedFiles)
+        {
+            return excludedFiles.Any(excludedFile => path.EndsWith(excludedFile, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        private static bool IsInFolder(string relativePath, params string[] dirs)
         {
             var directoryName = Path.GetDirectoryName(relativePath);
             if (string.IsNullOrEmpty(directoryName))
             {
                 return false;
             }
+            return dirs.Any(dir => IsInDirectory(directoryName, dir));
+        }
+
+        private static bool IsInDirectory(string directoryName, string dir)
+        {
             return directoryName
-                    .Split(Path.DirectorySeparatorChar)
-                    .Contains(dir, StringComparer.InvariantCultureIgnoreCase);
+                .Split(Path.DirectorySeparatorChar)
+                .Contains(dir, StringComparer.InvariantCultureIgnoreCase);
         }
 
         public void Backup()
