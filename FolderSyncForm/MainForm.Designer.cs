@@ -51,128 +51,141 @@
             btnBackupList = new Button();
             btnRestore = new Button();
             gvDiff = new DataGridView();
+            btnUpdateSite = new Button();
             ((System.ComponentModel.ISupportInitialize)gvDiff).BeginInit();
             SuspendLayout();
             // 
-            // _lbSource
+            // lbSource
             // 
             lbSource.Font = new Font("Segoe UI", 12F);
             lbSource.ForeColor = Color.FromArgb(51, 51, 51);
             lbSource.Location = new Point(12, 15);
             lbSource.Margin = new Padding(2, 0, 2, 0);
-            lbSource.Name = "_lbSource";
+            lbSource.Name = "lbSource";
             lbSource.Size = new Size(117, 30);
             lbSource.TabIndex = 0;
             lbSource.Text = "來源(新資料)";
             lbSource.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // _lbTarget
+            // lbTarget
             // 
             lbTarget.Font = new Font("Segoe UI", 12F);
             lbTarget.Location = new Point(11, 52);
             lbTarget.Margin = new Padding(2, 0, 2, 0);
-            lbTarget.Name = "_lbTarget";
+            lbTarget.Name = "lbTarget";
             lbTarget.Size = new Size(117, 30);
             lbTarget.TabIndex = 1;
             lbTarget.Text = "目標(被更新)";
             lbTarget.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // _txtSource
+            // txtSource
             // 
             txtSource.Font = new Font("Segoe UI", 12F);
             txtSource.Location = new Point(132, 15);
             txtSource.Margin = new Padding(2);
-            txtSource.Name = "_txtSource";
+            txtSource.Name = "txtSource";
             txtSource.Size = new Size(474, 29);
             txtSource.TabIndex = 2;
             // 
-            // _txtTarget
+            // txtTarget
             // 
             txtTarget.Font = new Font("Segoe UI", 12F);
             txtTarget.Location = new Point(132, 52);
             txtTarget.Margin = new Padding(2);
-            txtTarget.Name = "_txtTarget";
+            txtTarget.Name = "txtTarget";
             txtTarget.Size = new Size(474, 29);
             txtTarget.TabIndex = 3;
             // 
-            // _btnSource
+            // btnSource
             // 
             btnSource.Font = new Font("Segoe UI", 12F);
             btnSource.Location = new Point(613, 15);
             btnSource.Margin = new Padding(2);
-            btnSource.Name = "_btnSource";
+            btnSource.Name = "btnSource";
             btnSource.Size = new Size(93, 30);
             btnSource.TabIndex = 4;
             btnSource.Text = "選擇來源";
             btnSource.Click += btnSource_Click;
             // 
-            // _btnTarget
+            // btnTarget
             // 
             btnTarget.Font = new Font("Segoe UI", 12F);
             btnTarget.Location = new Point(613, 52);
             btnTarget.Margin = new Padding(2);
-            btnTarget.Name = "_btnTarget";
+            btnTarget.Name = "btnTarget";
             btnTarget.Size = new Size(93, 30);
             btnTarget.TabIndex = 5;
             btnTarget.Text = "選擇目標";
             btnTarget.Click += btnTarget_Click;
             // 
-            // _btnCompare
+            // btnCompare
             // 
             btnCompare.Font = new Font("Segoe UI", 12F);
             btnCompare.Location = new Point(613, 90);
             btnCompare.Margin = new Padding(2);
-            btnCompare.Name = "_btnCompare";
+            btnCompare.Name = "btnCompare";
             btnCompare.Size = new Size(93, 30);
             btnCompare.TabIndex = 6;
             btnCompare.Text = "比對";
             btnCompare.Click += btnCompare_Click;
             // 
-            // _btnCopy
+            // btnCopy
             // 
             btnCopy.Font = new Font("Segoe UI", 12F);
-            btnCopy.Location = new Point(613, 128);
+            btnCopy.Location = new Point(613, 158);
             btnCopy.Margin = new Padding(2);
-            btnCopy.Name = "_btnCopy";
+            btnCopy.Name = "btnCopy";
             btnCopy.Size = new Size(93, 30);
             btnCopy.TabIndex = 7;
             btnCopy.Text = "複製";
             btnCopy.Click += btnCopy_Click;
             // 
-            // _btnBackupList
+            // btnBackupList
             // 
             btnBackupList.Font = new Font("Segoe UI", 12F);
-            btnBackupList.Location = new Point(613, 165);
+            btnBackupList.Location = new Point(611, 362);
             btnBackupList.Margin = new Padding(2);
-            btnBackupList.Name = "_btnBackupList";
+            btnBackupList.Name = "btnBackupList";
             btnBackupList.Size = new Size(93, 30);
             btnBackupList.TabIndex = 8;
             btnBackupList.Text = "備份紀錄";
             btnBackupList.Click += btnBackupList_Click;
             // 
-            // _btnRestore
+            // btnRestore
             // 
             btnRestore.Font = new Font("Segoe UI", 12F);
-            btnRestore.Location = new Point(613, 202);
+            btnRestore.Location = new Point(611, 396);
             btnRestore.Margin = new Padding(2);
-            btnRestore.Name = "_btnRestore";
+            btnRestore.Name = "btnRestore";
             btnRestore.Size = new Size(93, 30);
             btnRestore.TabIndex = 9;
             btnRestore.Text = "還原";
             btnRestore.Click += btnRestore_Click;
             // 
-            // _gvDiff
+            // gvDiff
             // 
             gvDiff.Location = new Point(12, 90);
-            gvDiff.Name = "_gvDiff";
+            gvDiff.Name = "gvDiff";
             gvDiff.Size = new Size(594, 336);
             gvDiff.TabIndex = 10;
+            // 
+            // btnUpdateSite
+            // 
+            btnUpdateSite.Font = new Font("Segoe UI", 12F);
+            btnUpdateSite.Location = new Point(613, 124);
+            btnUpdateSite.Margin = new Padding(2);
+            btnUpdateSite.Name = "btnUpdateSite";
+            btnUpdateSite.Size = new Size(93, 30);
+            btnUpdateSite.TabIndex = 11;
+            btnUpdateSite.Text = "更新站台";
+            btnUpdateSite.Click += btnUpdateSite_Click;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(722, 450);
+            Controls.Add(btnUpdateSite);
             Controls.Add(btnRestore);
             Controls.Add(btnBackupList);
             Controls.Add(btnCopy);
@@ -196,5 +209,6 @@
 
 
 
+        private Button btnUpdateSite;
     }
 }

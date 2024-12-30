@@ -218,5 +218,30 @@ namespace FolderSyncCore
                 .ToList();
             Copy(dtos, targetFolder, x => x.來源路徑);
         }
+
+        public bool ExistOffline()
+        {
+            return File.Exists(CurrentOfflinePath());
+        }
+
+        private string CurrentOfflinePath()
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), "App_offline.htm");
+        }
+
+        public void CloseSite()
+        {
+            File.Copy(CurrentOfflinePath(), TergetOfflinePath(), true);
+        }
+
+        private string TergetOfflinePath()
+        {
+            return Path.Combine(_targetFolder, "App_offline.htm");
+        }
+
+        public void OpenSite()
+        {
+            File.Delete(TergetOfflinePath());
+        }
     }
 }

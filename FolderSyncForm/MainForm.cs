@@ -36,6 +36,23 @@ namespace FolderSyncForm
             gvDiff.DataSource = comparer.GetDiffFiles();
         }
 
+        private void btnUpdateSite_Click(object sender, EventArgs e)
+        {
+            var comparer = new FolderComparer(txtSource.Text, txtTarget.Text);
+
+            if (comparer.ExistOffline())
+            {
+                comparer.CloseSite();
+                comparer.Backup();
+                comparer.OpenSite();
+                MessageBox.Show("站台更新成功，已將 新檔案 及 被覆蓋檔案 的差異檔案 均備份至本目錄底下backup/時間標記");
+            }
+            else
+            {
+                MessageBox.Show("找不到App_offline.htm，請將檔案放置本執行檔旁邊");
+            }
+        }
+
         private void btnBackupList_Click(object sender, EventArgs e)
         {
             gvDiff.DataSource = new FolderComparer(txtSource.Text, txtTarget.Text).GetBackupFolders();
@@ -62,5 +79,7 @@ namespace FolderSyncForm
 
             MessageBox.Show("還原成功，目前僅還原原始文件，不會刪除新增的文件");
         }
+
+
     }
 }
