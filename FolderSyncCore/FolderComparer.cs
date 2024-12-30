@@ -66,9 +66,28 @@ namespace FolderSyncCore
         {
             return Directory
                 .EnumerateFiles(source, "*", SearchOption.AllDirectories)
-                .Where(path => !path.Contains("logs", StringComparison.InvariantCultureIgnoreCase))
                 .Where(path => !path.EndsWith("appsettings.json"))
-                .ToDictionary(path => Path.GetRelativePath(source, path), path => path);
+                .Where(path => !path.EndsWith("web.config"))
+                .Select(path => new
+                {
+                    path,
+                    RelativePath = Path.GetRelativePath(source, path)
+                })
+                .ToList()
+                .Where(x => !IsInFolder(x.RelativePath, "logs"))
+                .ToDictionary(x => x.RelativePath, x => x.path);
+        }
+
+        private static bool IsInFolder(string relativePath, string dir)
+        {
+            var directoryName = Path.GetDirectoryName(relativePath);
+            if (string.IsNullOrEmpty(directoryName))
+            {
+                return false;
+            }
+            return directoryName
+                    .Split(Path.DirectorySeparatorChar)
+                    .Contains(dir, StringComparer.InvariantCultureIgnoreCase);
         }
 
         public void Backup()
