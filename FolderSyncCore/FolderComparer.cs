@@ -134,9 +134,9 @@ namespace FolderSyncCore
 
             Backup(dtos, backupFolder, sourceName, x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同);
             Backup(dtos, backupFolder, targetName, x => x.目標路徑, CompareState.刪除檔案, CompareState.時間不同);
-            Backup(dtos, backupFolder, "Delete", x => x.目標路徑, CompareState.刪除檔案);
-            Backup(dtos, backupFolder, "Diff", x => x.目標路徑, CompareState.時間不同);
-            Backup(dtos, backupFolder, "Add", x => x.來源路徑, CompareState.新增檔案);
+            Backup(dtos, backupFolder, "State/Delete", x => x.目標路徑, CompareState.刪除檔案);
+            Backup(dtos, backupFolder, "State/Diff", x => x.目標路徑, CompareState.時間不同);
+            Backup(dtos, backupFolder, "State/Add", x => x.來源路徑, CompareState.新增檔案);
         }
 
         private static void Backup(IEnumerable<FileDTO> dtos, string backupHost, string backupName, Func<FileDTO, string> func, params CompareState[] states)
@@ -227,13 +227,13 @@ namespace FolderSyncCore
 
         private static void Restore(string backupFolder, string targetFolder)
         {
-            var deleteDTOs = GetByStateDTOs(backupFolder, "Delete");
+            var deleteDTOs = GetByStateDTOs(backupFolder, "State/Delete");
             Copy(deleteDTOs, targetFolder, x => x.來源路徑);
 
-            var diffDTOs = GetByStateDTOs(backupFolder, "Diff");
+            var diffDTOs = GetByStateDTOs(backupFolder, "State/Diff");
             Copy(diffDTOs, targetFolder, x => x.來源路徑);
 
-            var addDTOs = GetByStateDTOs(backupFolder, "Add");
+            var addDTOs = GetByStateDTOs(backupFolder, "State/Add");
             var targetDTOs = addDTOs
                 .Select(x => new FileDTO(x.相對路徑, new FileInfo(Path.Combine(targetFolder, x.相對路徑)), null))
                 .ToList();
