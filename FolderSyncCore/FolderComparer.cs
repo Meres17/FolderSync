@@ -121,18 +121,31 @@ namespace FolderSyncCore
         public void Backup()
         {
             var diff = GetDiffFiles();
-            BackupBy(diff, _targetFolder, x => x.目標路徑, CompareState.刪除檔案, CompareState.時間不同);
-            BackupBy(diff, _sourceFolder, x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同);
+            Backup(diff, _sourceFolder, _targetFolder);
             Overwrite(diff);
         }
 
-        private static void BackupBy(IEnumerable<FileDTO> sourceDTOs, string folder, Func<FileDTO, string> func, params CompareState[] states)
+        private static void Backup(IEnumerable<FileDTO> dtos, string sourceFolder, string targetFolder)
         {
-            var backupFolder = BuildBackupFolder(folder);
-            var backupSource = sourceDTOs
+            var backupFolder = BuildBackupFolder(sourceFolder, targetFolder);
+
+            var sourceName = Path.GetFileName(sourceFolder);
+            var targetName = Path.GetFileName(targetFolder);
+
+            Backup(dtos, backupFolder, sourceName, x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同);
+            Backup(dtos, backupFolder, targetName, x => x.目標路徑, CompareState.刪除檔案, CompareState.時間不同);
+            Backup(dtos, backupFolder, "Delete", x => x.目標路徑, CompareState.刪除檔案);
+            Backup(dtos, backupFolder, "Diff", x => x.目標路徑, CompareState.時間不同);
+            Backup(dtos, backupFolder, "Add", x => x.來源路徑, CompareState.新增檔案);
+        }
+
+        private static void Backup(IEnumerable<FileDTO> dtos, string backupHost, string backupName, Func<FileDTO, string> func, params CompareState[] states)
+        {
+            var deleteDTOs = dtos
                 .Where(x => states.Contains(x.狀態))
                 .ToList();
-            Copy(backupSource, backupFolder, func);
+            var backupFolder = Path.Combine(backupHost, backupName);
+            Copy(deleteDTOs, backupFolder, func);
         }
 
         private void Overwrite(IEnumerable<FileDTO> diffDTOs)
@@ -146,18 +159,19 @@ namespace FolderSyncCore
             Delete(deleteDTOs, x => x.目標路徑);
         }
 
-        private static string BuildBackupFolder(string sourceFolder)
+        private static string BuildBackupFolder(string sourceFolder, string targetFolder)
         {
-            var host = BuildBackupHost(sourceFolder);
+            var host = BuildBackupHost(sourceFolder, targetFolder);
             var time = DateTime.Now.ToString(Format);
             return Path.Combine(host, time);
         }
 
-        private static string BuildBackupHost(string sourceFolder)
+        private static string BuildBackupHost(string sourceFolder, string targetFolder)
         {
             var host = Directory.GetCurrentDirectory();
-            var filename = Path.GetFileName(sourceFolder);
-            var result = Path.Combine(host, "Backup", filename);
+            var sourceFileName = Path.GetFileName(sourceFolder);
+            var targetFileName = Path.GetFileName(targetFolder);
+            var result = Path.Combine(host, "Backup", $"{sourceFileName}_{targetFileName}");
             CreateFolder(result);
             return result;
         }
@@ -193,12 +207,12 @@ namespace FolderSyncCore
 
         public List<FolderDTO> GetBackupFolders()
         {
-            return GetBackupFolders(_targetFolder);
+            return GetBackupFolders(_sourceFolder, _targetFolder);
         }
 
-        private static List<FolderDTO> GetBackupFolders(string sourceFolder)
+        private static List<FolderDTO> GetBackupFolders(string sourceFolder, string targetFolder)
         {
-            var folder = BuildBackupHost(sourceFolder);
+            var folder = BuildBackupHost(sourceFolder, targetFolder);
             return Directory
                 .EnumerateDirectories(folder, "*", SearchOption.TopDirectoryOnly)
                 .Where(x => DateTime.TryParseExact(Path.GetFileName(x), Format, null, DateTimeStyles.None, out _))
@@ -213,10 +227,25 @@ namespace FolderSyncCore
 
         private static void Restore(string backupFolder, string targetFolder)
         {
-            var dtos = GetDictionary(backupFolder)
+            var deleteDTOs = GetByStateDTOs(backupFolder, "Delete");
+            Copy(deleteDTOs, targetFolder, x => x.來源路徑);
+
+            var diffDTOs = GetByStateDTOs(backupFolder, "Diff");
+            Copy(diffDTOs, targetFolder, x => x.來源路徑);
+
+            var addDTOs = GetByStateDTOs(backupFolder, "Add");
+            var targetDTOs = addDTOs
+                .Select(x => new FileDTO(x.相對路徑, new FileInfo(Path.Combine(targetFolder, x.相對路徑)), null))
+                .ToList();
+            Delete(targetDTOs, x => x.來源路徑);
+        }
+
+        private static List<FileDTO> GetByStateDTOs(string backupFolder, string stateName)
+        {
+            var stateFolder = Path.Combine(backupFolder, stateName);
+            return GetDictionary(stateFolder)
                 .Select(x => new FileDTO(x.Key, new FileInfo(x.Value), null))
                 .ToList();
-            Copy(dtos, targetFolder, x => x.來源路徑);
         }
 
         public bool ExistOffline()
