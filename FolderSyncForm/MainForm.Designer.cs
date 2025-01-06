@@ -80,6 +80,7 @@
             // 
             // txtSource
             // 
+            txtSource.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtSource.Font = new Font("Segoe UI", 12F);
             txtSource.Location = new Point(132, 15);
             txtSource.Margin = new Padding(2);
@@ -89,6 +90,7 @@
             // 
             // txtTarget
             // 
+            txtTarget.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtTarget.Font = new Font("Segoe UI", 12F);
             txtTarget.Location = new Point(132, 52);
             txtTarget.Margin = new Padding(2);
@@ -98,6 +100,7 @@
             // 
             // btnSource
             // 
+            btnSource.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnSource.Font = new Font("Segoe UI", 12F);
             btnSource.Location = new Point(613, 15);
             btnSource.Margin = new Padding(2);
@@ -109,6 +112,7 @@
             // 
             // btnTarget
             // 
+            btnTarget.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnTarget.Font = new Font("Segoe UI", 12F);
             btnTarget.Location = new Point(613, 52);
             btnTarget.Margin = new Padding(2);
@@ -120,6 +124,7 @@
             // 
             // btnCompare
             // 
+            btnCompare.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnCompare.Font = new Font("Segoe UI", 12F);
             btnCompare.Location = new Point(613, 90);
             btnCompare.Margin = new Padding(2);
@@ -131,6 +136,7 @@
             // 
             // btnCopy
             // 
+            btnCopy.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnCopy.Font = new Font("Segoe UI", 12F);
             btnCopy.Location = new Point(613, 158);
             btnCopy.Margin = new Padding(2);
@@ -142,6 +148,7 @@
             // 
             // btnBackupList
             // 
+            btnBackupList.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnBackupList.Font = new Font("Segoe UI", 12F);
             btnBackupList.Location = new Point(611, 362);
             btnBackupList.Margin = new Padding(2);
@@ -153,6 +160,7 @@
             // 
             // btnRestore
             // 
+            btnRestore.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnRestore.Font = new Font("Segoe UI", 12F);
             btnRestore.Location = new Point(611, 396);
             btnRestore.Margin = new Padding(2);
@@ -164,6 +172,7 @@
             // 
             // gvDiff
             // 
+            gvDiff.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             gvDiff.Location = new Point(12, 90);
             gvDiff.Name = "gvDiff";
             gvDiff.Size = new Size(594, 336);
@@ -171,6 +180,7 @@
             // 
             // btnUpdateSite
             // 
+            btnUpdateSite.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnUpdateSite.Font = new Font("Segoe UI", 12F);
             btnUpdateSite.Location = new Point(613, 124);
             btnUpdateSite.Margin = new Padding(2);
