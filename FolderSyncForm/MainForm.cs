@@ -32,7 +32,7 @@ namespace FolderSyncForm
         {
             var comparer = new FolderComparer(txtSource.Text, txtTarget.Text);
             comparer.Backup();
-            MessageBox.Show("複製成功，已將 新檔案 及 被覆蓋檔案 的差異檔案 均備份至本目錄底下backup/時間標記");
+            MessageBox.Show("複製成功，差異檔案已備份至本目錄底下backup/來源_目標/時間標記");
         }
 
         private void btnUpdateSite_Click(object sender, EventArgs e)
@@ -44,7 +44,7 @@ namespace FolderSyncForm
                 comparer.CloseSite();
                 comparer.Backup();
                 comparer.OpenSite();
-                MessageBox.Show("站台更新成功，已將 新檔案 及 被覆蓋檔案 的差異檔案 均備份至本目錄底下backup/時間標記");
+                MessageBox.Show("站台更新成功，差異檔案已備份至本目錄底下backup/來源_目標/時間標記");
             }
             else
             {
@@ -76,7 +76,7 @@ namespace FolderSyncForm
 
             new FolderComparer(txtSource.Text, txtTarget.Text).Restore(dto.完整路徑);
 
-            MessageBox.Show("還原成功，目前僅還原原始文件，不會刪除新增的文件");
+            MessageBox.Show("還原成功");
         }
 
 
