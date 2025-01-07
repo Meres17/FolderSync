@@ -1,4 +1,6 @@
-﻿namespace FolderSyncCore
+﻿using System.Text.Json;
+
+namespace FolderSyncCore
 {
     public class AppSettings
     {
@@ -6,5 +8,27 @@
         public string Target { get; set; } = "";
         public string[] IgnoreFiles { get; set; } = new[] { "appsettings.json", "web.config", "App_offline.htm" };
         public string[] IgnoreFolders { get; set; } = new[] { "logs" };
+
+        public static AppSettings Build(string? path = null)
+        {
+            if (path is null)
+            {
+                path = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
+            }
+            var text = File.ReadAllText(path);
+            return BindAppSettings(path);
+        }
+
+        private static AppSettings BindAppSettings(string text)
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<AppSettings>(text) ?? new AppSettings();
+            }
+            catch (Exception)
+            {
+                return new AppSettings();
+            }
+        }
     }
 }

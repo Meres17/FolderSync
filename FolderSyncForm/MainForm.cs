@@ -9,8 +9,9 @@ namespace FolderSyncForm
         public MainForm()
         {
             InitializeComponent();
-            txtSource.Text = FolderComparer.Source;
-            txtTarget.Text = FolderComparer.Target;
+            var settings = AppSettings.Build();
+            txtSource.Text = settings.Source;
+            txtTarget.Text = settings.Target;
         }
 
         private void btnSource_Click(object sender, EventArgs e)
