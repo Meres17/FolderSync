@@ -1,9 +1,9 @@
 ﻿
 namespace FolderSyncCore
 {
-    public class FileDTO
+    public class FileStatus
     {
-        public FileDTO(string path, FileInfo? source, FileInfo? target)
+        public FileStatus(string path, FileInfo? source, FileInfo? target)
         {
             相對路徑 = path;
             狀態 = GetState(source?.LastWriteTime, target?.LastWriteTime);
@@ -27,10 +27,10 @@ namespace FolderSyncCore
 
         public CompareState 狀態 { get; }
         public string 檔名 { get; }
+        public string 相對路徑 { get; }
         public DateTime? 來源時間 { get; }
         public string? 來源路徑 { get; }
         public DateTime? 目標時間 { get; }
         public string? 目標路徑 { get; }
-        public string 相對路徑 { get; }
     }
 }
