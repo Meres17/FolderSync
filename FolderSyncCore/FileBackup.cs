@@ -2,7 +2,7 @@
 
 namespace FolderSyncCore
 {
-    internal class FileBackup
+    public class FileBackup
     {
         private const string Format = "yyyyMMdd_HHmm";
         private const string DeleteName = "_state/Delete";

@@ -1,6 +1,6 @@
 ﻿namespace FolderSyncCore
 {
-    internal class DictionaryComparer
+    public class DictionaryComparer
     {
         private readonly AppSettings _appSettings;
 

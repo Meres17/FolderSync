@@ -31,12 +31,5 @@
             File.Delete(GetDestPath(path));
         }
 
-        public void ToggleSite(string dust, Action action)
-        {
-            if (!CanClose()) throw new Exception("找不到App_offline.htm，請將檔案放置本執行檔旁邊");
-            CloseSite(dust);
-            action();
-            OpenSite(dust);
-        }
     }
 }
