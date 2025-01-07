@@ -39,22 +39,19 @@ namespace FolderSyncForm
         private void btnCopy_Click(object sender, EventArgs e)
         {
             _service.Backup(_source, _dest);
-            MessageBox.Show("複製成功，差異檔案已備份至本目錄底下backup/來源_目標/時間標記");
+            MessageBox.Show("複製成功");
         }
 
         private void btnUpdateSite_Click(object sender, EventArgs e)
         {
-
-            if (_site.CanClose())
+            try
             {
-                _site.CloseSite(_dest);
-                _service.Backup(_source, _dest);
-                _site.OpenSite(_dest);
-                MessageBox.Show("站台更新成功，差異檔案已備份至本目錄底下backup/來源_目標/時間標記");
+                _site.ToggleSite(_dest, () => _service.Backup(_source, _dest));
+                MessageBox.Show("站台更新成功");
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("找不到App_offline.htm，請將檔案放置本執行檔旁邊");
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -65,24 +62,44 @@ namespace FolderSyncForm
 
         private void btnRestore_Click(object sender, EventArgs e)
         {
+            // 取得選取的 FolderDTO 物件
+            var backupDir = GetSelectedDirectory();
+            if (backupDir is null) return;
+            _service.Restore(backupDir.完整路徑, _dest);
+            MessageBox.Show("還原成功");
+        }
+
+        private void btnRestoreSite_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var backupDir = GetSelectedDirectory();
+                if (backupDir is null) return;
+                _site.ToggleSite(_dest, () => _service.Restore(backupDir.完整路徑, _dest));
+                MessageBox.Show("站台還原成功");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        private FolderDTO? GetSelectedDirectory()
+        {
             if (gvDiff.SelectedRows.Count == 0)
             {
                 MessageBox.Show("請選擇要還原的檔案");
-                return;
+                return null;
             }
 
             if (gvDiff.SelectedRows.Count > 1)
             {
                 MessageBox.Show("要還原的檔案只能選一個");
-                return;
+                return null;
             }
 
-            // 取得選取的 FolderDTO 物件
-            var backupDir = (FolderDTO)gvDiff.SelectedRows[0].DataBoundItem;
-
-            _service.Restore(backupDir.完整路徑, _dest);
-
-            MessageBox.Show("還原成功");
+            return (FolderDTO)gvDiff.SelectedRows[0].DataBoundItem;
         }
     }
 }

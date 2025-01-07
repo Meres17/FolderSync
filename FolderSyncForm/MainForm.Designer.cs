@@ -52,6 +52,7 @@
             btnRestore = new Button();
             gvDiff = new DataGridView();
             btnUpdateSite = new Button();
+            btnRestoreSite = new Button();
             ((System.ComponentModel.ISupportInitialize)gvDiff).BeginInit();
             SuspendLayout();
             // 
@@ -67,7 +68,7 @@
             lbSource.Text = "來源(新資料)";
             lbSource.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // lbTarget
+            // lbDest
             // 
             lbDest.Font = new Font("Segoe UI", 12F);
             lbDest.Location = new Point(11, 52);
@@ -88,7 +89,7 @@
             txtSource.Size = new Size(474, 29);
             txtSource.TabIndex = 2;
             // 
-            // txtTarget
+            // txtDest
             // 
             txtDest.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtDest.Font = new Font("Segoe UI", 12F);
@@ -110,7 +111,7 @@
             btnSource.Text = "選擇來源";
             btnSource.Click += btnSource_Click;
             // 
-            // btnTarget
+            // btnDest
             // 
             btnDest.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnDest.Font = new Font("Segoe UI", 12F);
@@ -150,7 +151,7 @@
             // 
             btnBackupList.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnBackupList.Font = new Font("Segoe UI", 12F);
-            btnBackupList.Location = new Point(611, 362);
+            btnBackupList.Location = new Point(613, 328);
             btnBackupList.Margin = new Padding(2);
             btnBackupList.Name = "btnBackupList";
             btnBackupList.Size = new Size(93, 30);
@@ -162,7 +163,7 @@
             // 
             btnRestore.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnRestore.Font = new Font("Segoe UI", 12F);
-            btnRestore.Location = new Point(611, 396);
+            btnRestore.Location = new Point(613, 396);
             btnRestore.Margin = new Padding(2);
             btnRestore.Name = "btnRestore";
             btnRestore.Size = new Size(93, 30);
@@ -190,11 +191,24 @@
             btnUpdateSite.Text = "更新站台";
             btnUpdateSite.Click += btnUpdateSite_Click;
             // 
+            // btnRestoreSite
+            // 
+            btnRestoreSite.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnRestoreSite.Font = new Font("Segoe UI", 12F);
+            btnRestoreSite.Location = new Point(613, 362);
+            btnRestoreSite.Margin = new Padding(2);
+            btnRestoreSite.Name = "btnRestoreSite";
+            btnRestoreSite.Size = new Size(93, 30);
+            btnRestoreSite.TabIndex = 12;
+            btnRestoreSite.Text = "還原站台";
+            btnRestoreSite.Click += btnRestoreSite_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(722, 450);
+            Controls.Add(btnRestoreSite);
             Controls.Add(btnUpdateSite);
             Controls.Add(btnRestore);
             Controls.Add(btnBackupList);
@@ -220,5 +234,6 @@
 
 
         private Button btnUpdateSite;
+        private Button btnRestoreSite;
     }
 }
