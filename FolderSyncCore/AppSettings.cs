@@ -15,14 +15,14 @@ namespace FolderSyncCore
             {
                 path = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
             }
-            var text = File.ReadAllText(path);
-            return BindAppSettings(text);
+            return BindAppSettings(path);
         }
 
-        private static AppSettings BindAppSettings(string text)
+        private static AppSettings BindAppSettings(string path)
         {
             try
             {
+                var text = File.ReadAllText(path);
                 return JsonSerializer.Deserialize<AppSettings>(text) ?? new AppSettings();
             }
             catch (Exception)
