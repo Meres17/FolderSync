@@ -16,7 +16,7 @@ namespace FolderSyncCore
                 path = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
             }
             var text = File.ReadAllText(path);
-            return BindAppSettings(path);
+            return BindAppSettings(text);
         }
 
         private static AppSettings BindAppSettings(string text)
