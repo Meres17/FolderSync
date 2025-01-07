@@ -3,11 +3,11 @@
     partial class MainForm
     {
         private Label lbSource;
-        private Label lbTarget;
+        private Label lbDest;
         private TextBox txtSource;
-        private TextBox txtTarget;
+        private TextBox txtDest;
         private Button btnSource;
-        private Button btnTarget;
+        private Button btnDest;
         private Button btnCompare;
         private Button btnCopy;
         private Button btnBackupList;
@@ -41,11 +41,11 @@
         private void InitializeComponent()
         {
             lbSource = new Label();
-            lbTarget = new Label();
+            lbDest = new Label();
             txtSource = new TextBox();
-            txtTarget = new TextBox();
+            txtDest = new TextBox();
             btnSource = new Button();
-            btnTarget = new Button();
+            btnDest = new Button();
             btnCompare = new Button();
             btnCopy = new Button();
             btnBackupList = new Button();
@@ -69,14 +69,14 @@
             // 
             // lbTarget
             // 
-            lbTarget.Font = new Font("Segoe UI", 12F);
-            lbTarget.Location = new Point(11, 52);
-            lbTarget.Margin = new Padding(2, 0, 2, 0);
-            lbTarget.Name = "lbTarget";
-            lbTarget.Size = new Size(117, 30);
-            lbTarget.TabIndex = 1;
-            lbTarget.Text = "目標(被更新)";
-            lbTarget.TextAlign = ContentAlignment.MiddleLeft;
+            lbDest.Font = new Font("Segoe UI", 12F);
+            lbDest.Location = new Point(11, 52);
+            lbDest.Margin = new Padding(2, 0, 2, 0);
+            lbDest.Name = "lbDest";
+            lbDest.Size = new Size(117, 30);
+            lbDest.TabIndex = 1;
+            lbDest.Text = "目標(被更新)";
+            lbDest.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // txtSource
             // 
@@ -90,13 +90,13 @@
             // 
             // txtTarget
             // 
-            txtTarget.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtTarget.Font = new Font("Segoe UI", 12F);
-            txtTarget.Location = new Point(132, 52);
-            txtTarget.Margin = new Padding(2);
-            txtTarget.Name = "txtTarget";
-            txtTarget.Size = new Size(474, 29);
-            txtTarget.TabIndex = 3;
+            txtDest.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtDest.Font = new Font("Segoe UI", 12F);
+            txtDest.Location = new Point(132, 52);
+            txtDest.Margin = new Padding(2);
+            txtDest.Name = "txtDest";
+            txtDest.Size = new Size(474, 29);
+            txtDest.TabIndex = 3;
             // 
             // btnSource
             // 
@@ -112,15 +112,15 @@
             // 
             // btnTarget
             // 
-            btnTarget.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnTarget.Font = new Font("Segoe UI", 12F);
-            btnTarget.Location = new Point(613, 52);
-            btnTarget.Margin = new Padding(2);
-            btnTarget.Name = "btnTarget";
-            btnTarget.Size = new Size(93, 30);
-            btnTarget.TabIndex = 5;
-            btnTarget.Text = "選擇目標";
-            btnTarget.Click += btnTarget_Click;
+            btnDest.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnDest.Font = new Font("Segoe UI", 12F);
+            btnDest.Location = new Point(613, 52);
+            btnDest.Margin = new Padding(2);
+            btnDest.Name = "btnDest";
+            btnDest.Size = new Size(93, 30);
+            btnDest.TabIndex = 5;
+            btnDest.Text = "選擇目標";
+            btnDest.Click += btnDest_Click;
             // 
             // btnCompare
             // 
@@ -200,11 +200,11 @@
             Controls.Add(btnBackupList);
             Controls.Add(btnCopy);
             Controls.Add(btnCompare);
-            Controls.Add(btnTarget);
+            Controls.Add(btnDest);
             Controls.Add(btnSource);
-            Controls.Add(txtTarget);
+            Controls.Add(txtDest);
             Controls.Add(txtSource);
-            Controls.Add(lbTarget);
+            Controls.Add(lbDest);
             Controls.Add(lbSource);
             Controls.Add(gvDiff);
             Margin = new Padding(2);

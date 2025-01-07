@@ -14,25 +14,25 @@
             _dictionaryComparer = new DictionaryComparer(appSettings);
         }
 
-        public void Backup(string sourceDir, string targetDir)
+        public void Backup(string sourceDir, string destDir)
         {
-            var files = GetDiffFiles(sourceDir, targetDir);
-            _filebackup.Backup(files, sourceDir, targetDir);
+            var files = GetDiffFiles(sourceDir, destDir);
+            _filebackup.Backup(files, sourceDir, destDir);
         }
 
-        public List<FileStatus> GetDiffFiles(string sourceDir, string targetDir)
+        public List<FileStatus> GetDiffFiles(string sourceDir, string destDir)
         {
-            return _dictionaryComparer.GetFiles(sourceDir, targetDir);
+            return _dictionaryComparer.GetFiles(sourceDir, destDir);
         }
 
-        public List<FolderDTO> GetBackupFolders(string sourceDir, string targetDir)
+        public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir)
         {
-            return _filebackup.GetFolders(sourceDir, targetDir);
+            return _filebackup.GetFolders(sourceDir, destDir);
         }
 
-        public void Restore(string backupDir, string targetDir)
+        public void Restore(string backupDir, string destDir)
         {
-            _filebackup.Restore(backupDir, targetDir);
+            _filebackup.Restore(backupDir, destDir);
         }
     }
 }

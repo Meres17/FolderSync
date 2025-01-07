@@ -3,25 +3,25 @@ namespace FolderSyncCore
 {
     public class FileStatus
     {
-        public FileStatus(string path, FileInfo? source, FileInfo? target)
+        public FileStatus(string path, FileInfo? source, FileInfo? dest)
         {
             相對路徑 = path;
-            狀態 = GetState(source?.LastWriteTime, target?.LastWriteTime);
+            狀態 = GetState(source?.LastWriteTime, dest?.LastWriteTime);
             檔名 = Path.GetFileName(path);
             來源時間 = source?.LastWriteTime;
             來源路徑 = source?.FullName;
-            目標時間 = target?.LastWriteTime;
-            目標路徑 = target?.FullName;
+            目標時間 = dest?.LastWriteTime;
+            目標路徑 = dest?.FullName;
         }
 
-        private CompareState GetState(DateTime? sourceTime, DateTime? targetTime)
+        private CompareState GetState(DateTime? sourceTime, DateTime? destTime)
         {
-            return (sourceTime, targetTime) switch
+            return (sourceTime, destTime) switch
             {
                 (null, null) => CompareState.不存在,
                 (null, _) => CompareState.刪除檔案,
                 (_, null) => CompareState.新增檔案,
-                (_, _) => sourceTime == targetTime ? CompareState.時間相同 : CompareState.時間不同,
+                (_, _) => sourceTime == destTime ? CompareState.時間相同 : CompareState.時間不同,
             };
         }
 

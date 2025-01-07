@@ -9,7 +9,7 @@ namespace FolderSyncForm
         private readonly FolderService _service;
         private readonly Site _site;
         private string _source => txtSource.Text;
-        private string _target => txtTarget.Text;
+        private string _dest => txtDest.Text;
 
         public MainForm()
         {
@@ -18,7 +18,7 @@ namespace FolderSyncForm
             var appSettings = AppSettings.Build();
             _service = new FolderService(appSettings);
             txtSource.Text = appSettings.Source;
-            txtTarget.Text = appSettings.Target;
+            txtDest.Text = appSettings.Target;
         }
 
         private void btnSource_Click(object sender, EventArgs e)
@@ -26,19 +26,19 @@ namespace FolderSyncForm
             txtSource.BindFolderDialog();
         }
 
-        private void btnTarget_Click(object sender, EventArgs e)
+        private void btnDest_Click(object sender, EventArgs e)
         {
-            txtTarget.BindFolderDialog();
+            txtDest.BindFolderDialog();
         }
 
         private void btnCompare_Click(object sender, EventArgs e)
         {
-            gvDiff.DataSource = _service.GetDiffFiles(_source, _target);
+            gvDiff.DataSource = _service.GetDiffFiles(_source, _dest);
         }
 
         private void btnCopy_Click(object sender, EventArgs e)
         {
-            _service.Backup(_source, _target);
+            _service.Backup(_source, _dest);
             MessageBox.Show("複製成功，差異檔案已備份至本目錄底下backup/來源_目標/時間標記");
         }
 
@@ -47,9 +47,9 @@ namespace FolderSyncForm
 
             if (_site.CanClose())
             {
-                _site.CloseSite(_target);
-                _service.Backup(_source, _target);
-                _site.OpenSite(_target);
+                _site.CloseSite(_dest);
+                _service.Backup(_source, _dest);
+                _site.OpenSite(_dest);
                 MessageBox.Show("站台更新成功，差異檔案已備份至本目錄底下backup/來源_目標/時間標記");
             }
             else
@@ -60,7 +60,7 @@ namespace FolderSyncForm
 
         private void btnBackupList_Click(object sender, EventArgs e)
         {
-            gvDiff.DataSource = _service.GetBackupFolders(_source, _target);
+            gvDiff.DataSource = _service.GetBackupFolders(_source, _dest);
         }
 
         private void btnRestore_Click(object sender, EventArgs e)
@@ -80,7 +80,7 @@ namespace FolderSyncForm
             // 取得選取的 FolderDTO 物件
             var backupDir = (FolderDTO)gvDiff.SelectedRows[0].DataBoundItem;
 
-            _service.Restore(backupDir.完整路徑, _target);
+            _service.Restore(backupDir.完整路徑, _dest);
 
             MessageBox.Show("還原成功");
         }

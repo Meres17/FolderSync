@@ -15,9 +15,9 @@ namespace FolderSyncCore
             _appSettings = appSettings;
         }
 
-        public List<FolderDTO> GetFolders(string sourceDir, string targetDir)
+        public List<FolderDTO> GetFolders(string sourceDir, string destDir)
         {
-            var backupHost = CreateBackupHost(sourceDir, targetDir);
+            var backupHost = CreateBackupHost(sourceDir, destDir);
             return Directory
                 .EnumerateDirectories(backupHost, "*", SearchOption.TopDirectoryOnly)
                 .Where(x => DateTime.TryParseExact(Path.GetFileName(x), Format, null, DateTimeStyles.None, out _))
@@ -25,12 +25,12 @@ namespace FolderSyncCore
                 .ToList();
         }
 
-        private static string CreateBackupHost(string sourceDir, string targetDir)
+        private static string CreateBackupHost(string sourceDir, string destDir)
         {
             var host = Directory.GetCurrentDirectory();
             var sourceFileName = Path.GetFileName(sourceDir);
-            var targetFileName = Path.GetFileName(targetDir);
-            var result = Path.Combine(host, "Backup", $"{sourceFileName}_{targetFileName}");
+            var destFileName = Path.GetFileName(destDir);
+            var result = Path.Combine(host, "Backup", $"{sourceFileName}_{destFileName}");
             CreateDirectory(result);
             return result;
         }
@@ -44,21 +44,21 @@ namespace FolderSyncCore
         }
 
 
-        public void Backup(IEnumerable<FileStatus> files, string sourceDir, string targetDir)
+        public void Backup(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
-            var backupDir = CreateBackupDirectory(sourceDir, targetDir);
+            var backupDir = CreateBackupDirectory(sourceDir, destDir);
             Backup(files, backupDir, Path.GetFileName(sourceDir), x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同);
-            Backup(files, backupDir, Path.GetFileName(targetDir), x => x.目標路徑, CompareState.刪除檔案, CompareState.時間不同);
+            Backup(files, backupDir, Path.GetFileName(destDir), x => x.目標路徑, CompareState.刪除檔案, CompareState.時間不同);
             Backup(files, backupDir, DeleteName, x => x.目標路徑, CompareState.刪除檔案);
             Backup(files, backupDir, DiffName, x => x.目標路徑, CompareState.時間不同);
             Backup(files, backupDir, AddName, x => x.來源路徑, CompareState.新增檔案);
 
-            Overwrite(files, targetDir);
+            Overwrite(files, destDir);
         }
 
-        private static string CreateBackupDirectory(string sourceDir, string targetDir)
+        private static string CreateBackupDirectory(string sourceDir, string destDir)
         {
-            var host = CreateBackupHost(sourceDir, targetDir);
+            var host = CreateBackupHost(sourceDir, destDir);
             var time = DateTime.Now.ToString(Format);
             return Path.Combine(host, time);
         }
@@ -75,26 +75,26 @@ namespace FolderSyncCore
         }
 
 
-        private void Overwrite(IEnumerable<FileStatus> files, string targetDir)
+        private void Overwrite(IEnumerable<FileStatus> files, string destDir)
         {
             var copyFiles = files
                 .Where(x => x.狀態 == CompareState.新增檔案 || x.狀態 == CompareState.時間不同)
                 .ToList();
-            Copy(copyFiles, targetDir, x => x.來源路徑);
+            Copy(copyFiles, destDir, x => x.來源路徑);
 
             var deleteFiles = files.Where(x => x.狀態 == CompareState.刪除檔案).ToList();
             Delete(deleteFiles, x => x.目標路徑);
         }
 
-        private static void Copy(IEnumerable<FileStatus> files, string dir, Func<FileStatus, string> func)
+        private static void Copy(IEnumerable<FileStatus> files, string destHost, Func<FileStatus, string> func)
         {
             foreach (var file in files)
             {
                 var sourcePath = func.Invoke(file);
-                var targetPath = Path.Combine(dir, file.相對路徑);
-                var targetDir = Path.GetDirectoryName(targetPath);
-                CreateDirectory(targetDir);
-                File.Copy(sourcePath, targetPath, true);
+                var destPath = Path.Combine(destHost, file.相對路徑);
+                var destDir = Path.GetDirectoryName(destPath);
+                CreateDirectory(destDir);
+                File.Copy(sourcePath, destPath, true);
             }
         }
 
@@ -108,32 +108,29 @@ namespace FolderSyncCore
         }
 
 
-        public void Restore(string backupHostDic, string targetDir)
+        public void Restore(string backupDir, string destDir)
         {
             //反向操作
-            var deleteFiles = GetRestoreFiles(backupHostDic, DeleteName);
-            Copy(deleteFiles, targetDir, x => x.來源路徑);
+            var deleteFiles = GetRestoreFiles(backupDir, DeleteName);
+            Copy(deleteFiles, destDir, x => x.來源路徑);
 
-            var diffFiles = GetRestoreFiles(backupHostDic, DiffName);
-            Copy(diffFiles, targetDir, x => x.來源路徑);
+            var diffFiles = GetRestoreFiles(backupDir, DiffName);
+            Copy(diffFiles, destDir, x => x.來源路徑);
 
-            var addFiles = GetRestoreFiles(backupHostDic, AddName)
-                .Select(x => new FileStatus(x.相對路徑, new FileInfo(Path.Combine(targetDir, x.相對路徑)), null))
+            var addFiles = GetRestoreFiles(backupDir, AddName)
+                .Select(x => new FileStatus(x.相對路徑, new FileInfo(Path.Combine(destDir, x.相對路徑)), null))
                 .ToList();
             Delete(addFiles, x => x.來源路徑);
         }
 
         private List<FileStatus> GetRestoreFiles(string host, string name)
         {
-            var backupDic = Path.Combine(host, name);
+            var backupDir = Path.Combine(host, name);
             return new DictionaryComparer(_appSettings)
-                .GetPathDictionary(backupDic)
+                .GetPathDictionary(backupDir)
                 .Select(x => new FileStatus(x.Key, new FileInfo(x.Value), null))
                 .ToList();
         }
-
-
-
 
     }
 }

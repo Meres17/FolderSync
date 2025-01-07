@@ -2,8 +2,6 @@
 {
     internal class DictionaryComparer
     {
-        private readonly Dictionary<string, string> _sourceDic;
-        private readonly Dictionary<string, string> _targetDic;
         private readonly AppSettings _appSettings;
 
         public DictionaryComparer(AppSettings appSettings)
@@ -11,25 +9,25 @@
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
-        public List<FileStatus> GetFiles(string sourceDir, string targetDir)
+        public List<FileStatus> GetFiles(string sourceDir, string destDir)
         {
             var sourceDic = GetPathDictionary(sourceDir);
-            var targetDic = GetPathDictionary(targetDir);
-            return CompareDictionary(sourceDic, targetDic)
+            var destDic = GetPathDictionary(destDir);
+            return CompareDictionary(sourceDic, destDic)
                 .Where(x => x.狀態 != CompareState.時間相同)
                 .OrderBy(x => x.狀態)
                 .ThenBy(x => x.相對路徑)
                 .ToList(); ;
         }
 
-        public Dictionary<string, string> GetPathDictionary(string source)
+        public Dictionary<string, string> GetPathDictionary(string dir)
         {
             return Directory
-                .EnumerateFiles(source, "*", SearchOption.AllDirectories)
+                .EnumerateFiles(dir, "*", SearchOption.AllDirectories)
                 .Select(path => new
                 {
                     Path = path,
-                    RelativePath = Path.GetRelativePath(source, path)
+                    RelativePath = Path.GetRelativePath(dir, path)
                 })
                 .ToList()
                 .Where(x => !IsIgnoreFile(x.Path, _appSettings.IgnoreFiles))
@@ -60,20 +58,20 @@
         }
 
 
-        private static List<FileStatus> CompareDictionary(Dictionary<string, string> sourceDictionary, Dictionary<string, string> targetDictionary)
+        private static List<FileStatus> CompareDictionary(Dictionary<string, string> sourceDic, Dictionary<string, string> destDic)
         {
             List<FileStatus> result = new();
-            foreach (var source in sourceDictionary)
+            foreach (var source in sourceDic)
             {
                 var sourcePath = source.Key;
                 var sourceFullPath = source.Value;
                 var sourceFile = new FileInfo(sourceFullPath);
 
-                if (targetDictionary.TryGetValue(sourcePath, out var targetFullPath))
+                if (destDic.TryGetValue(sourcePath, out var destFullPath))
                 {
-                    var targetFile = new FileInfo(targetFullPath);
-                    result.Add(new FileStatus(sourcePath, sourceFile, targetFile));
-                    targetDictionary.Remove(sourcePath); // 移除已經比對過的檔案
+                    var destFile = new FileInfo(destFullPath);
+                    result.Add(new FileStatus(sourcePath, sourceFile, destFile));
+                    destDic.Remove(sourcePath); // 移除已經比對過的檔案
                 }
                 else
                 {
@@ -81,13 +79,13 @@
                 }
             }
 
-            // 剩下的檔案是 targetFolder 中多出的檔案
-            foreach (var target in targetDictionary)
+            // 剩下的檔案是 dest資料夾 中多出的檔案
+            foreach (var dest in destDic)
             {
-                var targetPath = target.Key;
-                var targetFullPath = target.Value;
-                var targetFile = new FileInfo(targetFullPath);
-                result.Add(new FileStatus(targetPath, null, targetFile));
+                var destPath = dest.Key;
+                var destFullPath = dest.Value;
+                var destFile = new FileInfo(destFullPath);
+                result.Add(new FileStatus(destPath, null, destFile));
             }
 
             return result;
