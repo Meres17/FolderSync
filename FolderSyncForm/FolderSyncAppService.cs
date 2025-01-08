@@ -17,11 +17,7 @@ namespace FolderSyncForm
             _site = new FolderSyncCore.Site();
         }
 
-        public void Backup(string sourceDir, string destDir)
-        {
-            var files = GetDiffFiles(sourceDir, destDir);
-            _filebackup.Backup(files, sourceDir, destDir);
-        }
+
 
         public List<FileStatus> GetDiffFiles(string sourceDir, string destDir)
         {
@@ -32,20 +28,27 @@ namespace FolderSyncForm
         {
             return _filebackup.GetFolders(sourceDir, destDir);
         }
-        public void Restore(string backupDir, string destDir)
+
+        public void RestoreSite(DataGridView gv, string dest)
         {
-            _filebackup.Restore(backupDir, destDir);
+            try
+            {
+                _site.CloseSite(dest);
+                Restore(gv, dest);
+            }
+            finally
+            {
+                _site.OpenSite(dest);
+            }
         }
 
-        public void ToggleSite(string dest, Action action)
+        public void Restore(DataGridView gv, string dest)
         {
-            if (!_site.CanClose()) throw new Exception("找不到App_offline.htm，請將檔案放置本執行檔旁邊");
-            _site.CloseSite(dest);
-            action();
-            _site.OpenSite(dest);
+            var backupDir = GetBackupDir(gv);
+            _filebackup.Restore(backupDir.完整路徑, dest);
         }
 
-        public FolderDTO GetBackupDir(DataGridView gvDiff)
+        private FolderDTO GetBackupDir(DataGridView gvDiff)
         {
             if (gvDiff.SelectedRows.Count == 0)
             {
@@ -66,5 +69,26 @@ namespace FolderSyncForm
 
             return result;
         }
+
+
+        public void UpdateSite(string source, string dest)
+        {
+            try
+            {
+                _site.CloseSite(dest);
+                Backup(source, dest);
+            }
+            finally
+            {
+                _site.OpenSite(dest);
+            }
+        }
+
+        public void Backup(string sourceDir, string destDir)
+        {
+            var files = GetDiffFiles(sourceDir, destDir);
+            _filebackup.Backup(files, sourceDir, destDir);
+        }
+
     }
 }

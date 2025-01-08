@@ -31,20 +31,34 @@ namespace FolderSyncForm
 
         private void btnCompare_Click(object sender, EventArgs e)
         {
-            gv.DataSource = _service.GetDiffFiles(_source, _dest);
+            try
+            {
+                gv.DataSource = _service.GetDiffFiles(_source, _dest);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void btnCopy_Click(object sender, EventArgs e)
         {
-            _service.Backup(_source, _dest);
-            MessageBox.Show("複製成功");
+            try
+            {
+                _service.Backup(_source, _dest);
+                MessageBox.Show("複製成功");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void btnUpdateSite_Click(object sender, EventArgs e)
         {
             try
             {
-                _service.ToggleSite(_dest, () => _service.Backup(_source, _dest));
+                _service.UpdateSite(_source, _dest);
                 MessageBox.Show("站台更新成功");
             }
             catch (Exception ex)
@@ -62,8 +76,7 @@ namespace FolderSyncForm
         {
             try
             {
-                var backupDir = _service.GetBackupDir(gv);
-                _service.Restore(backupDir.完整路徑, _dest);
+                _service.Restore(gv, _dest);
                 MessageBox.Show("還原成功");
             }
             catch (Exception ex)
@@ -76,23 +89,16 @@ namespace FolderSyncForm
         {
             try
             {
-                var backupDir = _service.GetBackupDir(gv);
-                _service.ToggleSite(_dest, () => _service.Restore(backupDir.完整路徑, _dest));
+                _service.RestoreSite(gv, _dest);
                 MessageBox.Show("站台還原成功");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-
         }
 
         private void cbType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SetShowOrHide();
-        }
-
-        private void SetShowOrHide()
         {
             var isFolder = cbType.Text?.Contains("資料夾") == true;
             btnCopy.Visible = isFolder;
