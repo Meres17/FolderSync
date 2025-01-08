@@ -31,7 +31,7 @@ namespace FolderSyncForm
 
         private void btnCompare_Click(object sender, EventArgs e)
         {
-            gvDiff.DataSource = _service.GetDiffFiles(_source, _dest);
+            gv.DataSource = _service.GetDiffFiles(_source, _dest);
         }
 
         private void btnCopy_Click(object sender, EventArgs e)
@@ -55,14 +55,14 @@ namespace FolderSyncForm
 
         private void btnBackupList_Click(object sender, EventArgs e)
         {
-            gvDiff.DataSource = _service.GetBackupFolders(_source, _dest);
+            gv.DataSource = _service.GetBackupFolders(_source, _dest);
         }
 
         private void btnRestore_Click(object sender, EventArgs e)
         {
             try
             {
-                var backupDir = _service.GetBackupDir(gvDiff);
+                var backupDir = _service.GetBackupDir(gv);
                 _service.Restore(backupDir.完整路徑, _dest);
                 MessageBox.Show("還原成功");
             }
@@ -76,7 +76,7 @@ namespace FolderSyncForm
         {
             try
             {
-                var backupDir = _service.GetBackupDir(gvDiff);
+                var backupDir = _service.GetBackupDir(gv);
                 _service.ToggleSite(_dest, () => _service.Restore(backupDir.完整路徑, _dest));
                 MessageBox.Show("站台還原成功");
             }

@@ -12,7 +12,7 @@
         private Button btnCopy;
         private Button btnBackupList;
         private Button btnRestore;
-        private DataGridView gvDiff;
+        private DataGridView gv;
 
         /// <summary>
         ///  Required designer variable.
@@ -50,10 +50,10 @@
             btnCopy = new Button();
             btnBackupList = new Button();
             btnRestore = new Button();
-            gvDiff = new DataGridView();
+            gv = new DataGridView();
             btnUpdateSite = new Button();
             btnRestoreSite = new Button();
-            ((System.ComponentModel.ISupportInitialize)gvDiff).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)gv).BeginInit();
             SuspendLayout();
             // 
             // lbSource
@@ -173,11 +173,11 @@
             // 
             // gvDiff
             // 
-            gvDiff.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            gvDiff.Location = new Point(12, 90);
-            gvDiff.Name = "gvDiff";
-            gvDiff.Size = new Size(594, 336);
-            gvDiff.TabIndex = 10;
+            gv.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            gv.Location = new Point(12, 90);
+            gv.Name = "gv";
+            gv.Size = new Size(594, 336);
+            gv.TabIndex = 10;
             // 
             // btnUpdateSite
             // 
@@ -220,11 +220,11 @@
             Controls.Add(txtSource);
             Controls.Add(lbDest);
             Controls.Add(lbSource);
-            Controls.Add(gvDiff);
+            Controls.Add(gv);
             Margin = new Padding(2);
             Name = "MainForm";
             Text = "資料夾比對";
-            ((System.ComponentModel.ISupportInitialize)gvDiff).EndInit();
+            ((System.ComponentModel.ISupportInitialize)gv).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
