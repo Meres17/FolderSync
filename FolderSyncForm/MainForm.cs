@@ -87,5 +87,19 @@ namespace FolderSyncForm
 
         }
 
+        private void cbType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetShowOrHide();
+        }
+
+        private void SetShowOrHide()
+        {
+            var isFolder = cbType.Text?.Contains("¸ê®Æ§¨") == true;
+            btnCopy.Visible = isFolder;
+            btnRestore.Visible = isFolder;
+
+            btnUpdateSite.Visible = !isFolder;
+            btnRestoreSite.Visible = !isFolder;
+        }
     }
 }
