@@ -126,7 +126,7 @@ namespace FolderSyncCore.Imps
         private List<FileStatus> GetRestoreFiles(string host, string name)
         {
             var backupDir = Path.Combine(host, name);
-            return new DictionaryComparer(_appSettings)
+            return new FolderComparer(_appSettings)
                 .GetPathDictionary(backupDir)
                 .Select(x => new FileStatus(x.Key, new FileInfo(x.Value), null))
                 .ToList();

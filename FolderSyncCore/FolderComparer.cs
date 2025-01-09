@@ -1,15 +1,15 @@
 ﻿namespace FolderSyncCore
 {
-    public class DictionaryComparer
+    public class FolderComparer
     {
         private readonly AppSettings _appSettings;
 
-        public DictionaryComparer(AppSettings appSettings)
+        public FolderComparer(AppSettings appSettings)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
-        public List<FileStatus> GetFiles(string sourceDir, string destDir)
+        public List<FileStatus> GetDiffFiles(string sourceDir, string destDir)
         {
             var sourceDic = GetPathDictionary(sourceDir);
             var destDic = GetPathDictionary(destDir);
