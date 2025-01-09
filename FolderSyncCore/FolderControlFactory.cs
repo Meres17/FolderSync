@@ -2,26 +2,26 @@
 
 namespace FolderSyncCore
 {
-    public class BackupFactory
+    public class FolderControlFactory
     {
         private readonly IFolderReader _reader;
 
-        public BackupFactory(AppSettings appSettings)
+        public FolderControlFactory(AppSettings appSettings)
         {
             _reader = new FolderReader(appSettings);
         }
 
         public string[] GetNames()
         {
-            return new[] { "資料夾", ".NET站台" };
+            return new[] { ".NET站台", "資料夾" };
         }
 
-        public IBackup Create(string name)
+        public IFolderControl Create(string name)
         {
             return name switch
             {
-                "資料夾" => new FolderBackup(_reader),
-                ".NET站台" => new NetSiteBackup(new FolderBackup(_reader)),
+                "資料夾" => new FolderControl(_reader),
+                ".NET站台" => new NETSiteFolderControl(new FolderControl(_reader)),
                 _ => throw new NotSupportedException($"不支援的備份類型：{name}")
             };
         }

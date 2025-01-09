@@ -2,7 +2,7 @@
 
 namespace FolderSyncCore.Imps
 {
-    internal class FolderBackup : IBackup
+    internal class FolderControl : IFolderControl
     {
         private const string Format = "yyyyMMdd_HHmm";
         private const string DeleteName = "_state/Delete";
@@ -10,7 +10,7 @@ namespace FolderSyncCore.Imps
         private const string AddName = "_state/Add";
         private readonly IFolderReader _reader;
 
-        public FolderBackup(IFolderReader reader)
+        public FolderControl(IFolderReader reader)
         {
             _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
@@ -44,7 +44,7 @@ namespace FolderSyncCore.Imps
         }
 
 
-        public void Backup(IEnumerable<FileStatus> files, string sourceDir, string destDir)
+        public void Overwrite(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
             var backupDir = CreateBackupDirectory(sourceDir, destDir);
             Backup(files, backupDir, Path.GetFileName(sourceDir), x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同);

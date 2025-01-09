@@ -4,12 +4,12 @@ namespace FolderSyncForm
 {
     internal class FolderSyncAppService
     {
-        private readonly BackupFactory _factory;
+        private readonly FolderControlFactory _factory;
         private readonly IFolderReader _reader;
 
         public FolderSyncAppService(AppSettings appSettings)
         {
-            _factory = new BackupFactory(appSettings);
+            _factory = new FolderControlFactory(appSettings);
             _reader = new FolderReader(appSettings);
         }
 
@@ -32,8 +32,8 @@ namespace FolderSyncForm
         public void Restore(DataGridView gv, string destDir, string type)
         {
             var backupDir = GetBackupDir(gv);
-            var backup = _factory.Create(type);
-            backup.Restore(backupDir.完整路徑, destDir);
+            var folderControl = _factory.Create(type);
+            folderControl.Restore(backupDir.完整路徑, destDir);
         }
 
         private FolderDTO GetBackupDir(DataGridView gv)
@@ -61,8 +61,8 @@ namespace FolderSyncForm
         public void Overwrite(string sourceDir, string destDir, string type)
         {
             var files = GetDiffFiles(sourceDir, destDir);
-            var backup = _factory.Create(type);
-            backup.Backup(files, sourceDir, destDir);
+            var folderControl = _factory.Create(type);
+            folderControl.Overwrite(files, sourceDir, destDir);
         }
 
     }

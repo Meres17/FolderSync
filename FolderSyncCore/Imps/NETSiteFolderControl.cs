@@ -1,10 +1,10 @@
 ﻿namespace FolderSyncCore.Imps
 {
-    internal class NetSiteBackup : IBackup
+    internal class NETSiteFolderControl : IFolderControl
     {
-        private readonly IBackup _backup;
+        private readonly IFolderControl _backup;
 
-        public NetSiteBackup(IBackup backup)
+        public NETSiteFolderControl(IFolderControl backup)
         {
             _backup = backup ?? throw new ArgumentNullException(nameof(backup));
         }
@@ -14,12 +14,12 @@
             return _backup.GetFolders(sourceDir, destDir);
         }
 
-        public void Backup(IEnumerable<FileStatus> files, string sourceDir, string destDir)
+        public void Overwrite(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
             try
             {
                 CloseSite(destDir);
-                _backup.Backup(files, sourceDir, destDir);
+                _backup.Overwrite(files, sourceDir, destDir);
             }
             finally
             {
