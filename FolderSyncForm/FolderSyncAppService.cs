@@ -5,15 +5,11 @@ namespace FolderSyncForm
     internal class FolderSyncAppService
     {
         private readonly BackupFactory _factory;
-        private readonly IBackup _webSite;
-        private readonly IBackup _folder;
         private readonly DictionaryComparer _dictionaryComparer;
 
         public FolderSyncAppService(AppSettings appSettings)
         {
             _factory = new BackupFactory(appSettings);
-            _folder = _factory.Create("資料夾");
-            _webSite = _factory.Create(".NET站台");
             _dictionaryComparer = new DictionaryComparer(appSettings);
         }
 
@@ -27,21 +23,17 @@ namespace FolderSyncForm
             return _dictionaryComparer.GetFiles(sourceDir, destDir);
         }
 
-        public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir)
+        public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir, string type)
         {
-            return _folder.GetFolders(sourceDir, destDir);
+            var backup = _factory.Create(type);
+            return backup.GetFolders(sourceDir, destDir);
         }
 
-        public void RestoreSite(DataGridView gv, string destDir)
+        public void Restore(DataGridView gv, string destDir, string type)
         {
             var backupDir = GetBackupDir(gv);
-            _webSite.Restore(backupDir.完整路徑, destDir);
-        }
-
-        public void Restore(DataGridView gv, string destDir)
-        {
-            var backupDir = GetBackupDir(gv);
-            _folder.Restore(backupDir.完整路徑, destDir);
+            var backup = _factory.Create(type);
+            backup.Restore(backupDir.完整路徑, destDir);
         }
 
         private FolderDTO GetBackupDir(DataGridView gv)
@@ -66,17 +58,11 @@ namespace FolderSyncForm
             return result;
         }
 
-
-        public void UpdateSite(string sourceDir, string destDir)
+        public void Backup(string sourceDir, string destDir, string type)
         {
             var files = GetDiffFiles(sourceDir, destDir);
-            _webSite.Backup(files, sourceDir, destDir);
-        }
-
-        public void Backup(string sourceDir, string destDir)
-        {
-            var files = GetDiffFiles(sourceDir, destDir);
-            _folder.Backup(files, sourceDir, destDir);
+            var backup = _factory.Create(type);
+            backup.Backup(files, sourceDir, destDir);
         }
 
     }

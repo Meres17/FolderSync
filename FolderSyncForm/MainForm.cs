@@ -9,14 +9,18 @@ namespace FolderSyncForm
         private readonly FolderSyncAppService _service;
         private string _source => txtSource.Text;
         private string _dest => txtDest.Text;
+        private string _type => cbType.Text;
 
         public MainForm()
         {
             InitializeComponent();
             var appSettings = AppSettings.Build();
-            _service = new FolderSyncAppService(appSettings);
             txtSource.Text = appSettings.Source;
             txtDest.Text = appSettings.Target;
+
+            _service = new FolderSyncAppService(appSettings);
+            cbType.Items.AddRange(_service.GetNames());
+            cbType.SelectedIndex = 1;
         }
 
         private void btnSource_Click(object sender, EventArgs e)
@@ -45,8 +49,8 @@ namespace FolderSyncForm
         {
             try
             {
-                _service.Backup(_source, _dest);
-                MessageBox.Show("複製成功");
+                _service.Backup(_source, _dest, _type);
+                MessageBox.Show(_type + "更新成功");
             }
             catch (Exception ex)
             {
@@ -58,8 +62,8 @@ namespace FolderSyncForm
         {
             try
             {
-                _service.UpdateSite(_source, _dest);
-                MessageBox.Show("站台更新成功");
+                _service.Backup(_source, _dest, _type);
+                MessageBox.Show(_type + "更新成功");
             }
             catch (Exception ex)
             {
@@ -69,15 +73,15 @@ namespace FolderSyncForm
 
         private void btnBackupList_Click(object sender, EventArgs e)
         {
-            gv.DataSource = _service.GetBackupFolders(_source, _dest);
+            gv.DataSource = _service.GetBackupFolders(_source, _dest, _type);
         }
 
         private void btnRestore_Click(object sender, EventArgs e)
         {
             try
             {
-                _service.Restore(gv, _dest);
-                MessageBox.Show("還原成功");
+                _service.Restore(gv, _dest, _type);
+                MessageBox.Show(_type + "還原成功");
             }
             catch (Exception ex)
             {
@@ -89,8 +93,8 @@ namespace FolderSyncForm
         {
             try
             {
-                _service.RestoreSite(gv, _dest);
-                MessageBox.Show("站台還原成功");
+                _service.Restore(gv, _dest, _type);
+                MessageBox.Show(_type + "還原成功");
             }
             catch (Exception ex)
             {

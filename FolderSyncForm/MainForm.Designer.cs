@@ -135,12 +135,10 @@
             cbType.DropDownStyle = ComboBoxStyle.DropDownList;
             cbType.Font = new Font("Segoe UI", 12F);
             cbType.FormattingEnabled = true;
-            cbType.Items.AddRange(new object[] { ".NET站台", "資料夾" });
             cbType.Location = new Point(624, 90);
             cbType.Margin = new Padding(2);
             cbType.Name = "cbType";
             cbType.Size = new Size(110, 29);
-            cbType.SelectedIndex = 0;
             cbType.TabIndex = 6;
             cbType.SelectedIndexChanged += cbType_SelectedIndexChanged;
             // 
