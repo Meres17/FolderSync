@@ -4,7 +4,7 @@ namespace FolderSyncForm
 {
     internal class FolderSyncAppService
     {
-        private readonly FolderSyncCore.Site _site;
+        private readonly NetSiteBackup _site;
         private readonly AppSettings _appSettings;
         private readonly FolderBackup _filebackup;
         private readonly DictionaryComparer _dictionaryComparer;
@@ -14,7 +14,7 @@ namespace FolderSyncForm
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _filebackup = new FolderBackup(appSettings);
             _dictionaryComparer = new DictionaryComparer(appSettings);
-            _site = new FolderSyncCore.Site();
+            _site = new NetSiteBackup();
         }
 
 

@@ -1,6 +1,6 @@
 ﻿namespace FolderSyncCore
 {
-    public class Site
+    public class NetSiteBackup
     {
         public void OpenSite(string path)
         {
