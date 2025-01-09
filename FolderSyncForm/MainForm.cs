@@ -16,7 +16,7 @@ namespace FolderSyncForm
             InitializeComponent();
             var appSettings = AppSettings.Build();
             txtSource.Text = appSettings.Source;
-            txtDest.Text = appSettings.Target;
+            txtDest.Text = appSettings.Dest;
 
             _service = new FolderSyncAppService(appSettings);
             cbType.Items.AddRange(_service.GetNames());
