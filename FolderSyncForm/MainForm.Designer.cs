@@ -53,6 +53,7 @@
             btnBackupList = new Button();
             btnRestore = new Button();
             gv = new DataGridView();
+            btnSummary = new Button();
             ((System.ComponentModel.ISupportInitialize)gv).BeginInit();
             SuspendLayout();
             // 
@@ -81,8 +82,9 @@
             // btnSource
             // 
             btnSource.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSource.BackColor = Color.LightSkyBlue;
+            btnSource.BackColor = Color.SlateBlue;
             btnSource.Font = new Font("Segoe UI", 12F);
+            btnSource.ForeColor = SystemColors.Control;
             btnSource.Location = new Point(624, 15);
             btnSource.Margin = new Padding(2);
             btnSource.Name = "btnSource";
@@ -116,8 +118,9 @@
             // btnDest
             // 
             btnDest.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnDest.BackColor = Color.LightSkyBlue;
+            btnDest.BackColor = Color.RoyalBlue;
             btnDest.Font = new Font("Segoe UI", 12F);
+            btnDest.ForeColor = SystemColors.Control;
             btnDest.Location = new Point(624, 52);
             btnDest.Margin = new Padding(2);
             btnDest.Name = "btnDest";
@@ -144,7 +147,7 @@
             btnCompare.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnCompare.BackColor = Color.LightGreen;
             btnCompare.Font = new Font("Segoe UI", 12F);
-            btnCompare.Location = new Point(624, 168);
+            btnCompare.Location = new Point(624, 157);
             btnCompare.Margin = new Padding(2);
             btnCompare.Name = "btnCompare";
             btnCompare.Size = new Size(110, 30);
@@ -158,7 +161,7 @@
             btnCopy.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnCopy.BackColor = Color.LightCoral;
             btnCopy.Font = new Font("Segoe UI", 12F);
-            btnCopy.Location = new Point(624, 202);
+            btnCopy.Location = new Point(624, 191);
             btnCopy.Margin = new Padding(2);
             btnCopy.Name = "btnCopy";
             btnCopy.Size = new Size(110, 30);
@@ -172,7 +175,7 @@
             btnBackupList.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnBackupList.BackColor = Color.LightGreen;
             btnBackupList.Font = new Font("Segoe UI", 12F);
-            btnBackupList.Location = new Point(624, 362);
+            btnBackupList.Location = new Point(624, 328);
             btnBackupList.Margin = new Padding(2);
             btnBackupList.Name = "btnBackupList";
             btnBackupList.Size = new Size(110, 30);
@@ -186,7 +189,7 @@
             btnRestore.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnRestore.BackColor = Color.LightCoral;
             btnRestore.Font = new Font("Segoe UI", 12F);
-            btnRestore.Location = new Point(624, 396);
+            btnRestore.Location = new Point(624, 362);
             btnRestore.Margin = new Padding(2);
             btnRestore.Name = "btnRestore";
             btnRestore.Size = new Size(110, 30);
@@ -203,11 +206,26 @@
             gv.Size = new Size(606, 336);
             gv.TabIndex = 13;
             // 
+            // btnSummary
+            // 
+            btnSummary.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnSummary.BackColor = Color.Thistle;
+            btnSummary.Font = new Font("Segoe UI", 12F);
+            btnSummary.Location = new Point(624, 396);
+            btnSummary.Margin = new Padding(2);
+            btnSummary.Name = "btnSummary";
+            btnSummary.Size = new Size(110, 30);
+            btnSummary.TabIndex = 14;
+            btnSummary.Text = "說明";
+            btnSummary.UseVisualStyleBackColor = false;
+            btnSummary.Click += btnSummary_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(740, 440);
+            Controls.Add(btnSummary);
             Controls.Add(lbSource);
             Controls.Add(txtSource);
             Controls.Add(btnSource);
@@ -233,5 +251,6 @@
 
 
 
+        private Button btnSummary;
     }
 }

@@ -77,5 +77,10 @@ namespace FolderSyncForm
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void btnSummary_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
