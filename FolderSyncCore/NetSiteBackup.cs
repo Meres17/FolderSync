@@ -1,46 +1,82 @@
-﻿namespace FolderSyncCore
+﻿
+namespace FolderSyncCore
 {
-    public class NetSiteBackup
+    public class NetSiteBackup : IBackup
     {
-        public void OpenSite(string path)
+        private readonly IBackup _backup;
+
+        public NetSiteBackup(IBackup backup)
         {
-            if (!Directory.Exists(path))
+            _backup = backup ?? throw new ArgumentNullException(nameof(backup));
+        }
+
+        public List<FolderDTO> GetFolders(string sourceDir, string destDir)
+        {
+            return _backup.GetFolders(sourceDir, destDir);
+        }
+
+        public void Backup(IEnumerable<FileStatus> files, string sourceDir, string destDir)
+        {
+            try
             {
-                throw new DirectoryNotFoundException($"找不到站台資料夾：{path}");
+                CloseSite(destDir);
+                _backup.Backup(files, sourceDir, destDir);
             }
-
-            var destPath = GetDestPath(path);
-
-            if (File.Exists(destPath))
+            finally
             {
-                File.Delete(destPath);
+                OpenSite(destDir);
             }
         }
 
-        public void CloseSite(string path)
+        public void Restore(string backupDir, string destDir)
         {
-            if (!Directory.Exists(path))
+            try
             {
-                throw new DirectoryNotFoundException($"找不到站台資料夾：{path}");
+                CloseSite(destDir);
+                _backup.Restore(backupDir, destDir);
+            }
+            finally
+            {
+                OpenSite(destDir);
+            }
+        }
+
+        private void CloseSite(string destDir)
+        {
+            if (!Directory.Exists(destDir))
+            {
+                throw new DirectoryNotFoundException($"找不到站台資料夾：{destDir}");
             }
 
-            var sourcePath = GetSourcePath();
+            var sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "App_offline.htm");
 
             if (!File.Exists(sourcePath))
             {
                 throw new Exception("找不到App_offline.htm，請將檔案放置本執行檔旁邊");
             }
 
-            File.Copy(sourcePath, GetDestPath(path), true);
-        }
-        private string GetSourcePath()
-        {
-            return Path.Combine(Directory.GetCurrentDirectory(), "App_offline.htm");
+            File.Copy(sourcePath, GetOfflineFile(destDir), true);
         }
 
-        private string GetDestPath(string path)
+        private string GetOfflineFile(string destDir)
         {
-            return Path.Combine(path, "App_offline.htm");
+            return Path.Combine(destDir, "App_offline.htm");
         }
+
+        private void OpenSite(string destDir)
+        {
+            if (!Directory.Exists(destDir))
+            {
+                throw new DirectoryNotFoundException($"找不到站台資料夾：{destDir}");
+            }
+
+            var offlineFile = GetOfflineFile(destDir);
+
+            if (File.Exists(offlineFile))
+            {
+                File.Delete(offlineFile);
+            }
+        }
+
     }
 }

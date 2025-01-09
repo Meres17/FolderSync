@@ -4,7 +4,7 @@ namespace FolderSyncForm
 {
     internal class FolderSyncAppService
     {
-        private readonly NetSiteBackup _site;
+        private readonly NetSiteBackup _netSiteBackup;
         private readonly AppSettings _appSettings;
         private readonly FolderBackup _filebackup;
         private readonly DictionaryComparer _dictionaryComparer;
@@ -14,9 +14,8 @@ namespace FolderSyncForm
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _filebackup = new FolderBackup(appSettings);
             _dictionaryComparer = new DictionaryComparer(appSettings);
-            _site = new NetSiteBackup();
+            _netSiteBackup = new NetSiteBackup(_filebackup);
         }
-
 
 
         public List<FileStatus> GetDiffFiles(string sourceDir, string destDir)
@@ -31,21 +30,14 @@ namespace FolderSyncForm
 
         public void RestoreSite(DataGridView gv, string dest)
         {
-            try
-            {
-                _site.CloseSite(dest);
-                Restore(gv, dest);
-            }
-            finally
-            {
-                _site.OpenSite(dest);
-            }
+            var backupDir = GetBackupDir(gv);
+            _netSiteBackup.Restore(backupDir.完整路徑, dest);
         }
 
-        public void Restore(DataGridView gv, string dest)
+        public void Restore(DataGridView gv, string destDir)
         {
             var backupDir = GetBackupDir(gv);
-            _filebackup.Restore(backupDir.完整路徑, dest);
+            _filebackup.Restore(backupDir.完整路徑, destDir);
         }
 
         private FolderDTO GetBackupDir(DataGridView gvDiff)
@@ -71,17 +63,10 @@ namespace FolderSyncForm
         }
 
 
-        public void UpdateSite(string source, string dest)
+        public void UpdateSite(string sourceDir, string destDir)
         {
-            try
-            {
-                _site.CloseSite(dest);
-                Backup(source, dest);
-            }
-            finally
-            {
-                _site.OpenSite(dest);
-            }
+            var files = GetDiffFiles(sourceDir, destDir);
+            _netSiteBackup.Backup(files, sourceDir, destDir);
         }
 
         public void Backup(string sourceDir, string destDir)
