@@ -1,7 +1,6 @@
-﻿
-namespace FolderSyncCore
+﻿namespace FolderSyncCore.Imps
 {
-    public class NetSiteBackup : IBackup
+    internal class NetSiteBackup : IBackup
     {
         private readonly IBackup _backup;
 

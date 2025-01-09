@@ -1,4 +1,6 @@
-﻿namespace FolderSyncCore
+﻿using FolderSyncCore.Imps;
+
+namespace FolderSyncCore
 {
     public class BackupFactory
     {

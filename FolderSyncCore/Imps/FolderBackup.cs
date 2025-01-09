@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 
-namespace FolderSyncCore
+namespace FolderSyncCore.Imps
 {
-    public class FolderBackup : IBackup
+    internal class FolderBackup : IBackup
     {
         private const string Format = "yyyyMMdd_HHmm";
         private const string DeleteName = "_state/Delete";
