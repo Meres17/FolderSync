@@ -2,7 +2,7 @@
 
 namespace FolderSyncCore
 {
-    public class FileBackup
+    public class FolderBackup
     {
         private const string Format = "yyyyMMdd_HHmm";
         private const string DeleteName = "_state/Delete";
@@ -10,7 +10,7 @@ namespace FolderSyncCore
         private const string AddName = "_state/Add";
         private AppSettings _appSettings;
 
-        public FileBackup(AppSettings appSettings)
+        public FolderBackup(AppSettings appSettings)
         {
             _appSettings = appSettings;
         }

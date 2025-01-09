@@ -6,13 +6,13 @@ namespace FolderSyncForm
     {
         private readonly FolderSyncCore.Site _site;
         private readonly AppSettings _appSettings;
-        private readonly FileBackup _filebackup;
+        private readonly FolderBackup _filebackup;
         private readonly DictionaryComparer _dictionaryComparer;
 
         public FolderSyncAppService(AppSettings appSettings)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _filebackup = new FileBackup(appSettings);
+            _filebackup = new FolderBackup(appSettings);
             _dictionaryComparer = new DictionaryComparer(appSettings);
             _site = new FolderSyncCore.Site();
         }
