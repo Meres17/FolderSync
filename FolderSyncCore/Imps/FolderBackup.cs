@@ -118,7 +118,7 @@ namespace FolderSyncCore.Imps
             Copy(diffFiles, destDir, x => x.來源路徑);
 
             var addFiles = GetRestoreFiles(backupDir, AddName)
-                .Select(x => new FileStatus(x.相對路徑, new FileInfo(Path.Combine(destDir, x.相對路徑)), null))
+                .Select(x => new FileStatus(x.相對路徑, Path.Combine(destDir, x.相對路徑), null))
                 .ToList();
             Delete(addFiles, x => x.來源路徑);
         }
@@ -128,7 +128,7 @@ namespace FolderSyncCore.Imps
             var backupDir = Path.Combine(host, name);
             return new FolderComparer(_appSettings)
                 .GetPathDictionary(backupDir)
-                .Select(x => new FileStatus(x.Key, new FileInfo(x.Value), null))
+                .Select(x => new FileStatus(x.Key, x.Value, null))
                 .ToList();
         }
 

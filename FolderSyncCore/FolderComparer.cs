@@ -70,33 +70,20 @@
 
         private static List<FileStatus> CompareDictionary(Dictionary<string, string> sourceDic, Dictionary<string, string> destDic)
         {
-            List<FileStatus> result = new();
-            foreach (var source in sourceDic)
+            var result = new List<FileStatus>();
+            foreach (var (sourcePath, sourceFullPath) in sourceDic)
             {
-                var sourcePath = source.Key;
-                var sourceFullPath = source.Value;
-                var sourceFile = new FileInfo(sourceFullPath);
-
-                if (destDic.TryGetValue(sourcePath, out var destFullPath))
-                {
-                    var destFile = new FileInfo(destFullPath);
-                    result.Add(new FileStatus(sourcePath, sourceFile, destFile));
-                    destDic.Remove(sourcePath); // 移除已經比對過的檔案
-                }
-                else
-                {
-                    result.Add(new FileStatus(sourcePath, sourceFile, null));
-                }
+                // 移除已比對的項目，同時將找到的值傳給 destFullPath
+                // destFullPath 可以為 null，表示 dest 資料夾中沒有這個檔案
+                destDic.Remove(sourcePath, out var destFullPath);
+                result.Add(new FileStatus(sourcePath, sourceFullPath, destFullPath));
             }
 
-            // 剩下的檔案是 dest資料夾 中多出的檔案
-            foreach (var dest in destDic)
-            {
-                var destPath = dest.Key;
-                var destFullPath = dest.Value;
-                var destFile = new FileInfo(destFullPath);
-                result.Add(new FileStatus(destPath, null, destFile));
-            }
+            // 剩餘的 destDic 即為 dest 資料夾中多出的檔案
+            var remaining = destDic
+                .Select(dest => new FileStatus(dest.Key, null, dest.Value));
+
+            result.AddRange(remaining);
 
             return result;
         }
