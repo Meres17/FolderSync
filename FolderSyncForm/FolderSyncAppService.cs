@@ -58,7 +58,7 @@ namespace FolderSyncForm
             return result;
         }
 
-        public void Backup(string sourceDir, string destDir, string type)
+        public void Overwrite(string sourceDir, string destDir, string type)
         {
             var files = GetDiffFiles(sourceDir, destDir);
             var backup = _factory.Create(type);

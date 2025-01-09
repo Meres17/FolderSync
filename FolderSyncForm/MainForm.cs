@@ -49,21 +49,9 @@ namespace FolderSyncForm
         {
             try
             {
-                _service.Backup(_source, _dest, _type);
+                _service.Overwrite(_source, _dest, _type);
                 MessageBox.Show(_type + "更新成功");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void btnUpdateSite_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                _service.Backup(_source, _dest, _type);
-                MessageBox.Show(_type + "更新成功");
+                gv.DataSource = _service.GetDiffFiles(_source, _dest);
             }
             catch (Exception ex)
             {
@@ -82,34 +70,12 @@ namespace FolderSyncForm
             {
                 _service.Restore(gv, _dest, _type);
                 MessageBox.Show(_type + "還原成功");
+                gv.DataSource = _service.GetDiffFiles(_source, _dest);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-        }
-
-        private void btnRestoreSite_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                _service.Restore(gv, _dest, _type);
-                MessageBox.Show(_type + "還原成功");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void cbType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var isFolder = cbType.Text?.Contains("資料夾") == true;
-            btnCopy.Visible = isFolder;
-            btnRestore.Visible = isFolder;
-
-            btnUpdateSite.Visible = !isFolder;
-            btnRestoreSite.Visible = !isFolder;
         }
     }
 }

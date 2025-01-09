@@ -11,10 +11,8 @@
 
         private ComboBox cbType;
         private Button btnCompare;
-        private Button btnUpdateSite;
         private Button btnCopy;
         private Button btnBackupList;
-        private Button btnRestoreSite;
         private Button btnRestore;
         private DataGridView gv;
         /// <summary>
@@ -51,10 +49,8 @@
             btnDest = new Button();
             cbType = new ComboBox();
             btnCompare = new Button();
-            btnUpdateSite = new Button();
             btnCopy = new Button();
             btnBackupList = new Button();
-            btnRestoreSite = new Button();
             btnRestore = new Button();
             gv = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)gv).BeginInit();
@@ -85,6 +81,7 @@
             // btnSource
             // 
             btnSource.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnSource.BackColor = Color.LightSkyBlue;
             btnSource.Font = new Font("Segoe UI", 12F);
             btnSource.Location = new Point(624, 15);
             btnSource.Margin = new Padding(2);
@@ -92,7 +89,7 @@
             btnSource.Size = new Size(110, 30);
             btnSource.TabIndex = 2;
             btnSource.Text = "選擇來源";
-            btnSource.BackColor = Color.LightSkyBlue;
+            btnSource.UseVisualStyleBackColor = false;
             btnSource.Click += btnSource_Click;
             // 
             // lbDest
@@ -119,6 +116,7 @@
             // btnDest
             // 
             btnDest.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnDest.BackColor = Color.LightSkyBlue;
             btnDest.Font = new Font("Segoe UI", 12F);
             btnDest.Location = new Point(624, 52);
             btnDest.Margin = new Padding(2);
@@ -126,7 +124,7 @@
             btnDest.Size = new Size(110, 30);
             btnDest.TabIndex = 5;
             btnDest.Text = "選擇目標";
-            btnDest.BackColor = Color.LightSkyBlue;
+            btnDest.UseVisualStyleBackColor = false;
             btnDest.Click += btnDest_Click;
             // 
             // cbType
@@ -140,11 +138,11 @@
             cbType.Name = "cbType";
             cbType.Size = new Size(110, 29);
             cbType.TabIndex = 6;
-            cbType.SelectedIndexChanged += cbType_SelectedIndexChanged;
             // 
             // btnCompare
             // 
             btnCompare.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnCompare.BackColor = Color.LightGreen;
             btnCompare.Font = new Font("Segoe UI", 12F);
             btnCompare.Location = new Point(624, 168);
             btnCompare.Margin = new Padding(2);
@@ -152,74 +150,49 @@
             btnCompare.Size = new Size(110, 30);
             btnCompare.TabIndex = 7;
             btnCompare.Text = "比對";
-            btnCompare.BackColor = Color.LightGreen;
+            btnCompare.UseVisualStyleBackColor = false;
             btnCompare.Click += btnCompare_Click;
-            // 
-            // btnUpdateSite
-            // 
-            btnUpdateSite.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnUpdateSite.Font = new Font("Segoe UI", 12F);
-            btnUpdateSite.Location = new Point(623, 202);
-            btnUpdateSite.Margin = new Padding(2);
-            btnUpdateSite.Name = "btnUpdateSite";
-            btnUpdateSite.Size = new Size(111, 30);
-            btnUpdateSite.TabIndex = 8;
-            btnUpdateSite.Text = "更新站台";
-            btnUpdateSite.BackColor = Color.LightCoral;
-            btnUpdateSite.Click += btnUpdateSite_Click;
             // 
             // btnCopy
             // 
             btnCopy.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnCopy.BackColor = Color.LightCoral;
             btnCopy.Font = new Font("Segoe UI", 12F);
-            btnCopy.Location = new Point(624, 236);
+            btnCopy.Location = new Point(624, 202);
             btnCopy.Margin = new Padding(2);
             btnCopy.Name = "btnCopy";
             btnCopy.Size = new Size(110, 30);
             btnCopy.TabIndex = 9;
-            btnCopy.Text = "複製資料夾";
-            btnCopy.BackColor = Color.LightCoral;
-            btnCopy.Visible = false;
+            btnCopy.Text = "更新";
+            btnCopy.UseVisualStyleBackColor = false;
             btnCopy.Click += btnCopy_Click;
             // 
             // btnBackupList
             // 
             btnBackupList.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnBackupList.BackColor = Color.LightGreen;
             btnBackupList.Font = new Font("Segoe UI", 12F);
-            btnBackupList.Location = new Point(624, 328);
+            btnBackupList.Location = new Point(624, 362);
             btnBackupList.Margin = new Padding(2);
             btnBackupList.Name = "btnBackupList";
             btnBackupList.Size = new Size(110, 30);
             btnBackupList.TabIndex = 10;
             btnBackupList.Text = "備份紀錄";
-            btnBackupList.BackColor = Color.LightGreen;
+            btnBackupList.UseVisualStyleBackColor = false;
             btnBackupList.Click += btnBackupList_Click;
-            // 
-            // btnRestoreSite
-            // 
-            btnRestoreSite.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnRestoreSite.Font = new Font("Segoe UI", 12F);
-            btnRestoreSite.Location = new Point(624, 362);
-            btnRestoreSite.Margin = new Padding(2);
-            btnRestoreSite.Name = "btnRestoreSite";
-            btnRestoreSite.Size = new Size(110, 30);
-            btnRestoreSite.TabIndex = 11;
-            btnRestoreSite.Text = "還原站台";
-            btnRestoreSite.BackColor = Color.LightCoral;
-            btnRestoreSite.Click += btnRestoreSite_Click;
             // 
             // btnRestore
             // 
             btnRestore.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnRestore.BackColor = Color.LightCoral;
             btnRestore.Font = new Font("Segoe UI", 12F);
             btnRestore.Location = new Point(624, 396);
             btnRestore.Margin = new Padding(2);
             btnRestore.Name = "btnRestore";
             btnRestore.Size = new Size(110, 30);
             btnRestore.TabIndex = 12;
-            btnRestore.Text = "還原資料夾";
-            btnRestore.Visible = false;
-            btnRestore.BackColor = Color.LightCoral;
+            btnRestore.Text = "還原備份";
+            btnRestore.UseVisualStyleBackColor = false;
             btnRestore.Click += btnRestore_Click;
             // 
             // gv
@@ -243,10 +216,8 @@
             Controls.Add(btnDest);
             Controls.Add(cbType);
             Controls.Add(btnCompare);
-            Controls.Add(btnUpdateSite);
             Controls.Add(btnCopy);
             Controls.Add(btnBackupList);
-            Controls.Add(btnRestoreSite);
             Controls.Add(btnRestore);
             Controls.Add(gv);
             Margin = new Padding(2);
