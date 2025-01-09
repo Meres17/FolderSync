@@ -20,7 +20,7 @@ namespace FolderSyncForm
 
             _service = new FolderSyncAppService(appSettings);
             cbType.Items.AddRange(_service.GetNames());
-            cbType.SelectedIndex = 1;
+            cbType.SelectedIndex = 0;
         }
 
         private void btnSource_Click(object sender, EventArgs e)
