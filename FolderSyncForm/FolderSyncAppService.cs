@@ -5,12 +5,12 @@ namespace FolderSyncForm
     internal class FolderSyncAppService
     {
         private readonly BackupFactory _factory;
-        private readonly FolderComparer _folder;
+        private readonly IFolderReader _reader;
 
         public FolderSyncAppService(AppSettings appSettings)
         {
             _factory = new BackupFactory(appSettings);
-            _folder = new FolderComparer(appSettings);
+            _reader = new FolderReader(appSettings);
         }
 
         public string[] GetNames()
@@ -20,7 +20,7 @@ namespace FolderSyncForm
 
         public List<FileStatus> GetDiffFiles(string sourceDir, string destDir)
         {
-            return _folder.GetDiffFiles(sourceDir, destDir);
+            return _reader.GetDiffFiles(sourceDir, destDir);
         }
 
         public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir, string type)

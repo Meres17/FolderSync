@@ -8,11 +8,11 @@ namespace FolderSyncCore.Imps
         private const string DeleteName = "_state/Delete";
         private const string DiffName = "_state/Diff";
         private const string AddName = "_state/Add";
-        private AppSettings _appSettings;
+        private readonly IFolderReader _reader;
 
-        public FolderBackup(AppSettings appSettings)
+        public FolderBackup(IFolderReader reader)
         {
-            _appSettings = appSettings;
+            _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
 
         public List<FolderDTO> GetFolders(string sourceDir, string destDir)
@@ -126,7 +126,7 @@ namespace FolderSyncCore.Imps
         private List<FileStatus> GetRestoreFiles(string host, string name)
         {
             var backupDir = Path.Combine(host, name);
-            return new FolderComparer(_appSettings)
+            return _reader
                 .GetPathDictionary(backupDir)
                 .Select(x => new FileStatus(x.Key, x.Value, null))
                 .ToList();

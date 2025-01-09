@@ -1,10 +1,10 @@
 ﻿namespace FolderSyncCore
 {
-    public class FolderComparer
+    public class FolderReader : IFolderReader
     {
         private readonly AppSettings _appSettings;
 
-        public FolderComparer(AppSettings appSettings)
+        public FolderReader(AppSettings appSettings)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         }

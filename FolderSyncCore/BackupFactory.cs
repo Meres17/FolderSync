@@ -4,11 +4,11 @@ namespace FolderSyncCore
 {
     public class BackupFactory
     {
-        private readonly AppSettings _appSettings;
+        private readonly IFolderReader _reader;
 
         public BackupFactory(AppSettings appSettings)
         {
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            _reader = new FolderReader(appSettings);
         }
 
         public string[] GetNames()
@@ -20,8 +20,8 @@ namespace FolderSyncCore
         {
             return name switch
             {
-                "資料夾" => new FolderBackup(_appSettings),
-                ".NET站台" => new NetSiteBackup(new FolderBackup(_appSettings)),
+                "資料夾" => new FolderBackup(_reader),
+                ".NET站台" => new NetSiteBackup(new FolderBackup(_reader)),
                 _ => throw new NotSupportedException($"不支援的備份類型：{name}")
             };
         }
