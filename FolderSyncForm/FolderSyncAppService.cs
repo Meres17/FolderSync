@@ -1,5 +1,7 @@
 ﻿using FolderSyncCore;
 
+using FolderSyncForm.Helpers;
+
 namespace FolderSyncForm
 {
     internal class FolderSyncAppService
@@ -31,31 +33,16 @@ namespace FolderSyncForm
 
         public void Restore(DataGridView gv, string destDir, string type)
         {
-            var backupDir = GetBackupDir(gv);
-            var folderControl = _factory.Create(type);
-            folderControl.Restore(backupDir.完整路徑, destDir);
-        }
+            var backupFolders = GetBackupFolders(gv);
 
-        private FolderDTO GetBackupDir(DataGridView gv)
-        {
-            if (gv.SelectedRows.Count == 0)
-            {
-                throw new Exception("請選擇要還原的檔案");
-            }
-
-            if (gv.SelectedRows.Count > 1)
+            if (backupFolders.Count > 1)
             {
                 throw new Exception("要還原的檔案只能選一個");
             }
 
-            var result = (FolderDTO)gv.SelectedRows[0].DataBoundItem;
-
-            if (result is null)
-            {
-                throw new Exception("選擇的檔案不存在");
-            }
-
-            return result;
+            var backupDir = backupFolders.First();
+            var folderControl = _factory.Create(type);
+            folderControl.Restore(backupDir.完整路徑, destDir);
         }
 
         public void Overwrite(string sourceDir, string destDir, string type)
@@ -67,25 +54,30 @@ namespace FolderSyncForm
 
         public void DeleteBackup(DataGridView gv)
         {
+            var backupFolders = GetBackupFolders(gv);
+
+            if (backupFolders.Count == 0)
+            {
+                throw new Exception("選擇的備份紀錄不存在");
+            }
+
+            var result = MessageHelper.Warning("確定刪除備份紀錄嗎");
+
+            backupFolders.ForEach(x => Directory.Delete(x.完整路徑, true));
+        }
+
+        private static List<FolderDTO?> GetBackupFolders(DataGridView gv)
+        {
             if (gv.SelectedRows.Count == 0)
             {
                 throw new Exception("請選擇備份紀錄");
             }
 
-            var result = gv.SelectedRows
+            return gv.SelectedRows
                 .OfType<DataGridViewRow>()
                 .Select(x => x.DataBoundItem as FolderDTO)
                 .Where(x => x != null)
                 .ToList();
-
-            if (result.Any())
-            {
-                result.ForEach(x => Directory.Delete(x.完整路徑, true));
-            }
-            else
-            {
-                throw new Exception("選擇的備份紀錄不存在");
-            }
         }
     }
 }

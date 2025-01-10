@@ -237,6 +237,14 @@ namespace FolderSyncForm
             toolTip.ShowAlways = true;
             toolTip.ToolTipIcon = ToolTipIcon.Info;
             toolTip.ToolTipTitle = "說明";
+            toolTip.SetToolTip(cbType, ".NET站台模式 先關閉站台再操作資料夾\r\n資料夾模式 直接操作資料夾");
+            toolTip.SetToolTip(btnSource, "選擇 新檔案 資料夾");
+            toolTip.SetToolTip(btnDest, "選擇 被覆蓋 資料夾");
+            toolTip.SetToolTip(btnCompare, "比較 檔案 差異");
+            toolTip.SetToolTip(btnCopy, "備份後覆蓋資料夾");
+            toolTip.SetToolTip(btnBackupList, "顯示 備份清單");
+            toolTip.SetToolTip(btnRestore, "從 備份清單 還原檔案");
+            toolTip.SetToolTip(btnDeleteBackup, "刪除 選擇的備份紀錄");
             // 
             // MainForm
             // 
