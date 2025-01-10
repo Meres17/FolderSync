@@ -1,6 +1,6 @@
-﻿namespace FolderSyncCore
+﻿namespace FolderSyncCore.Imps
 {
-    public class FolderReader : IFolderReader
+    internal class FolderReader : IFolderReader
     {
         private readonly AppSettings _appSettings;
 
@@ -45,30 +45,30 @@
                 .ToDictionary(x => x.RelativePath, x => x.Path);
         }
 
-        private static bool IsIgnoreFile(string path, params string[] excludedFiles)
+        internal bool IsIgnoreFile(string path, params string[] excludedFiles)
         {
             return excludedFiles.Any(excludedFile => path.EndsWith(excludedFile, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private static bool IsInFolder(string relativePath, params string[] dirs)
+        internal bool IsInFolder(string relativePath, params string[] keys)
         {
-            var directoryName = Path.GetDirectoryName(relativePath);
-            if (string.IsNullOrEmpty(directoryName))
+            var directory = Path.GetDirectoryName(relativePath);
+            if (string.IsNullOrEmpty(directory))
             {
                 return false;
             }
-            return dirs.Any(dir => IsInDirectory(directoryName, dir));
+            return keys.Any(key => IsInDirectory(directory, key));
         }
 
-        private static bool IsInDirectory(string directoryName, string dir)
+        internal bool IsInDirectory(string directory, string key)
         {
-            return directoryName
+            return directory
                 .Split(Path.DirectorySeparatorChar)
-                .Contains(dir, StringComparer.InvariantCultureIgnoreCase);
+                .Contains(key, StringComparer.InvariantCultureIgnoreCase);
         }
 
 
-        private static List<FileStatus> CompareDictionary(Dictionary<string, string> sourceDic, Dictionary<string, string> destDic)
+        internal List<FileStatus> CompareDictionary(Dictionary<string, string> sourceDic, Dictionary<string, string> destDic)
         {
             var result = new List<FileStatus>();
             foreach (var (sourcePath, sourceFullPath) in sourceDic)
