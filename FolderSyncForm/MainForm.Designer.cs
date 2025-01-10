@@ -1,4 +1,5 @@
-﻿namespace FolderSyncForm
+﻿
+namespace FolderSyncForm
 {
     partial class MainForm
     {
@@ -15,6 +16,8 @@
         private Button btnBackupList;
         private Button btnRestore;
         private DataGridView gv;
+        private Button btnDeleteBackup;
+        private ToolTip toolTip;
         /// <summary>
         ///  Required designer variable.
         /// </summary>
@@ -41,6 +44,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             lbSource = new Label();
             txtSource = new TextBox();
             btnSource = new Button();
@@ -53,7 +57,8 @@
             btnBackupList = new Button();
             btnRestore = new Button();
             gv = new DataGridView();
-            btnSummary = new Button();
+            btnDeleteBackup = new Button();
+            toolTip = new ToolTip(components);
             ((System.ComponentModel.ISupportInitialize)gv).BeginInit();
             SuspendLayout();
             // 
@@ -64,19 +69,20 @@
             lbSource.Location = new Point(12, 15);
             lbSource.Margin = new Padding(2, 0, 2, 0);
             lbSource.Name = "lbSource";
-            lbSource.Size = new Size(117, 30);
+            lbSource.Size = new Size(131, 30);
             lbSource.TabIndex = 0;
-            lbSource.Text = "來源(新資料)";
+            lbSource.Text = "來源（新資料）";
             lbSource.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // txtSource
             // 
             txtSource.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtSource.Font = new Font("Segoe UI", 12F);
-            txtSource.Location = new Point(132, 15);
+            txtSource.Location = new Point(147, 15);
             txtSource.Margin = new Padding(2);
             txtSource.Name = "txtSource";
-            txtSource.Size = new Size(488, 29);
+            txtSource.PlaceholderText = "新檔案 的資料夾路徑";
+            txtSource.Size = new Size(471, 29);
             txtSource.TabIndex = 1;
             // 
             // btnSource
@@ -100,19 +106,20 @@
             lbDest.Location = new Point(11, 52);
             lbDest.Margin = new Padding(2, 0, 2, 0);
             lbDest.Name = "lbDest";
-            lbDest.Size = new Size(117, 30);
+            lbDest.Size = new Size(132, 30);
             lbDest.TabIndex = 3;
-            lbDest.Text = "目標(被更新)";
+            lbDest.Text = "目標（被更新）";
             lbDest.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // txtDest
             // 
             txtDest.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtDest.Font = new Font("Segoe UI", 12F);
-            txtDest.Location = new Point(132, 52);
+            txtDest.Location = new Point(147, 52);
             txtDest.Margin = new Padding(2);
             txtDest.Name = "txtDest";
-            txtDest.Size = new Size(488, 29);
+            txtDest.PlaceholderText = "被覆蓋 的資料夾路徑";
+            txtDest.Size = new Size(471, 29);
             txtDest.TabIndex = 4;
             // 
             // btnDest
@@ -208,24 +215,35 @@
             // 
             // btnSummary
             // 
-            btnSummary.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnSummary.BackColor = Color.Thistle;
-            btnSummary.Font = new Font("Segoe UI", 12F);
-            btnSummary.Location = new Point(624, 396);
-            btnSummary.Margin = new Padding(2);
-            btnSummary.Name = "btnSummary";
-            btnSummary.Size = new Size(110, 30);
-            btnSummary.TabIndex = 14;
-            btnSummary.Text = "說明";
-            btnSummary.UseVisualStyleBackColor = false;
-            btnSummary.Click += btnSummary_Click;
+            btnDeleteBackup.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDeleteBackup.BackColor = Color.Thistle;
+            btnDeleteBackup.Font = new Font("Segoe UI", 12F);
+            btnDeleteBackup.Location = new Point(624, 396);
+            btnDeleteBackup.Margin = new Padding(2);
+            btnDeleteBackup.Name = "btnDeleteBackup";
+            btnDeleteBackup.Size = new Size(110, 30);
+            btnDeleteBackup.TabIndex = 14;
+            btnDeleteBackup.Text = "刪除備份";
+            btnDeleteBackup.UseVisualStyleBackColor = false;
+            btnDeleteBackup.Click += btnDeleteBackup_Click;
+            // 
+            // toolTip
+            // 
+            toolTip.AutomaticDelay = 0;
+            toolTip.AutoPopDelay = 0;
+            toolTip.InitialDelay = 0;
+            toolTip.IsBalloon = true;
+            toolTip.ReshowDelay = 0;
+            toolTip.ShowAlways = true;
+            toolTip.ToolTipIcon = ToolTipIcon.Info;
+            toolTip.ToolTipTitle = "說明";
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(740, 440);
-            Controls.Add(btnSummary);
+            Controls.Add(btnDeleteBackup);
             Controls.Add(lbSource);
             Controls.Add(txtSource);
             Controls.Add(btnSource);
@@ -251,6 +269,5 @@
 
 
 
-        private Button btnSummary;
     }
 }

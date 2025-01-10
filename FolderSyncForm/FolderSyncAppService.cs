@@ -65,5 +65,27 @@ namespace FolderSyncForm
             folderControl.Overwrite(files, sourceDir, destDir);
         }
 
+        public void DeleteBackup(DataGridView gv)
+        {
+            if (gv.SelectedRows.Count == 0)
+            {
+                throw new Exception("請選擇備份紀錄");
+            }
+
+            var result = gv.SelectedRows
+                .OfType<DataGridViewRow>()
+                .Select(x => x.DataBoundItem as FolderDTO)
+                .Where(x => x != null)
+                .ToList();
+
+            if (result.Any())
+            {
+                result.ForEach(x => Directory.Delete(x.完整路徑, true));
+            }
+            else
+            {
+                throw new Exception("選擇的備份紀錄不存在");
+            }
+        }
     }
 }
