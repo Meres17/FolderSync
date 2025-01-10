@@ -6,24 +6,24 @@ namespace FolderSyncCore
         public FileStatus(string path, string? sourcePath, string? destPath)
         {
             相對路徑 = path;
-            FileInfo? source = ToFileInfo(sourcePath);
-            FileInfo? dest = ToFileInfo(destPath);
-            狀態 = GetState(source?.LastWriteTime, dest?.LastWriteTime);
             檔名 = Path.GetFileName(path);
-            來源時間 = source?.LastWriteTime;
-            來源路徑 = source?.FullName;
-            目標時間 = dest?.LastWriteTime;
-            目標路徑 = dest?.FullName;
+            來源時間 = GetLastWriteTime(sourcePath);
+            目標時間 = GetLastWriteTime(destPath);
+            來源路徑 = sourcePath;
+            目標路徑 = destPath;
+            狀態 = GetState(來源時間, 目標時間);
         }
 
-        private static FileInfo? ToFileInfo(string? destPath)
+        private DateTime? GetLastWriteTime(string? path)
         {
-            return string.IsNullOrEmpty(destPath)
-                ? null
-                : new FileInfo(destPath);
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+            return new FileInfo(path).LastWriteTime;
         }
 
-        private CompareState GetState(DateTime? sourceTime, DateTime? destTime)
+        public CompareState GetState(DateTime? sourceTime, DateTime? destTime)
         {
             return (sourceTime, destTime) switch
             {
