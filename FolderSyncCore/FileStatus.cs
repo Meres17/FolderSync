@@ -3,6 +3,10 @@ namespace FolderSyncCore
 {
     public class FileStatus
     {
+        internal FileStatus()
+        {
+            
+        }
         public FileStatus(string path, string? sourcePath, string? destPath)
         {
             相對路徑 = path;
@@ -34,9 +38,9 @@ namespace FolderSyncCore
             };
         }
 
-        public CompareState 狀態 { get; }
+        public virtual CompareState 狀態 { get; }
         public string 檔名 { get; }
-        public string 相對路徑 { get; }
+        public virtual string 相對路徑 { get; }
         public DateTime? 來源時間 { get; }
         public string? 來源路徑 { get; }
         public DateTime? 目標時間 { get; }

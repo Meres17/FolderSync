@@ -5,9 +5,9 @@ namespace FolderSyncCore.Imps
     internal class FolderControl : IFolderControl
     {
         private const string Format = "yyyyMMdd_HHmm";
-        private const string DeleteName = "_state/Delete";
-        private const string DiffName = "_state/Diff";
-        private const string AddName = "_state/Add";
+        internal const string DeleteName = "_state/Delete";
+        internal const string DiffName = "_state/Diff";
+        internal const string AddName = "_state/Add";
         private readonly IFolderReader _reader;
 
         public FolderControl(IFolderReader reader)
@@ -25,7 +25,7 @@ namespace FolderSyncCore.Imps
                 .ToList();
         }
 
-        private static string CreateBackupHost(string sourceDir, string destDir)
+        private string CreateBackupHost(string sourceDir, string destDir)
         {
             var host = Directory.GetCurrentDirectory();
             var sourceFileName = Path.GetFileName(sourceDir);
@@ -56,7 +56,7 @@ namespace FolderSyncCore.Imps
             Overwrite(files, destDir);
         }
 
-        private static string CreateBackupDirectory(string sourceDir, string destDir)
+        internal virtual string CreateBackupDirectory(string sourceDir, string destDir)
         {
             var host = CreateBackupHost(sourceDir, destDir);
             var time = DateTime.Now.ToString(Format);
@@ -64,8 +64,7 @@ namespace FolderSyncCore.Imps
         }
 
 
-
-        private static void Backup(IEnumerable<FileStatus> files, string host, string name, Func<FileStatus, string> func, params CompareState[] states)
+        private void Backup(IEnumerable<FileStatus> files, string host, string name, Func<FileStatus, string> func, params CompareState[] states)
         {
             var filters = files
                 .Where(x => states.Contains(x.狀態))
@@ -86,7 +85,7 @@ namespace FolderSyncCore.Imps
             Delete(deleteFiles, x => x.目標路徑);
         }
 
-        private static void Copy(IEnumerable<FileStatus> files, string destHost, Func<FileStatus, string> func)
+        internal virtual void Copy(IEnumerable<FileStatus> files, string destHost, Func<FileStatus, string> func)
         {
             foreach (var file in files)
             {
@@ -98,7 +97,7 @@ namespace FolderSyncCore.Imps
             }
         }
 
-        private static void Delete(IEnumerable<FileStatus> dtos, Func<FileStatus, string> func)
+        internal virtual void Delete(IEnumerable<FileStatus> dtos, Func<FileStatus, string> func)
         {
             foreach (var dto in dtos)
             {
@@ -123,7 +122,7 @@ namespace FolderSyncCore.Imps
             Delete(addFiles, x => x.來源路徑);
         }
 
-        private List<FileStatus> GetRestoreFiles(string host, string name)
+        internal virtual List<FileStatus> GetRestoreFiles(string host, string name)
         {
             var backupDir = Path.Combine(host, name);
             return _reader
