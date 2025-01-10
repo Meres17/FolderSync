@@ -2,11 +2,11 @@
 
 namespace FolderSyncCore
 {
-    public class FolderControlFactory
+    public class FolderFactory
     {
         private readonly IFolderReader _reader;
 
-        public FolderControlFactory(AppSettings appSettings)
+        public FolderFactory(AppSettings appSettings)
         {
             _reader = new FolderReader(appSettings);
         }
@@ -16,7 +16,12 @@ namespace FolderSyncCore
             return new[] { ".NET站台", "資料夾" };
         }
 
-        public IFolderControl Create(string name)
+        public IFolderReader GetReader()
+        {
+            return _reader;
+        }
+
+        public IFolderControl CreateControl(string name)
         {
             return name switch
             {

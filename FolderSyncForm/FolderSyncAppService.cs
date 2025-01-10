@@ -6,13 +6,11 @@ namespace FolderSyncForm
 {
     internal class FolderSyncAppService
     {
-        private readonly FolderControlFactory _factory;
-        private readonly IFolderReader _reader;
+        private readonly FolderFactory _factory;
 
         public FolderSyncAppService(AppSettings appSettings)
         {
-            _factory = new FolderControlFactory(appSettings);
-            _reader = new FolderReader(appSettings);
+            _factory = new FolderFactory(appSettings);
         }
 
         public string[] GetNames()
@@ -22,12 +20,12 @@ namespace FolderSyncForm
 
         public List<FileStatus> GetDiffFiles(string sourceDir, string destDir)
         {
-            return _reader.GetDiffFiles(sourceDir, destDir);
+            return _factory.GetReader().GetDiffFiles(sourceDir, destDir);
         }
 
         public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir, string type)
         {
-            var backup = _factory.Create(type);
+            var backup = _factory.CreateControl(type);
             return backup.GetFolders(sourceDir, destDir);
         }
 
@@ -41,14 +39,14 @@ namespace FolderSyncForm
             }
 
             var backupDir = backupFolders.First();
-            var folderControl = _factory.Create(type);
+            var folderControl = _factory.CreateControl(type);
             folderControl.Restore(backupDir.完整路徑, destDir);
         }
 
         public void Overwrite(string sourceDir, string destDir, string type)
         {
             var files = GetDiffFiles(sourceDir, destDir);
-            var folderControl = _factory.Create(type);
+            var folderControl = _factory.CreateControl(type);
             folderControl.Overwrite(files, sourceDir, destDir);
         }
 
