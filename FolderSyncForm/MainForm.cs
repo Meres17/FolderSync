@@ -45,7 +45,7 @@ namespace FolderSyncForm
             ShowBackupList();
         }
 
-        private void btnCopy_Click(object sender, EventArgs e)
+        private void btnOverwrite_Click(object sender, EventArgs e)
         {
             try
             {

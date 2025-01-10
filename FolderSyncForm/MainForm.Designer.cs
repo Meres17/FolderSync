@@ -12,7 +12,7 @@ namespace FolderSyncForm
 
         private ComboBox cbType;
         private Button btnCompare;
-        private Button btnCopy;
+        private Button btnOverwrite;
         private Button btnBackupList;
         private Button btnRestore;
         private DataGridView gv;
@@ -53,7 +53,7 @@ namespace FolderSyncForm
             btnDest = new Button();
             cbType = new ComboBox();
             btnCompare = new Button();
-            btnCopy = new Button();
+            btnOverwrite = new Button();
             btnBackupList = new Button();
             btnRestore = new Button();
             gv = new DataGridView();
@@ -165,17 +165,17 @@ namespace FolderSyncForm
             // 
             // btnCopy
             // 
-            btnCopy.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnCopy.BackColor = Color.LightCoral;
-            btnCopy.Font = new Font("Segoe UI", 12F);
-            btnCopy.Location = new Point(624, 191);
-            btnCopy.Margin = new Padding(2);
-            btnCopy.Name = "btnCopy";
-            btnCopy.Size = new Size(110, 30);
-            btnCopy.TabIndex = 9;
-            btnCopy.Text = "更新";
-            btnCopy.UseVisualStyleBackColor = false;
-            btnCopy.Click += btnCopy_Click;
+            btnOverwrite.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnOverwrite.BackColor = Color.LightCoral;
+            btnOverwrite.Font = new Font("Segoe UI", 12F);
+            btnOverwrite.Location = new Point(624, 191);
+            btnOverwrite.Margin = new Padding(2);
+            btnOverwrite.Name = "btnOverwrite";
+            btnOverwrite.Size = new Size(110, 30);
+            btnOverwrite.TabIndex = 9;
+            btnOverwrite.Text = "更新";
+            btnOverwrite.UseVisualStyleBackColor = false;
+            btnOverwrite.Click += btnOverwrite_Click;
             // 
             // btnBackupList
             // 
@@ -241,7 +241,7 @@ namespace FolderSyncForm
             toolTip.SetToolTip(btnSource, "選擇 新檔案 資料夾");
             toolTip.SetToolTip(btnDest, "選擇 被覆蓋 資料夾");
             toolTip.SetToolTip(btnCompare, "比較 檔案 差異");
-            toolTip.SetToolTip(btnCopy, "備份後覆蓋資料夾");
+            toolTip.SetToolTip(btnOverwrite, "備份後覆蓋資料夾");
             toolTip.SetToolTip(btnBackupList, "顯示 備份清單");
             toolTip.SetToolTip(btnRestore, "從 備份清單 還原檔案");
             toolTip.SetToolTip(btnDeleteBackup, "刪除 選擇的備份紀錄");
@@ -260,7 +260,7 @@ namespace FolderSyncForm
             Controls.Add(btnDest);
             Controls.Add(cbType);
             Controls.Add(btnCompare);
-            Controls.Add(btnCopy);
+            Controls.Add(btnOverwrite);
             Controls.Add(btnBackupList);
             Controls.Add(btnRestore);
             Controls.Add(gv);
