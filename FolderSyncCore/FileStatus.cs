@@ -23,7 +23,7 @@ namespace FolderSyncCore
             return new FileInfo(path).LastWriteTime;
         }
 
-        public CompareState GetState(DateTime? sourceTime, DateTime? destTime)
+        internal CompareState GetState(DateTime? sourceTime, DateTime? destTime)
         {
             return (sourceTime, destTime) switch
             {
