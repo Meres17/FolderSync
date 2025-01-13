@@ -26,7 +26,7 @@ namespace FolderSyncCore
             return name switch
             {
                 "資料夾" => new FolderControl(_reader),
-                ".NET站台" => new NETSiteFolderControl(new FolderControl(_reader)),
+                ".NET站台" => new NETSiteFolderControl(new FolderControl(_reader), new SiteControl()),
                 _ => throw new NotSupportedException($"不支援的備份類型：{name}")
             };
         }

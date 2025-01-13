@@ -15,144 +15,92 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         {
             // Arrange
             IFolderControl mock = FakeFolderControl();
-            var sut = new NETSiteFolderControl(mock);
+            ISiteControl stub = FakeSiteControl();
+            var sut = new NETSiteFolderControl(mock, stub);
 
             // Act
             sut.GetFolders(SourceDir, DestDir);
 
             // Assert
-            mock.Received(1).GetFolders(Arg.Any<string>(), Arg.Any<string>());
+            mock.Received(1)
+                .GetFolders(Arg.Any<string>(), Arg.Any<string>());
         }
 
         [Fact]
-        public void Overwrite_關閉站台_調用FolderControl的Overwrite_打開站台()
+        public void Overwrite_調用FolderControl的Overwrite方法()
         {
             // Arrange
-            var mock = FakeFolderControl();
-            var sut = Substitute.For<NETSiteFolderControl>(mock);
-            sut.CloseSite(Arg.Any<string>());
-            sut.OpenSite(Arg.Any<string>());
-
-            var stub = new List<FileStatus>();
+            IFolderControl mock = FakeFolderControl();
+            ISiteControl stub = FakeSiteControl();
+            var sut = new NETSiteFolderControl(mock, stub);
 
             // Act
-            sut.Overwrite(stub, SourceDir, DestDir);
+            sut.Overwrite(Enumerable.Empty<FileStatus>(), SourceDir, DestDir);
 
             // Assert
-            sut.Received(1).CloseSite(Arg.Any<string>());
-            mock.Received(1).Overwrite(stub, Arg.Any<string>(), Arg.Any<string>());
-            sut.Received(1).OpenSite(Arg.Any<string>());
+            mock.Received(1)
+                .Overwrite(Arg.Any<IEnumerable<FileStatus>>(), Arg.Any<string>(), Arg.Any<string>());
         }
 
         [Fact]
-        public void Restore_關閉站台_調用FolderControl的Restore_打開站點()
+        public void Restore_調用FolderControl的Restore方法()
         {
             // Arrange
-            var mock = FakeFolderControl();
-            var sut = Substitute.For<NETSiteFolderControl>(mock);
-            sut.CloseSite(Arg.Any<string>());
-            sut.OpenSite(Arg.Any<string>());
+            IFolderControl mock = FakeFolderControl();
+            ISiteControl stub = FakeSiteControl();
+            var sut = new NETSiteFolderControl(mock, stub);
 
             // Act
             sut.Restore(BackupDir, DestDir);
 
             // Assert
-            mock.Received(1).Restore(Arg.Any<string>(), Arg.Any<string>());
+            mock.Received(1)
+                .Restore(Arg.Any<string>(), Arg.Any<string>());
         }
 
         [Fact]
-        public void CloseSite_目標資料夾不存在時拋出異常()
+        public void Overwrite_調用SiteControl_開關站台()
         {
             // Arrange
             var stub = FakeFolderControl();
-            var sut = Substitute.ForPartsOf<NETSiteFolderControl>(stub);
-            sut.NotFoundDirectory(Arg.Any<string>())
-                .Returns(true);
-
-            // Act & Assert
-            Assert.Throws<DirectoryNotFoundException>(
-                () => sut.CloseSite(DestDir));
-        }
-
-        [Fact]
-        public void CloseSite_找不到App_offline_htm時拋出異常()
-        {
-            // Arrange
-            var stub = FakeFolderControl();
-            var sut = Substitute.ForPartsOf<NETSiteFolderControl>(stub);
-            sut.NotFoundDirectory(Arg.Any<string>())
-                .Returns(false);
-
-            sut.NotFoundFile(Arg.Any<string>())
-               .Returns(true);
-
-            // Act & Assert
-            Assert.Throws<Exception>(() => sut.CloseSite(DestDir));
-        }
-
-        [Fact]
-        public void CloseSite_依照有無App_offline_htm呼叫Delete()
-        {
-            // Arrange
-            var stub = FakeFolderControl();
-            var sut = Substitute.ForPartsOf<NETSiteFolderControl>(stub);
-            sut.When(x => x.Copy(Arg.Any<string>(), Arg.Any<string>()))
-                .DoNotCallBase();
-
-            sut.NotFoundDirectory(Arg.Any<string>())
-                .Returns(false);
-
-            sut.NotFoundFile(Arg.Any<string>())
-               .Returns(false);
+            var mock = FakeSiteControl();
+            var sut = new NETSiteFolderControl(stub, mock);
 
             // Act
-            sut.CloseSite(DestDir);
+            sut.Overwrite(new List<FileStatus>(), SourceDir, DestDir);
 
             // Assert
-            sut.Received(1).Copy(Arg.Any<string>(), Arg.Any<string>());
+            mock.Received(1).CloseSite(Arg.Any<string>());
+            mock.Received(1).OpenSite(Arg.Any<string>());
         }
 
         [Fact]
-        public void OpenSite_目標資料夾不存在時拋出異常()
+        public void Restore_調用SiteControl_開關站台()
         {
             // Arrange
             var stub = FakeFolderControl();
-            var sut = Substitute.ForPartsOf<NETSiteFolderControl>(stub);
-            sut.NotFoundDirectory(Arg.Any<string>())
-                .Returns(true);
-
-            // Act & Assert
-            Assert.Throws<DirectoryNotFoundException>(
-                () => sut.OpenSite(DestDir));
-        }
-
-        [Theory]
-        [InlineData(false, 1)]
-        [InlineData(true, 0)]
-        public void OpenSite_依照有無App_offline_htm呼叫Delete(bool hasFile, int received)
-        {
-            // Arrange
-            var stub = FakeFolderControl();
-            var sut = Substitute.ForPartsOf<NETSiteFolderControl>(stub);
-            sut.When(x => x.Delete(Arg.Any<string>()))
-                .DoNotCallBase();
-
-            sut.NotFoundDirectory(Arg.Any<string>())
-                .Returns(false);
-
-            sut.NotFoundFile(Arg.Any<string>())
-               .Returns(hasFile);
+            var mock = FakeSiteControl();
+            var sut = new NETSiteFolderControl(stub, mock);
 
             // Act
-            sut.OpenSite(DestDir);
+            sut.Restore(BackupDir, DestDir);
 
             // Assert
-            sut.Received(received).Delete(Arg.Any<string>());
+            mock.Received(1).CloseSite(Arg.Any<string>());
+            mock.Received(1).OpenSite(Arg.Any<string>());
         }
 
         private static IFolderControl FakeFolderControl()
         {
             return Substitute.For<IFolderControl>();
+        }
+
+        private static ISiteControl FakeSiteControl()
+        {
+            var result = Substitute.For<ISiteControl>();
+            result.CloseSite(Arg.Any<string>());
+            result.OpenSite(Arg.Any<string>());
+            return result;
         }
     }
 }
