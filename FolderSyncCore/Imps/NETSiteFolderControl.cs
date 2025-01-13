@@ -18,23 +18,20 @@
 
         public void Overwrite(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
-            try
-            {
-                _siteControl.CloseSite(destDir);
-                _folderControl.Overwrite(files, sourceDir, destDir);
-            }
-            finally
-            {
-                _siteControl.OpenSite(destDir);
-            }
+            ExecuteWithSiteControl(destDir, () => _folderControl.Overwrite(files, sourceDir, destDir));
         }
 
         public void Restore(string backupDir, string destDir)
         {
+            ExecuteWithSiteControl(destDir, () => _folderControl.Restore(backupDir, destDir));
+        }
+
+        internal virtual void ExecuteWithSiteControl(string destDir, Action action)
+        {
             try
             {
                 _siteControl.CloseSite(destDir);
-                _folderControl.Restore(backupDir, destDir);
+                action();
             }
             finally
             {
