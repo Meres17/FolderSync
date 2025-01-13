@@ -116,5 +116,10 @@ namespace FolderSyncForm
             }
         }
 
+        private void btnOpenSettings_Click(object sender, EventArgs e)
+        {
+            var form = new AppSettingsForm();
+            form.ShowDialog();
+        }
     }
 }

@@ -13,9 +13,14 @@ namespace FolderSyncCore
         {
             if (path is null)
             {
-                path = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
+                path = GetPath();
             }
             return BindAppSettings(path);
+        }
+
+        private static string GetPath()
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
         }
 
         private static AppSettings BindAppSettings(string path)
@@ -29,6 +34,18 @@ namespace FolderSyncCore
             {
                 return new AppSettings();
             }
+        }
+
+        public void Save(string? path = null)
+        {
+            if (path is null)
+            {
+                path = GetPath();
+            }
+
+            var text = JsonSerializer.Serialize(this);
+
+            File.WriteAllText(path, text);
         }
     }
 }

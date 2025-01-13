@@ -59,6 +59,7 @@ namespace FolderSyncForm
             gv = new DataGridView();
             btnDeleteBackup = new Button();
             toolTip = new ToolTip(components);
+            btnOpenSettings = new Button();
             ((System.ComponentModel.ISupportInitialize)gv).BeginInit();
             SuspendLayout();
             // 
@@ -97,6 +98,7 @@ namespace FolderSyncForm
             btnSource.Size = new Size(110, 30);
             btnSource.TabIndex = 2;
             btnSource.Text = "選擇來源";
+            toolTip.SetToolTip(btnSource, "選擇 新檔案 資料夾");
             btnSource.UseVisualStyleBackColor = false;
             btnSource.Click += btnSource_Click;
             // 
@@ -134,6 +136,7 @@ namespace FolderSyncForm
             btnDest.Size = new Size(110, 30);
             btnDest.TabIndex = 5;
             btnDest.Text = "選擇目標";
+            toolTip.SetToolTip(btnDest, "選擇 被覆蓋 資料夾");
             btnDest.UseVisualStyleBackColor = false;
             btnDest.Click += btnDest_Click;
             // 
@@ -143,11 +146,12 @@ namespace FolderSyncForm
             cbType.DropDownStyle = ComboBoxStyle.DropDownList;
             cbType.Font = new Font("Segoe UI", 12F);
             cbType.FormattingEnabled = true;
-            cbType.Location = new Point(624, 90);
+            cbType.Location = new Point(624, 124);
             cbType.Margin = new Padding(2);
             cbType.Name = "cbType";
             cbType.Size = new Size(110, 29);
             cbType.TabIndex = 6;
+            toolTip.SetToolTip(cbType, ".NET站台模式 先關閉站台再操作資料夾\r\n資料夾模式 直接操作資料夾");
             // 
             // btnCompare
             // 
@@ -160,10 +164,11 @@ namespace FolderSyncForm
             btnCompare.Size = new Size(110, 30);
             btnCompare.TabIndex = 7;
             btnCompare.Text = "比對";
+            toolTip.SetToolTip(btnCompare, "比較 檔案 差異");
             btnCompare.UseVisualStyleBackColor = false;
             btnCompare.Click += btnCompare_Click;
             // 
-            // btnCopy
+            // btnOverwrite
             // 
             btnOverwrite.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnOverwrite.BackColor = Color.LightCoral;
@@ -174,6 +179,7 @@ namespace FolderSyncForm
             btnOverwrite.Size = new Size(110, 30);
             btnOverwrite.TabIndex = 9;
             btnOverwrite.Text = "更新";
+            toolTip.SetToolTip(btnOverwrite, "備份後覆蓋資料夾");
             btnOverwrite.UseVisualStyleBackColor = false;
             btnOverwrite.Click += btnOverwrite_Click;
             // 
@@ -188,6 +194,7 @@ namespace FolderSyncForm
             btnBackupList.Size = new Size(110, 30);
             btnBackupList.TabIndex = 10;
             btnBackupList.Text = "備份紀錄";
+            toolTip.SetToolTip(btnBackupList, "顯示 備份清單");
             btnBackupList.UseVisualStyleBackColor = false;
             btnBackupList.Click += btnBackupList_Click;
             // 
@@ -202,6 +209,7 @@ namespace FolderSyncForm
             btnRestore.Size = new Size(110, 30);
             btnRestore.TabIndex = 12;
             btnRestore.Text = "還原備份";
+            toolTip.SetToolTip(btnRestore, "從 備份清單 還原檔案");
             btnRestore.UseVisualStyleBackColor = false;
             btnRestore.Click += btnRestore_Click;
             // 
@@ -213,7 +221,7 @@ namespace FolderSyncForm
             gv.Size = new Size(606, 336);
             gv.TabIndex = 13;
             // 
-            // btnSummary
+            // btnDeleteBackup
             // 
             btnDeleteBackup.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnDeleteBackup.BackColor = Color.Thistle;
@@ -224,6 +232,7 @@ namespace FolderSyncForm
             btnDeleteBackup.Size = new Size(110, 30);
             btnDeleteBackup.TabIndex = 14;
             btnDeleteBackup.Text = "刪除備份";
+            toolTip.SetToolTip(btnDeleteBackup, "刪除 選擇的備份紀錄");
             btnDeleteBackup.UseVisualStyleBackColor = false;
             btnDeleteBackup.Click += btnDeleteBackup_Click;
             // 
@@ -237,20 +246,28 @@ namespace FolderSyncForm
             toolTip.ShowAlways = true;
             toolTip.ToolTipIcon = ToolTipIcon.Info;
             toolTip.ToolTipTitle = "說明";
-            toolTip.SetToolTip(cbType, ".NET站台模式 先關閉站台再操作資料夾\r\n資料夾模式 直接操作資料夾");
-            toolTip.SetToolTip(btnSource, "選擇 新檔案 資料夾");
-            toolTip.SetToolTip(btnDest, "選擇 被覆蓋 資料夾");
-            toolTip.SetToolTip(btnCompare, "比較 檔案 差異");
-            toolTip.SetToolTip(btnOverwrite, "備份後覆蓋資料夾");
-            toolTip.SetToolTip(btnBackupList, "顯示 備份清單");
-            toolTip.SetToolTip(btnRestore, "從 備份清單 還原檔案");
-            toolTip.SetToolTip(btnDeleteBackup, "刪除 選擇的備份紀錄");
+            // 
+            // btnOpenSettings
+            // 
+            btnOpenSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnOpenSettings.BackColor = Color.LightGreen;
+            btnOpenSettings.Font = new Font("Segoe UI", 12F);
+            btnOpenSettings.Location = new Point(624, 90);
+            btnOpenSettings.Margin = new Padding(2);
+            btnOpenSettings.Name = "btnOpenSettings";
+            btnOpenSettings.Size = new Size(110, 30);
+            btnOpenSettings.TabIndex = 15;
+            btnOpenSettings.Text = "設定檔";
+            toolTip.SetToolTip(btnOpenSettings, "比較 檔案 差異");
+            btnOpenSettings.UseVisualStyleBackColor = false;
+            btnOpenSettings.Click += btnOpenSettings_Click;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(740, 440);
+            Controls.Add(btnOpenSettings);
             Controls.Add(btnDeleteBackup);
             Controls.Add(lbSource);
             Controls.Add(txtSource);
@@ -277,5 +294,6 @@ namespace FolderSyncForm
 
 
 
+        private Button btnOpenSettings;
     }
 }
