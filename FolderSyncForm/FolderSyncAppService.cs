@@ -20,12 +20,12 @@ namespace FolderSyncForm
 
         public List<FileStatus> GetDiffFiles(string sourceDir, string destDir)
         {
-            return _factory.GetReader().GetDiffFiles(sourceDir, destDir);
+            return _factory.GetDiffFiles(sourceDir, destDir);
         }
 
-        public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir, string type)
+        public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir)
         {
-            return _factory.GetReader().GetFolders(sourceDir, destDir);
+            return _factory.GetBackupFolders(sourceDir, destDir);
         }
 
         public void Restore(DataGridView gv, string destDir, string type)

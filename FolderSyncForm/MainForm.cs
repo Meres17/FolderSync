@@ -108,7 +108,7 @@ namespace FolderSyncForm
         {
             try
             {
-                gv.DataSource = _service.GetBackupFolders(_source, _dest, _type);
+                gv.DataSource = _service.GetBackupFolders(_source, _dest);
             }
             catch (Exception ex)
             {
