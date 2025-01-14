@@ -23,10 +23,10 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
                 FakeFileStatus(CompareState.刪除檔案),
                 FakeFileStatus(CompareState.刪除檔案),
             };
+            var stub = FakeFolderReader();
+            FolderControl sut = FakeFolderControl(stub);
 
-            FolderControl sut = FakeFolderControl();
-
-            sut.CreateBackupDirectory(Arg.Any<string>(), Arg.Any<string>())
+            stub.CreateBackupDirectory(Arg.Any<string>(), Arg.Any<string>())
                 .Returns(BackupDir);
 
             // Act
@@ -43,22 +43,28 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             Assert_Delete_Received(sut, 3);
         }
 
+        private static IFolderReader FakeFolderReader()
+        {
+            return Substitute.For<IFolderReader>();
+        }
+
         [Fact]
         public void Restore_測試不同狀態的資料進行了Copy和Delete()
         {
             // Arrange
-            FolderControl sut = FakeFolderControl();
+            var stub = FakeFolderReader();
+            FolderControl sut = FakeFolderControl(stub);
 
             var three_data = DeleteFiles_3_Data();
-            sut.GetRestoreFiles(Arg.Any<string>(), FolderControl.DeleteName)
+            stub.GetRestoreFiles(Arg.Any<string>(), FolderControl.DeleteName)
                 .Returns(three_data);
 
             var two_data = DiffFiles_2_Data();
-            sut.GetRestoreFiles(Arg.Any<string>(), FolderControl.DiffName)
+            stub.GetRestoreFiles(Arg.Any<string>(), FolderControl.DiffName)
                 .Returns(two_data);
 
             var one_data = AddFiles_1_data();
-            sut.GetRestoreFiles(Arg.Any<string>(), FolderControl.AddName)
+            stub.GetRestoreFiles(Arg.Any<string>(), FolderControl.AddName)
                 .Returns(one_data);
 
             // Act
@@ -98,10 +104,10 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             };
         }
 
-        private static FolderControl FakeFolderControl()
+        private static FolderControl FakeFolderControl(IFolderReader reader)
         {
-            var stub = Substitute.For<IFolderReader>();
-            var result = Substitute.For<FolderControl>(stub);
+            //var stub = Substitute.For<IFolderReader>();
+            var result = Substitute.For<FolderControl>(reader);
             // Copy與Delete不執行實際動作
             result.When(x =>
             x.Copy(Arg.Any<IEnumerable<FileStatus>>(),

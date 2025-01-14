@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace FolderSyncCore.Imps
+﻿namespace FolderSyncCore.Imps
 {
     internal class FolderControl : IFolderControl
     {
@@ -17,36 +15,12 @@ namespace FolderSyncCore.Imps
 
         public List<FolderDTO> GetFolders(string sourceDir, string destDir)
         {
-            var backupHost = CreateBackupHost(sourceDir, destDir);
-            return Directory
-                .EnumerateDirectories(backupHost, "*", SearchOption.TopDirectoryOnly)
-                .Where(x => DateTime.TryParseExact(Path.GetFileName(x), Format, null, DateTimeStyles.None, out _))
-                .Select(x => new FolderDTO(x))
-                .ToList();
+            return _reader.GetFolders(sourceDir, destDir);
         }
-
-        private string CreateBackupHost(string sourceDir, string destDir)
-        {
-            var host = Directory.GetCurrentDirectory();
-            var sourceFileName = Path.GetFileName(sourceDir);
-            var destFileName = Path.GetFileName(destDir);
-            var result = Path.Combine(host, "Backup", $"{sourceFileName}_{destFileName}");
-            CreateDirectory(result);
-            return result;
-        }
-
-        private static void CreateDirectory(string dir)
-        {
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-        }
-
 
         public void Overwrite(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
-            var backupDir = CreateBackupDirectory(sourceDir, destDir);
+            var backupDir = _reader.CreateBackupDirectory(sourceDir, destDir);
             Backup(files, backupDir, Path.GetFileName(sourceDir), x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同);
             Backup(files, backupDir, Path.GetFileName(destDir), x => x.目標路徑, CompareState.刪除檔案, CompareState.時間不同);
             Backup(files, backupDir, DeleteName, x => x.目標路徑, CompareState.刪除檔案);
@@ -55,14 +29,6 @@ namespace FolderSyncCore.Imps
 
             Overwrite(files, destDir);
         }
-
-        internal virtual string CreateBackupDirectory(string sourceDir, string destDir)
-        {
-            var host = CreateBackupHost(sourceDir, destDir);
-            var time = DateTime.Now.ToString(Format);
-            return Path.Combine(host, time);
-        }
-
 
         private void Backup(IEnumerable<FileStatus> files, string host, string name, Func<FileStatus, string> func, params CompareState[] states)
         {
@@ -97,6 +63,14 @@ namespace FolderSyncCore.Imps
             }
         }
 
+        private static void CreateDirectory(string dir)
+        {
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+        }
+
         internal virtual void Delete(IEnumerable<FileStatus> dtos, Func<FileStatus, string> func)
         {
             foreach (var dto in dtos)
@@ -106,29 +80,19 @@ namespace FolderSyncCore.Imps
             }
         }
 
-
         public void Restore(string backupDir, string destDir)
         {
             //反向操作
-            var deleteFiles = GetRestoreFiles(backupDir, DeleteName);
+            var deleteFiles = _reader.GetRestoreFiles(backupDir, DeleteName);
             Copy(deleteFiles, destDir, x => x.來源路徑);
 
-            var diffFiles = GetRestoreFiles(backupDir, DiffName);
+            var diffFiles = _reader.GetRestoreFiles(backupDir, DiffName);
             Copy(diffFiles, destDir, x => x.來源路徑);
 
-            var addFiles = GetRestoreFiles(backupDir, AddName)
+            var addFiles = _reader.GetRestoreFiles(backupDir, AddName)
                 .Select(x => new FileStatus(x.相對路徑, Path.Combine(destDir, x.相對路徑), null))
                 .ToList();
             Delete(addFiles, x => x.來源路徑);
-        }
-
-        internal virtual List<FileStatus> GetRestoreFiles(string host, string name)
-        {
-            var backupDir = Path.Combine(host, name);
-            return _reader
-                .GetPathDictionary(backupDir)
-                .Select(x => new FileStatus(x.Key, x.Value, null))
-                .ToList();
         }
 
     }

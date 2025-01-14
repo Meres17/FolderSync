@@ -1,7 +1,10 @@
-﻿namespace FolderSyncCore.Imps
+﻿using System.Globalization;
+
+namespace FolderSyncCore.Imps
 {
     internal class FolderReader : IFolderReader
     {
+        private const string Format = "yyyyMMdd_HHmm";
         private readonly AppSettings _appSettings;
 
         public FolderReader(AppSettings appSettings)
@@ -86,6 +89,49 @@
             result.AddRange(remaining);
 
             return result;
+        }
+
+        public List<FileStatus> GetRestoreFiles(string host, string name)
+        {
+            var backupDir = Path.Combine(host, name);
+            return GetPathDictionary(backupDir)
+                .Select(x => new FileStatus(x.Key, x.Value, null))
+                .ToList();
+        }
+
+        public List<FolderDTO> GetFolders(string sourceDir, string destDir)
+        {
+            var backupHost = CreateBackupHost(sourceDir, destDir);
+            return Directory
+                .EnumerateDirectories(backupHost, "*", SearchOption.TopDirectoryOnly)
+                .Where(x => DateTime.TryParseExact(Path.GetFileName(x), Format, null, DateTimeStyles.None, out _))
+                .Select(x => new FolderDTO(x))
+                .ToList();
+        }
+
+        private string CreateBackupHost(string sourceDir, string destDir)
+        {
+            var host = Directory.GetCurrentDirectory();
+            var sourceFileName = Path.GetFileName(sourceDir);
+            var destFileName = Path.GetFileName(destDir);
+            var result = Path.Combine(host, "Backup", $"{sourceFileName}_{destFileName}");
+            CreateDirectory(result);
+            return result;
+        }
+
+        private static void CreateDirectory(string dir)
+        {
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+        }
+
+        public string CreateBackupDirectory(string sourceDir, string destDir)
+        {
+            var host = CreateBackupHost(sourceDir, destDir);
+            var time = DateTime.Now.ToString(Format);
+            return Path.Combine(host, time);
         }
     }
 }
