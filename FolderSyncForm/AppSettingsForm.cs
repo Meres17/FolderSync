@@ -35,12 +35,12 @@ namespace FolderSyncForm
             try
             {
                 _service.Save(txtSource.Text, txtDest.Text, txtIgnoreFolders.Text, txtIgnoreFiles.Text);
-                MessageHelper.Ok("儲存成功");
+                Dialog.Alert("儲存成功");
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageHelper.Error(ex);
+                Dialog.Error(ex);
             }
         }
     }

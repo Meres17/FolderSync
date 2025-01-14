@@ -50,12 +50,12 @@ namespace FolderSyncForm
             try
             {
                 _service.Overwrite(_source, _dest, _type);
-                MessageHelper.Ok(_type + "更新成功");
+                Dialog.Alert(_type + "更新成功");
                 ShowCompareList();
             }
             catch (Exception ex)
             {
-                MessageHelper.Error(ex);
+                Dialog.Error(ex);
             }
         }
 
@@ -64,12 +64,12 @@ namespace FolderSyncForm
             try
             {
                 _service.Restore(gv, _dest, _type);
-                MessageHelper.Ok(_type + "還原成功");
+                Dialog.Alert(_type + "還原成功");
                 ShowCompareList();
             }
             catch (Exception ex)
             {
-                MessageHelper.Error(ex);
+                Dialog.Error(ex);
                 ShowBackupList();
             }
         }
@@ -79,11 +79,11 @@ namespace FolderSyncForm
             try
             {
                 _service.DeleteBackup(gv);
-                MessageHelper.Ok("刪除成功");
+                Dialog.Alert("刪除成功");
             }
             catch (Exception ex)
             {
-                MessageHelper.Error(ex);
+                Dialog.Error(ex);
             }
             finally
             {
@@ -99,7 +99,7 @@ namespace FolderSyncForm
             }
             catch (Exception ex)
             {
-                MessageHelper.Error(ex);
+                Dialog.Error(ex);
             }
 
         }
@@ -112,7 +112,7 @@ namespace FolderSyncForm
             }
             catch (Exception ex)
             {
-                MessageHelper.Error(ex);
+                Dialog.Error(ex);
             }
         }
 

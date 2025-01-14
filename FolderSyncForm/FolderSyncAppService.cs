@@ -58,9 +58,10 @@ namespace FolderSyncForm
                 throw new Exception("選擇的備份紀錄不存在");
             }
 
-            var result = MessageHelper.Warning("確定刪除備份紀錄嗎");
-
-            backupFolders.ForEach(x => Directory.Delete(x.完整路徑, true));
+            if (Dialog.Confirm("確定刪除備份紀錄嗎"))
+            {
+                backupFolders.ForEach(x => Directory.Delete(x.完整路徑, true));
+            }
         }
 
         private static List<FolderDTO?> GetBackupFolders(DataGridView gv)
