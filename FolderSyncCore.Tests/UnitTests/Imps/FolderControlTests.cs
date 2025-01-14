@@ -43,11 +43,6 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             Assert_Delete_Received(sut, 3);
         }
 
-        private static IFolderReader FakeFolderReader()
-        {
-            return Substitute.For<IFolderReader>();
-        }
-
         [Fact]
         public void Restore_測試不同狀態的資料進行了Copy和Delete()
         {
@@ -77,6 +72,34 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             Assert_Delete_Received(sut, 1);
         }
 
+        /// <summary>
+        /// 驗證 Copy 特定目錄接收到的檔案數量
+        /// </summary>
+        /// <param name="sut"></param>
+        /// <param name="path"></param>
+        /// <param name="count"></param>
+        private static void Assert_Copy_Received(FolderControl sut, string path, int count)
+        {
+            sut.Received(1)
+                .Copy(
+                Arg.Is<IEnumerable<FileStatus>>(x => x.Count() == count),
+                path,
+                Arg.Any<Func<FileStatus, string>>());
+        }
+
+        /// <summary>
+        /// 驗證 Delete 接收到的檔案數量
+        /// </summary>
+        /// <param name="sut"></param>
+        /// <param name="count"></param>
+        private static void Assert_Delete_Received(FolderControl sut, int count)
+        {
+            sut.Received(1)
+                .Delete(
+                Arg.Is<IEnumerable<FileStatus>>(x => x.Count() == count),
+                Arg.Any<Func<FileStatus, string>>());
+        }
+
         private static List<FileStatus> AddFiles_1_data()
         {
             return new List<FileStatus>
@@ -104,9 +127,16 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             };
         }
 
+        private static FileStatus FakeFileStatus(CompareState state)
+        {
+            var result = Substitute.For<FileStatus>();
+            result.狀態.Returns(state);
+            result.相對路徑.Returns("path");
+            return result;
+        }
+
         private static FolderControl FakeFolderControl(IFolderReader reader)
         {
-            //var stub = Substitute.For<IFolderReader>();
             var result = Substitute.For<FolderControl>(reader);
             // Copy與Delete不執行實際動作
             result.When(x =>
@@ -122,40 +152,11 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             return result;
         }
 
-        /// <summary>
-        /// 驗證 Copy 特定目錄接收到的檔案數量
-        /// </summary>
-        /// <param name="sut"></param>
-        /// <param name="path"></param>
-        /// <param name="count"></param>
-        private static void Assert_Copy_Received(FolderControl sut, string path, int count)
+        private static IFolderReader FakeFolderReader()
         {
-            sut.Received(1)
-                .Copy(
-                Arg.Is<IEnumerable<FileStatus>>(x => x.Count() == count),
-                path,
-                Arg.Any<Func<FileStatus, string>>());
-        }
-        /// <summary>
-        /// 驗證 Delete 接收到的檔案數量
-        /// </summary>
-        /// <param name="sut"></param>
-        /// <param name="count"></param>
-        private static void Assert_Delete_Received(FolderControl sut, int count)
-        {
-            sut.Received(1)
-                .Delete(
-                Arg.Is<IEnumerable<FileStatus>>(x => x.Count() == count),
-                Arg.Any<Func<FileStatus, string>>());
+            return Substitute.For<IFolderReader>();
         }
 
-        private static FileStatus FakeFileStatus(CompareState state)
-        {
-            var result = Substitute.For<FileStatus>();
-            result.狀態.Returns(state);
-            result.相對路徑.Returns("path");
-            return result;
-        }
 
 
     }

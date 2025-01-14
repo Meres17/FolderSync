@@ -11,7 +11,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         private const string BackupDir = "backup";
 
         [Fact]
-        public async void Overwrite_測試不同狀態的資料進行了Copy和Delete()
+        public async Task Overwrite_測試不同狀態的資料進行了Copy和Delete()
         {
             // Arrange
             var files = new List<FileStatus>
@@ -43,13 +43,8 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             await Assert_Delete_Received(sut, 3);
         }
 
-        private static IFolderReader FakeFolderReader()
-        {
-            return Substitute.For<IFolderReader>();
-        }
-
         [Fact]
-        public async void Restore_測試不同狀態的資料進行了Copy和Delete()
+        public async Task Restore_測試不同狀態的資料進行了Copy和Delete()
         {
             // Arrange
             var stub = FakeFolderReader();
@@ -75,6 +70,35 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             await Assert_Copy_Received(sut, DestDir, 2);
 
             await Assert_Delete_Received(sut, 1);
+        }
+
+
+        /// <summary>
+        /// 驗證 Copy 特定目錄接收到的檔案數量
+        /// </summary>
+        /// <param name="sut"></param>
+        /// <param name="path"></param>
+        /// <param name="count"></param>
+        private static Task Assert_Copy_Received(AsyncFolderControl sut, string path, int count)
+        {
+            return sut.Received(1)
+                .CopyAsync(
+                Arg.Is<IEnumerable<FileStatus>>(x => x.Count() == count),
+                path,
+                Arg.Any<Func<FileStatus, string>>());
+        }
+
+        /// <summary>
+        /// 驗證 Delete 接收到的檔案數量
+        /// </summary>
+        /// <param name="sut"></param>
+        /// <param name="count"></param>
+        private static Task Assert_Delete_Received(AsyncFolderControl sut, int count)
+        {
+            return sut.Received(1)
+                .DeleteAsync(
+                Arg.Is<IEnumerable<FileStatus>>(x => x.Count() == count),
+                Arg.Any<Func<FileStatus, string>>());
         }
 
         private static List<FileStatus> AddFiles_1_data()
@@ -104,6 +128,14 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             };
         }
 
+        private static FileStatus FakeFileStatus(CompareState state)
+        {
+            var result = Substitute.For<FileStatus>();
+            result.狀態.Returns(state);
+            result.相對路徑.Returns("path");
+            return result;
+        }
+
         private static AsyncFolderControl FakeFolderControl(IFolderReader reader)
         {
             var result = Substitute.For<AsyncFolderControl>(reader);
@@ -121,39 +153,9 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             return result;
         }
 
-        /// <summary>
-        /// 驗證 Copy 特定目錄接收到的檔案數量
-        /// </summary>
-        /// <param name="sut"></param>
-        /// <param name="path"></param>
-        /// <param name="count"></param>
-        private static Task Assert_Copy_Received(AsyncFolderControl sut, string path, int count)
+        private static IFolderReader FakeFolderReader()
         {
-            return sut.Received(1)
-                .CopyAsync(
-                Arg.Is<IEnumerable<FileStatus>>(x => x.Count() == count),
-                path,
-                Arg.Any<Func<FileStatus, string>>());
-        }
-        /// <summary>
-        /// 驗證 Delete 接收到的檔案數量
-        /// </summary>
-        /// <param name="sut"></param>
-        /// <param name="count"></param>
-        private static Task Assert_Delete_Received(AsyncFolderControl sut, int count)
-        {
-            return sut.Received(1)
-                .DeleteAsync(
-                Arg.Is<IEnumerable<FileStatus>>(x => x.Count() == count),
-                Arg.Any<Func<FileStatus, string>>());
-        }
-
-        private static FileStatus FakeFileStatus(CompareState state)
-        {
-            var result = Substitute.For<FileStatus>();
-            result.狀態.Returns(state);
-            result.相對路徑.Returns("path");
-            return result;
+            return Substitute.For<IFolderReader>();
         }
     }
 }
