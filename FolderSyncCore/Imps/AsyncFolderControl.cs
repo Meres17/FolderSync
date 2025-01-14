@@ -85,13 +85,13 @@
         public Task RestoreAsync(string backupDir, string destDir)
         {
             //反向操作
-            var deleteFiles = _reader.GetRestoreFiles(backupDir, DeleteName);
+            var deleteFiles = _reader.GetBackupFiles(backupDir, DeleteName);
             var restoreDeleteTask = CopyAsync(deleteFiles, destDir, x => x.來源路徑);
 
-            var diffFiles = _reader.GetRestoreFiles(backupDir, DiffName);
+            var diffFiles = _reader.GetBackupFiles(backupDir, DiffName);
             var restoreCopyTask = CopyAsync(diffFiles, destDir, x => x.來源路徑);
 
-            var addFiles = _reader.GetRestoreFiles(backupDir, AddName)
+            var addFiles = _reader.GetBackupFiles(backupDir, AddName)
                 .Select(x => new FileStatus(x.相對路徑, Path.Combine(destDir, x.相對路徑), null))
                 .ToList();
             var restoreAddTask = DeleteAsync(addFiles, x => x.來源路徑);

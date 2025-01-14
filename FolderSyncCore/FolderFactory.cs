@@ -23,7 +23,7 @@ namespace FolderSyncCore
 
         public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir)
         {
-            return _reader.GetFolders(sourceDir, destDir);
+            return _reader.GetBackupFolders(sourceDir, destDir);
         }
 
         public IFolderControl CreateControl(string name)

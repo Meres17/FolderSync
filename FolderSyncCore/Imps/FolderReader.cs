@@ -23,7 +23,7 @@ namespace FolderSyncCore.Imps
                 .ToList(); ;
         }
 
-        public Dictionary<string, string> GetPathDictionary(string dir)
+        internal Dictionary<string, string> GetPathDictionary(string dir)
         {
             if (string.IsNullOrEmpty(dir))
             {
@@ -70,7 +70,6 @@ namespace FolderSyncCore.Imps
                 .Contains(key, StringComparer.InvariantCultureIgnoreCase);
         }
 
-
         internal List<FileStatus> CompareDictionary(Dictionary<string, string> sourceDic, Dictionary<string, string> destDic)
         {
             var result = new List<FileStatus>();
@@ -91,7 +90,7 @@ namespace FolderSyncCore.Imps
             return result;
         }
 
-        public List<FileStatus> GetRestoreFiles(string host, string name)
+        public List<FileStatus> GetBackupFiles(string host, string name)
         {
             var backupDir = Path.Combine(host, name);
             return GetPathDictionary(backupDir)
@@ -99,9 +98,9 @@ namespace FolderSyncCore.Imps
                 .ToList();
         }
 
-        public List<FolderDTO> GetFolders(string sourceDir, string destDir)
+        public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir)
         {
-            var backupHost = CreateBackupHost(sourceDir, destDir);
+            var backupHost = BuildBackupHost(sourceDir, destDir);
             return Directory
                 .EnumerateDirectories(backupHost, "*", SearchOption.TopDirectoryOnly)
                 .Where(x => DateTime.TryParseExact(Path.GetFileName(x), Format, null, DateTimeStyles.None, out _))
@@ -109,7 +108,7 @@ namespace FolderSyncCore.Imps
                 .ToList();
         }
 
-        private string CreateBackupHost(string sourceDir, string destDir)
+        private string BuildBackupHost(string sourceDir, string destDir)
         {
             var host = Directory.GetCurrentDirectory();
             var sourceFileName = Path.GetFileName(sourceDir);
@@ -129,7 +128,7 @@ namespace FolderSyncCore.Imps
 
         public string CreateBackupDirectory(string sourceDir, string destDir)
         {
-            var host = CreateBackupHost(sourceDir, destDir);
+            var host = BuildBackupHost(sourceDir, destDir);
             var time = DateTime.Now.ToString(Format);
             return Path.Combine(host, time);
         }

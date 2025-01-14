@@ -56,15 +56,15 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             FolderControl sut = FakeFolderControl(stub);
 
             var three_data = DeleteFiles_3_Data();
-            stub.GetRestoreFiles(Arg.Any<string>(), FolderControl.DeleteName)
+            stub.GetBackupFiles(Arg.Any<string>(), FolderControl.DeleteName)
                 .Returns(three_data);
 
             var two_data = DiffFiles_2_Data();
-            stub.GetRestoreFiles(Arg.Any<string>(), FolderControl.DiffName)
+            stub.GetBackupFiles(Arg.Any<string>(), FolderControl.DiffName)
                 .Returns(two_data);
 
             var one_data = AddFiles_1_data();
-            stub.GetRestoreFiles(Arg.Any<string>(), FolderControl.AddName)
+            stub.GetBackupFiles(Arg.Any<string>(), FolderControl.AddName)
                 .Returns(one_data);
 
             // Act
