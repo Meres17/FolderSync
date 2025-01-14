@@ -11,7 +11,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         private const string BackupDir = "backupDir";
 
         [Fact]
-        public async Task Overwrite_調用FolderControl的Overwrite方法()
+        public async Task OverwriteAsync_調用FolderControl的OverwriteAsync()
         {
             // Arrange
             var mock = FakeFolderControl();
@@ -30,7 +30,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         }
 
         [Fact]
-        public async Task Restore_調用FolderControl的Restore方法()
+        public async Task RestoreAsync_調用FolderControl的RestoreAsync()
         {
             // Arrange
             var mock = FakeFolderControl();
@@ -46,7 +46,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         }
 
         [Fact]
-        public async Task Overwrite_調用ExecuteWithSiteControl操作站台()
+        public async Task OverwriteAsync_調用ExecuteWithSiteControl操作站台()
         {
             // Arrange
             var stubFolder = FakeFolderControl();
@@ -62,7 +62,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         }
 
         [Fact]
-        public async Task Restore_調用ExecuteWithSiteControl操作站台()
+        public async Task RestoreAsync_調用ExecuteWithSiteControl操作站台()
         {
             // Arrange
             var stubFolder = FakeFolderControl();

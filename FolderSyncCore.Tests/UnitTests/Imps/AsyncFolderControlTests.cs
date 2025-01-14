@@ -11,7 +11,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         private const string BackupDir = "backup";
 
         [Fact]
-        public async Task Overwrite_測試不同狀態的資料進行了Copy和Delete()
+        public async Task OverwriteAsync_測試不同狀態的資料進行了Copy和Delete()
         {
             // Arrange
             var files = new List<FileStatus>
@@ -44,7 +44,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         }
 
         [Fact]
-        public async Task Restore_測試不同狀態的資料進行了Copy和Delete()
+        public async Task RestoreAsync_測試不同狀態的資料進行了Copy和Delete()
         {
             // Arrange
             var stub = FakeFolderReader();
