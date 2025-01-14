@@ -11,22 +11,6 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         private const string BackupDir = "backupDir";
 
         [Fact]
-        public void GetFolders_調用FolderControl的GetFolders方法()
-        {
-            // Arrange
-            IFolderControl mock = FakeFolderControl();
-            ISiteControl stub = FakeSiteControl();
-            var sut = new NETSiteFolderControl(mock, stub);
-
-            // Act
-            sut.GetFolders(SourceDir, DestDir);
-
-            // Assert
-            mock.Received(1)
-                .GetFolders(Arg.Any<string>(), Arg.Any<string>());
-        }
-
-        [Fact]
         public void Overwrite_調用FolderControl的Overwrite方法()
         {
             // Arrange

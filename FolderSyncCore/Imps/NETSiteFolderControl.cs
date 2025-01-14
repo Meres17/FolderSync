@@ -11,11 +11,6 @@
             _siteControl = siteControl ?? throw new ArgumentNullException(nameof(siteControl));
         }
 
-        public List<FolderDTO> GetFolders(string sourceDir, string destDir)
-        {
-            return _folderControl.GetFolders(sourceDir, destDir);
-        }
-
         public void Overwrite(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
             ExecuteWithSiteControl(destDir, () => _folderControl.Overwrite(files, sourceDir, destDir));

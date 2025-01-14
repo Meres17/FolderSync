@@ -25,8 +25,7 @@ namespace FolderSyncForm
 
         public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir, string type)
         {
-            var backup = _factory.CreateControl(type);
-            return backup.GetFolders(sourceDir, destDir);
+            return _factory.GetReader().GetFolders(sourceDir, destDir);
         }
 
         public void Restore(DataGridView gv, string destDir, string type)

@@ -13,11 +13,6 @@
             _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
 
-        public List<FolderDTO> GetFolders(string sourceDir, string destDir)
-        {
-            return _reader.GetFolders(sourceDir, destDir);
-        }
-
         public void Overwrite(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
             var backupDir = _reader.CreateBackupDirectory(sourceDir, destDir);
