@@ -38,34 +38,35 @@
             // 
             // lblMessage
             // 
-            lblMessage.AutoSize = false;
             lblMessage.Font = new Font("微軟正黑體", 12F);
             lblMessage.Location = new Point(12, 9);
             lblMessage.Name = "lblMessage";
-            lblMessage.Size = new Size(213, 20);
+            lblMessage.Size = new Size(213, 86);
             lblMessage.TabIndex = 0;
             lblMessage.Text = "訊息";
             // 
             // btnOK
             // 
+            btnOK.BackColor = Color.LightBlue;
             btnOK.Font = new Font("微軟正黑體", 12F);
             btnOK.Location = new Point(60, 98);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(107, 30);
             btnOK.TabIndex = 1;
-            btnOK.BackColor = Color.LightBlue;
             btnOK.Text = "確定";
+            btnOK.UseVisualStyleBackColor = false;
             btnOK.Click += BtnOK_Click;
             // 
             // btnCancel
             // 
+            btnCancel.BackColor = Color.LightCoral;
             btnCancel.Font = new Font("微軟正黑體", 12F);
             btnCancel.Location = new Point(60, 134);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(107, 30);
             btnCancel.TabIndex = 2;
-            btnCancel.BackColor = Color.LightCoral;
             btnCancel.Text = "取消";
+            btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Visible = false;
             btnCancel.Click += BtnCancel_Click;
             // 
@@ -79,7 +80,6 @@
             Name = "DialogForm";
             Text = "訊息";
             ResumeLayout(false);
-            PerformLayout();
         }
 
 
