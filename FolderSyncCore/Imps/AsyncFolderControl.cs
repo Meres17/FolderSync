@@ -4,7 +4,7 @@
     {
         private readonly IFolderReader _reader;
 
-        private string DeleteName => FolderControl.DiffName;
+        private string DeleteName => FolderControl.DeleteName;
         private string DiffName => FolderControl.DiffName;
         private string AddName => FolderControl.AddName;
 
