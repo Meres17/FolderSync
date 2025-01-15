@@ -12,4 +12,10 @@
     <ProjectReference Include="..\FolderSyncCore\FolderSyncCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="App_offline.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
