@@ -26,6 +26,7 @@ namespace FolderSyncForm
             txtSource.Text = appSettings.Source;
             txtDest.Text = appSettings.Dest;
 
+            cbType.Items.Clear();
             cbType.Items.AddRange(_service.GetNames());
             cbType.SelectedIndex = 0;
         }
