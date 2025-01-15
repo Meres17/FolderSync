@@ -7,7 +7,7 @@ namespace FolderSyncForm
 {
     public partial class MainForm : System.Windows.Forms.Form
     {
-        private readonly FolderSyncAppService _service;
+        private FolderSyncAppService _service = default!;
         private string _source => txtSource.Text;
         private string _dest => txtDest.Text;
         private string _type => cbType.Text;
@@ -15,6 +15,11 @@ namespace FolderSyncForm
         public MainForm()
         {
             InitializeComponent();
+            InitForm();
+        }
+
+        private void InitForm()
+        {
             var appSettings = AppSettings.Build();
             _service = new FolderSyncAppService(appSettings);
 
@@ -119,7 +124,10 @@ namespace FolderSyncForm
         private void btnOpenSettings_Click(object sender, EventArgs e)
         {
             var form = new AppSettingsForm();
-            form.ShowDialog();
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                InitForm();
+            }
         }
     }
 }

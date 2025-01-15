@@ -35,6 +35,7 @@ namespace FolderSyncForm
             try
             {
                 _service.Save(txtSource.Text, txtDest.Text, txtIgnoreFolders.Text, txtIgnoreFiles.Text);
+                this.DialogResult = DialogResult.OK;
                 Dialog.Alert("儲存成功");
                 this.Close();
             }
