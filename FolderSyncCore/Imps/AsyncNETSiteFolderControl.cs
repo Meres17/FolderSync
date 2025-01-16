@@ -4,11 +4,13 @@
     {
         private readonly IAsyncFolderControl _folderControl;
         private readonly ISiteControl _siteControl;
+        private readonly AppSettings _appSettings;
 
-        public AsyncNETSiteFolderControl(IAsyncFolderControl folderControl, ISiteControl siteControl)
+        public AsyncNETSiteFolderControl(IAsyncFolderControl folderControl, ISiteControl siteControl, AppSettings appSettings)
         {
             _folderControl = folderControl ?? throw new ArgumentNullException(nameof(folderControl));
             _siteControl = siteControl ?? throw new ArgumentNullException(nameof(siteControl));
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         }
         public Task OverwriteAsync(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
@@ -25,6 +27,7 @@
             try
             {
                 _siteControl.CloseSite(destDir);
+                await Task.Delay(_appSettings.SiteDelay);
                 await action();
             }
             finally

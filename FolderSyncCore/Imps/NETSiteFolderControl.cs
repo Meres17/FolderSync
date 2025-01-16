@@ -4,11 +4,13 @@
     {
         private readonly IFolderControl _folderControl;
         private readonly ISiteControl _siteControl;
+        private readonly AppSettings _appSettings;
 
-        public NETSiteFolderControl(IFolderControl folderControl, ISiteControl siteControl)
+        public NETSiteFolderControl(IFolderControl folderControl, ISiteControl siteControl, AppSettings appSettings)
         {
             _folderControl = folderControl ?? throw new ArgumentNullException(nameof(folderControl));
             _siteControl = siteControl ?? throw new ArgumentNullException(nameof(siteControl));
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
         public void Overwrite(IEnumerable<FileStatus> files, string sourceDir, string destDir)
@@ -26,6 +28,7 @@
             try
             {
                 _siteControl.CloseSite(destDir);
+                Thread.Sleep(_appSettings.SiteDelay);
                 action();
             }
             finally

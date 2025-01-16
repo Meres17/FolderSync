@@ -20,7 +20,7 @@ namespace FolderSyncForm
 
         private static AppSettings ToAppSettings(string source, string dest, string ignoreFolders, string ignoreFiles, string siteDelayText)
         {
-            var appSettings = new AppSettings();
+            var appSettings = AppSettings.Build();
             appSettings.Source = source;
             appSettings.Dest = dest;
             appSettings.IgnoreFolders = ToArray(ignoreFolders);

@@ -16,7 +16,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             // Arrange
             var mock = FakeFolderControl();
             ISiteControl stub = FakeSiteControl();
-            var sut = new AsyncNETSiteFolderControl(mock, stub);
+            var sut = new AsyncNETSiteFolderControl(mock, stub, AppSettings.Empty());
 
             // Act
             await sut.OverwriteAsync(Enumerable.Empty<FileStatus>(), SourceDir, DestDir);
@@ -35,7 +35,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             // Arrange
             var mock = FakeFolderControl();
             ISiteControl stub = FakeSiteControl();
-            var sut = new AsyncNETSiteFolderControl(mock, stub);
+            var sut = new AsyncNETSiteFolderControl(mock, stub, AppSettings.Empty());
 
             // Act
             await sut.RestoreAsync(BackupDir, DestDir);
@@ -51,7 +51,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             // Arrange
             var stubFolder = FakeFolderControl();
             var stubSite = FakeSiteControl();
-            var sut = Substitute.For<AsyncNETSiteFolderControl>(stubFolder, stubSite);
+            var sut = Substitute.For<AsyncNETSiteFolderControl>(stubFolder, stubSite, AppSettings.Empty());
 
             // Act
             await sut.OverwriteAsync(new List<FileStatus>(), SourceDir, DestDir);
@@ -67,7 +67,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             // Arrange
             var stubFolder = FakeFolderControl();
             var stubSite = FakeSiteControl();
-            var sut = Substitute.For<AsyncNETSiteFolderControl>(stubFolder, stubSite);
+            var sut = Substitute.For<AsyncNETSiteFolderControl>(stubFolder, stubSite, AppSettings.Empty());
 
             // Act
             await sut.RestoreAsync(BackupDir, DestDir);
@@ -83,7 +83,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             // Arrange
             var stub = FakeFolderControl();
             var mock = FakeSiteControl();
-            var sut = new AsyncNETSiteFolderControl(stub, mock);
+            var sut = new AsyncNETSiteFolderControl(stub, mock, AppSettings.Empty());
 
             // Act
             await sut.ExecuteWithSiteControl(DestDir, () => Task.CompletedTask);
@@ -99,7 +99,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             // Arrange
             var stub = FakeFolderControl();
             var mock = FakeSiteControl();
-            var sut = new AsyncNETSiteFolderControl(stub, mock);
+            var sut = new AsyncNETSiteFolderControl(stub, mock, AppSettings.Empty());
             mock.When(x => x.CloseSite(Arg.Any<string>()))
                 .Do(x => { throw new Exception("關閉站台失敗"); });
 
@@ -117,7 +117,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             // Arrange
             var stub = FakeFolderControl();
             var mock = FakeSiteControl();
-            var sut = new AsyncNETSiteFolderControl(stub, mock);
+            var sut = new AsyncNETSiteFolderControl(stub, mock, AppSettings.Empty());
 
             // Act
             // Assert

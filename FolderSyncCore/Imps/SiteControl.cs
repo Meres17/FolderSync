@@ -2,12 +2,6 @@
 {
     internal class SiteControl : ISiteControl
     {
-        private readonly AppSettings _appSettings;
-
-        public SiteControl(AppSettings appSettings)
-        {
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-        }
         public void CloseSite(string destDir)
         {
             if (NotFoundDirectory(destDir))
@@ -23,8 +17,6 @@
             }
 
             Copy(destDir, sourcePath);
-
-            Thread.Sleep(_appSettings.SiteDelay);
         }
 
         internal virtual bool NotFoundDirectory(string destDir)

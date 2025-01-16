@@ -8,7 +8,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         public void GetPathDictionary_無效路徑_拋出DirectoryNotFoundException()
         {
             // Arrange
-            var stub = FakeAppSettings();
+            var stub = AppSettings.Empty();
             var sut = new FolderReader(stub);
 
             // Act & Assert
@@ -21,7 +21,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         public void GetPathDictionary_空白路徑_拋出ArgumentException(string dir)
         {
             // Arrange
-            var stub = FakeAppSettings();
+            var stub = AppSettings.Empty();
             var sut = new FolderReader(stub);
 
             // Act & Assert
@@ -34,7 +34,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         public void GetBackupFolders_空白路徑_拋出ArgumentException(string dir)
         {
             // Arrange
-            var stub = FakeAppSettings();
+            var stub = AppSettings.Empty();
             var sut = new FolderReader(stub);
 
             // Act & Assert
@@ -45,7 +45,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         public void GetBackupFolders_無效路徑_取得空資料()
         {
             // Arrange
-            var stub = FakeAppSettings();
+            var stub = AppSettings.Empty();
             var sut = new FolderReader(stub);
 
             // Act
@@ -64,7 +64,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         public void IsIgnoreFile_檔案路徑中有沒有指定檔名(string path, bool expected)
         {
             // Arrange
-            var stub = FakeAppSettings();
+            var stub = AppSettings.Empty();
             stub.IgnoreFiles = new[] { "ignore.txt", "ignore.doc" };
 
             var sut = new FolderReader(stub);
@@ -85,7 +85,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         public void IsInFolder_資料夾路徑中有沒有指定資料夾(string relativePath, bool expected)
         {
             // Arrange
-            var stub = FakeAppSettings();
+            var stub = AppSettings.Empty();
             stub.IgnoreFolders = new[] { "bin", "obj" };
             var sut = new FolderReader(stub);
 
@@ -103,7 +103,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         public void IsInDirectory_資料夾路徑中有沒有指定資料夾(string directoryName, string dir, bool expected)
         {
             // Arrange
-            var stub = FakeAppSettings();
+            var stub = AppSettings.Empty();
             var sut = new FolderReader(stub);
 
             // Act
@@ -117,7 +117,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         public void CompareDictionary_比較兩個字典_回傳正確的FileStatus列表()
         {
             // Arrange
-            var stub = FakeAppSettings();
+            var stub = AppSettings.Empty();
             var sut = new FolderReader(stub);
 
             var sourceDic = new Dictionary<string, string>
@@ -141,11 +141,6 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
             Assert.Contains("add.txt", names);
             Assert.Contains("change.txt", names);
             Assert.Contains("delete.txt", names);
-        }
-
-        private static AppSettings FakeAppSettings()
-        {
-            return new AppSettings();
         }
     }
 }

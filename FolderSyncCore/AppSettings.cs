@@ -29,12 +29,17 @@ namespace FolderSyncCore
             try
             {
                 var text = File.ReadAllText(path);
-                return JsonSerializer.Deserialize<AppSettings>(text) ?? new AppSettings();
+                return JsonSerializer.Deserialize<AppSettings>(text) ?? Empty();
             }
             catch
             {
-                return new AppSettings();
+                return Empty();
             }
+        }
+
+        internal static AppSettings Empty()
+        {
+            return new AppSettings();
         }
 
         public void Save(string? path = null)
