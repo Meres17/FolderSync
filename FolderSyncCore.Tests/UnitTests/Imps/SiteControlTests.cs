@@ -33,7 +33,7 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
                .Returns(true);
 
             // Act & Assert
-            Assert.Throws<Exception>(() => sut.CloseSite(DestDir));
+            Assert.Throws<FileNotFoundException>(() => sut.CloseSite(DestDir));
         }
 
         [Fact]

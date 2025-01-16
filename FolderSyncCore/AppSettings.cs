@@ -30,7 +30,7 @@ namespace FolderSyncCore
                 var text = File.ReadAllText(path);
                 return JsonSerializer.Deserialize<AppSettings>(text) ?? new AppSettings();
             }
-            catch (Exception)
+            catch
             {
                 return new AppSettings();
             }

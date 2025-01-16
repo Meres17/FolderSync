@@ -13,7 +13,7 @@
 
             if (NotFoundFile(sourcePath))
             {
-                throw new Exception("找不到App_offline.htm，請將檔案放置本執行檔旁邊");
+                throw new FileNotFoundException("找不到App_offline.htm，請將檔案放置本執行檔旁邊");
             }
 
             Copy(destDir, sourcePath);

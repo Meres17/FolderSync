@@ -8,7 +8,7 @@
         public AsyncNETSiteFolderControl(IAsyncFolderControl folderControl, ISiteControl siteControl)
         {
             _folderControl = folderControl ?? throw new ArgumentNullException(nameof(folderControl));
-            _siteControl = siteControl;
+            _siteControl = siteControl ?? throw new ArgumentNullException(nameof(siteControl));
         }
         public Task OverwriteAsync(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
