@@ -10,6 +10,20 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         private const string SourceDir = "sourceDir";
         private const string BackupDir = "backup";
 
+
+        [Fact]
+        public void Overwrite_沒有檔案彈出ArgumentException()
+        {
+            // Arrange
+            var files = Enumerable.Empty<FileStatus>();
+            var stub = FakeFolderReader();
+            FolderControl sut = FakeFolderControl(stub);
+
+            // Act
+            // Assert
+            Assert.Throws<ArgumentException>(() => sut.Overwrite(files, SourceDir, DestDir));
+        }
+
         [Fact]
         public void Overwrite_測試不同狀態的資料進行了Copy和Delete()
         {

@@ -11,6 +11,21 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         private const string BackupDir = "backup";
 
         [Fact]
+        public async Task OverwriteAsync_沒有檔案彈出ArgumentException()
+        {
+            // Arrange
+            var files = Enumerable.Empty<FileStatus>();
+
+            var stub = FakeFolderReader();
+            AsyncFolderControl sut = FakeFolderControl(stub);
+
+            // Act
+            // Assert
+
+            await Assert.ThrowsAsync<ArgumentException>(() => sut.OverwriteAsync(files, SourceDir, DestDir));
+        }
+
+        [Fact]
         public async Task OverwriteAsync_測試不同狀態的資料進行了Copy和Delete()
         {
             // Arrange
