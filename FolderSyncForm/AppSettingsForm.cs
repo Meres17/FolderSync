@@ -17,6 +17,7 @@ namespace FolderSyncForm
             txtDest.Text = appSettings.Dest;
             txtIgnoreFolders.Text = string.Join(Environment.NewLine, appSettings.IgnoreFolders);
             txtIgnoreFiles.Text = string.Join(Environment.NewLine, appSettings.IgnoreFiles);
+            txtSiteDelay.Text = appSettings.SiteDelay.ToString();
             _service = new AppSettingsAppService();
         }
 
@@ -34,7 +35,12 @@ namespace FolderSyncForm
         {
             try
             {
-                _service.Save(txtSource.Text, txtDest.Text, txtIgnoreFolders.Text, txtIgnoreFiles.Text);
+                _service.Save(
+                    txtSource.Text,
+                    txtDest.Text,
+                    txtIgnoreFolders.Text,
+                    txtIgnoreFiles.Text,
+                    txtSiteDelay.Text);
                 this.DialogResult = DialogResult.OK;
                 Dialog.Alert("儲存成功");
                 this.Close();

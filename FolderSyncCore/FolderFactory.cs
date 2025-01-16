@@ -5,9 +5,11 @@ namespace FolderSyncCore
     public class FolderFactory
     {
         private readonly IFolderReader _reader;
+        private readonly AppSettings _appSettings;
 
         public FolderFactory(AppSettings appSettings)
         {
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _reader = new FolderReader(appSettings);
         }
 
@@ -31,7 +33,7 @@ namespace FolderSyncCore
             return name switch
             {
                 "資料夾" => new FolderControl(_reader),
-                ".NET站台" => new NETSiteFolderControl(new FolderControl(_reader), new SiteControl()),
+                ".NET站台" => new NETSiteFolderControl(new FolderControl(_reader), new SiteControl(_appSettings)),
                 _ => throw new NotSupportedException($"不支援的備份類型：{name}")
             };
         }
@@ -41,7 +43,7 @@ namespace FolderSyncCore
             return name switch
             {
                 "資料夾" => new AsyncFolderControl(_reader),
-                ".NET站台" => new AsyncNETSiteFolderControl(new AsyncFolderControl(_reader), new SiteControl()),
+                ".NET站台" => new AsyncNETSiteFolderControl(new AsyncFolderControl(_reader), new SiteControl(_appSettings)),
                 _ => throw new NotSupportedException($"不支援的備份類型：{name}")
             };
         }

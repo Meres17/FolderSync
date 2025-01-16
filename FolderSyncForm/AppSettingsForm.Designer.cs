@@ -9,6 +9,8 @@
         private Label lbDest;
         private TextBox txtDest;
         private Button btnDest;
+
+        private TextBox txtSiteDelay;
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -45,7 +47,9 @@
             txtIgnoreFolders = new TextBox();
             txtIgnoreFiles = new TextBox();
             lbtxtIgnoreFiles = new Label();
+            txtSiteDelay = new TextBox();
             btnSave = new Button();
+            lbSiteDelay = new Label();
             SuspendLayout();
             // 
             // lbSource
@@ -171,7 +175,18 @@
             lbtxtIgnoreFiles.Text = "忽略檔案名稱";
             lbtxtIgnoreFiles.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // button1
+            // txtSiteDelay
+            // 
+            txtSiteDelay.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtSiteDelay.Font = new Font("Segoe UI", 12F);
+            txtSiteDelay.Margin = new Padding(2);
+            txtSiteDelay.PlaceholderText = "站台更新延遲毫秒";
+            txtSiteDelay.Location = new Point(178, 401);
+            txtSiteDelay.Name = "txtSiteDelay";
+            txtSiteDelay.Size = new Size(567, 23);
+            txtSiteDelay.TabIndex = 11;
+            // 
+            // btnSave
             // 
             btnSave.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnSave.BackColor = Color.RoyalBlue;
@@ -186,11 +201,23 @@
             btnSave.UseVisualStyleBackColor = false;
             btnSave.Click += btnSave_Click;
             // 
+            // lbSiteDelay
+            // 
+            lbSiteDelay.Font = new Font("Segoe UI", 12F);
+            lbSiteDelay.Location = new Point(10, 401);
+            lbSiteDelay.Margin = new Padding(2, 0, 2, 0);
+            lbSiteDelay.Name = "lbSiteDelay";
+            lbSiteDelay.Size = new Size(163, 30);
+            lbSiteDelay.TabIndex = 12;
+            lbSiteDelay.Text = "站台更新延遲毫秒";
+            lbSiteDelay.TextAlign = ContentAlignment.MiddleLeft;
+            // 
             // AppSettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(876, 450);
+            Controls.Add(lbSiteDelay);
             Controls.Add(btnSave);
             Controls.Add(lbtxtIgnoreFiles);
             Controls.Add(txtIgnoreFiles);
@@ -202,6 +229,7 @@
             Controls.Add(lbDest);
             Controls.Add(txtDest);
             Controls.Add(btnDest);
+            Controls.Add(txtSiteDelay);
             Name = "AppSettingsForm";
             Text = "設定檔調整";
             ResumeLayout(false);
@@ -215,5 +243,6 @@
         private TextBox txtIgnoreFiles;
         private Label lbtxtIgnoreFiles;
         private Button btnSave;
+        private Label lbSiteDelay;
     }
 }

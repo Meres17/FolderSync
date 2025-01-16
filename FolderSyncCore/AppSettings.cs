@@ -8,6 +8,7 @@ namespace FolderSyncCore
         public string Dest { get; set; } = "";
         public string[] IgnoreFiles { get; set; } = new[] { "appsettings.json", "web.config", "App_offline.htm" };
         public string[] IgnoreFolders { get; set; } = new[] { "logs" };
+        public int SiteDelay { get; set; }
 
         public static AppSettings Build(string? path = null)
         {

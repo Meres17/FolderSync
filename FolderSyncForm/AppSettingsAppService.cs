@@ -7,24 +7,26 @@ namespace FolderSyncForm
         //無效字元
         private char[] _invalidChars = new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
 
-        internal void Save(string source, string dest, string ignoreFolders, string ignoreFiles)
+        internal void Save(string source, string dest, string ignoreFolders, string ignoreFiles, string siteDelayText)
         {
             CheckDirectory(source);
             CheckDirectory(dest);
             CheckName(ignoreFolders);
             CheckName(ignoreFiles);
 
-            var appSettings = ToAppSettings(source, dest, ignoreFolders, ignoreFiles);
+            var appSettings = ToAppSettings(source, dest, ignoreFolders, ignoreFiles, siteDelayText);
             appSettings.Save();
         }
 
-        private static AppSettings ToAppSettings(string source, string dest, string ignoreFolders, string ignoreFiles)
+        private static AppSettings ToAppSettings(string source, string dest, string ignoreFolders, string ignoreFiles, string siteDelayText)
         {
             var appSettings = new AppSettings();
             appSettings.Source = source;
             appSettings.Dest = dest;
             appSettings.IgnoreFolders = ToArray(ignoreFolders);
             appSettings.IgnoreFiles = ToArray(ignoreFiles);
+            var delay = int.TryParse(siteDelayText, out int siteDelay);
+            appSettings.SiteDelay = siteDelay;
             return appSettings;
         }
 
