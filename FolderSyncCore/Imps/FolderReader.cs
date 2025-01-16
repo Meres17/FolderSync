@@ -27,7 +27,7 @@ namespace FolderSyncCore.Imps
         {
             if (string.IsNullOrEmpty(dir))
             {
-                throw new DirectoryNotFoundException($"請輸入資料夾路徑");
+                throw new ArgumentNullException($"請輸入資料夾路徑");
             }
 
             if (!Directory.Exists(dir))
@@ -93,9 +93,16 @@ namespace FolderSyncCore.Imps
         public List<FileStatus> GetBackupFiles(string host, string name)
         {
             var backupDir = Path.Combine(host, name);
-            return GetPathDictionary(backupDir)
-                .Select(x => new FileStatus(x.Key, x.Value, null))
-                .ToList();
+            try
+            {
+                return GetPathDictionary(backupDir)
+                    .Select(x => new FileStatus(x.Key, x.Value, null))
+                    .ToList();
+            }
+            catch (DirectoryNotFoundException) //還原時，未必會有新/刪/修資料夾
+            {
+                return new List<FileStatus>();
+            }
         }
 
         public List<FolderDTO> GetBackupFolders(string sourceDir, string destDir)
