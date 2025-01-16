@@ -15,6 +15,7 @@
 
         public async Task OverwriteAsync(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
+            if (!files.Any()) return;
             var backupDir = _reader.CreateBackupDirectory(sourceDir, destDir);
             var backupTasks = new List<Task>() {
                 BackupAsync(files, backupDir, Path.GetFileName(sourceDir), x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同),
