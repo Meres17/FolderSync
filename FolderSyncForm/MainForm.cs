@@ -84,8 +84,10 @@ namespace FolderSyncForm
         {
             try
             {
-                _service.DeleteBackup(gv);
-                Dialog.Alert("刪除成功");
+                if (_service.DeleteBackup(gv))
+                {
+                    Dialog.Alert("刪除成功");
+                }
             }
             catch (Exception ex)
             {

@@ -49,7 +49,7 @@ namespace FolderSyncForm
             folderControl.Overwrite(files, sourceDir, destDir);
         }
 
-        public void DeleteBackup(DataGridView gv)
+        public bool DeleteBackup(DataGridView gv)
         {
             var backupFolders = GetBackupFolders(gv);
 
@@ -60,8 +60,11 @@ namespace FolderSyncForm
 
             if (Dialog.Confirm("確定刪除備份紀錄嗎"))
             {
-                backupFolders.ForEach(x => Directory.Delete(x.完整路徑, true));
+                backupFolders.ForEach(folder => Directory.Delete(folder.完整路徑, true));
+                return true;
             }
+
+            return false;
         }
 
         private static List<FolderDTO?> GetBackupFolders(DataGridView gv)
