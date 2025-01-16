@@ -5,14 +5,14 @@ using FolderSyncForm.Helpers;
 
 namespace FolderSyncForm
 {
-    public partial class MainForm : System.Windows.Forms.Form
+    public partial class FolderSyncForm : System.Windows.Forms.Form
     {
         private FolderSyncAppService _service = default!;
         private string _source => txtSource.Text;
         private string _dest => txtDest.Text;
         private string _type => cbType.Text;
 
-        public MainForm()
+        public FolderSyncForm()
         {
             InitializeComponent();
             InitForm();

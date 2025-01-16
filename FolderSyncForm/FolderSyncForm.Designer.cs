@@ -1,7 +1,7 @@
 ﻿
 namespace FolderSyncForm
 {
-    partial class MainForm
+    partial class FolderSyncForm
     {
         private Label lbSource;
         private TextBox txtSource;
