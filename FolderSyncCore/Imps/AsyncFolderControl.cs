@@ -15,7 +15,11 @@
 
         public async Task OverwriteAsync(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
-            if (!files.Any()) return;
+            if (!files.Any())
+            {
+                throw new ArgumentException("沒有需要更新的檔案");
+            }
+
             var backupDir = _reader.CreateBackupDirectory(sourceDir, destDir);
             var backupTasks = new List<Task>() {
                 BackupAsync(files, backupDir, Path.GetFileName(sourceDir), x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同),

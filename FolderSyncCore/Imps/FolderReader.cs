@@ -27,7 +27,7 @@ namespace FolderSyncCore.Imps
         {
             if (string.IsNullOrEmpty(dir))
             {
-                throw new ArgumentNullException($"請輸入資料夾路徑");
+                throw new ArgumentException("請輸入資料夾路徑");
             }
 
             if (!Directory.Exists(dir))
@@ -92,7 +92,7 @@ namespace FolderSyncCore.Imps
 
         public List<FileStatus> GetBackupFiles(string host, string name)
         {
-            var backupDir = Path.Combine(host, name);
+            var backupDir = Path.Combine(host ?? "", name ?? "");
             try
             {
                 return GetPathDictionary(backupDir)

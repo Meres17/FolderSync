@@ -15,7 +15,11 @@
 
         public void Overwrite(IEnumerable<FileStatus> files, string sourceDir, string destDir)
         {
-            if (!files.Any()) return;
+            if (!files.Any())
+            {
+                throw new ArgumentException("沒有需要更新的檔案");
+            }
+
             var backupDir = _reader.CreateBackupDirectory(sourceDir, destDir);
             Backup(files, backupDir, Path.GetFileName(sourceDir), x => x.來源路徑, CompareState.新增檔案, CompareState.時間不同);
             Backup(files, backupDir, Path.GetFileName(destDir), x => x.目標路徑, CompareState.刪除檔案, CompareState.時間不同);

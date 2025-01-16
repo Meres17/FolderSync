@@ -18,27 +18,27 @@ namespace FolderSyncCore.Tests.UnitTests.Imps
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        public void GetPathDictionary_空白路徑_拋出ArgumentNullException(string dir)
+        public void GetPathDictionary_空白路徑_拋出ArgumentException(string dir)
         {
             // Arrange
             var stub = FakeAppSettings();
             var sut = new FolderReader(stub);
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => sut.GetPathDictionary(dir));
+            Assert.Throws<ArgumentException>(() => sut.GetPathDictionary(dir));
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        public void GetBackupFolders_空白路徑_拋出ArgumentNullException(string dir)
+        public void GetBackupFolders_空白路徑_拋出ArgumentException(string dir)
         {
             // Arrange
             var stub = FakeAppSettings();
             var sut = new FolderReader(stub);
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => sut.GetBackupFiles(dir, ""));
+            Assert.Throws<ArgumentException>(() => sut.GetBackupFiles("", dir));
         }
 
         [Fact]
