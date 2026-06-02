@@ -16,19 +16,19 @@ namespace FolderSyncForm.Helpers
         private static readonly Color OnAccent = Color.White;
         private static readonly Color InputBorder = Color.FromArgb(206, 212, 218);
 
-        // 按鈕角色色（filled）
-        private static readonly Color Primary = Color.FromArgb(37, 99, 235);   // 選擇/儲存
-        private static readonly Color Success = Color.FromArgb(22, 163, 74);   // 檢視/列表
-        private static readonly Color Danger = Color.FromArgb(220, 38, 38);    // 更新/還原
-        private static readonly Color Neutral = Color.FromArgb(108, 117, 125); // 設定/刪除/取消
+        // 按鈕角色色（同一套柔和冷色系，統一明度與彩度以求協調）
+        private static readonly Color Primary = Color.FromArgb(61, 126, 187);  // 選擇/儲存（藍）
+        private static readonly Color Success = Color.FromArgb(63, 167, 150);  // 檢視/列表（青）
+        private static readonly Color Danger = Color.FromArgb(214, 99, 107);   // 更新/還原（珊瑚）
+        private static readonly Color Neutral = Color.FromArgb(116, 129, 150); // 設定/刪除/取消（石板灰）
 
-        // 表格色
-        private static readonly Color HeaderBack = Color.FromArgb(245, 246, 248);
-        private static readonly Color HeaderFore = Color.FromArgb(73, 80, 87);
-        private static readonly Color GridLine = Color.FromArgb(233, 236, 239);
-        private static readonly Color AlternateRow = Color.FromArgb(248, 249, 250);
-        private static readonly Color SelectionBack = Color.FromArgb(219, 234, 254);
-        private static readonly Color SelectionFore = Color.FromArgb(30, 64, 175);
+        // 表格色（中性灰，與按鈕冷色系一致）
+        private static readonly Color HeaderBack = Color.FromArgb(244, 246, 249);
+        private static readonly Color HeaderFore = Color.FromArgb(71, 85, 105);
+        private static readonly Color GridLine = Color.FromArgb(231, 235, 240);
+        private static readonly Color AlternateRow = Color.FromArgb(247, 249, 251);
+        private static readonly Color SelectionBack = Color.FromArgb(225, 235, 245);
+        private static readonly Color SelectionFore = Color.FromArgb(42, 88, 133);
 
         public static void Apply(Form form)
         {
