@@ -11,7 +11,8 @@ namespace FolderSyncForm.Helpers
         private static readonly Font HeaderFont = new(FontFamily, 11F, FontStyle.Bold);
 
         // 介面底色與文字
-        private static readonly Color Surface = Color.White;
+        private static readonly Color Canvas = Color.FromArgb(242, 244, 247); // 表單畫布（柔和淺灰）
+        private static readonly Color Surface = Color.White;                  // 內容面（表格/輸入框）
         private static readonly Color Text = Color.FromArgb(33, 37, 41);
         private static readonly Color OnAccent = Color.White;
         private static readonly Color InputBorder = Color.FromArgb(206, 212, 218);
@@ -32,7 +33,7 @@ namespace FolderSyncForm.Helpers
 
         public static void Apply(Form form)
         {
-            form.BackColor = Surface;
+            form.BackColor = Canvas;
             Style(form);
         }
 
