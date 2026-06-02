@@ -1,6 +1,6 @@
 namespace FolderSync.Domain
 {
-    public class BackupFolder
+    public record BackupFolder
     {
         public BackupFolder(string path)
         {

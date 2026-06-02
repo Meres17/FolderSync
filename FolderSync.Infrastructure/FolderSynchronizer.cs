@@ -27,7 +27,7 @@ namespace FolderSync.Infrastructure
         {
             var rules = BackupPlan.ForOverwrite(Path.GetFileName(sourceDir), Path.GetFileName(destDir));
             var tasks = rules.Select(rule => CopyOpsAsync(
-                changes.Where(rule.Matches).Select(file => (file.PathOf(rule.Side), file.相對路徑)),
+                changes.Where(rule.Matches).Select(file => new CopyOperation(file.PathOf(rule.Side), file.相對路徑)),
                 Path.Combine(backupDir, rule.Folder)));
             return Task.WhenAll(tasks);
         }
@@ -36,7 +36,7 @@ namespace FolderSync.Infrastructure
         {
             var copy = CopyOpsAsync(
                 changes.Where(x => x.狀態 is CompareState.新增檔案 or CompareState.時間不同)
-                       .Select(file => (file.PathOf(FileSide.來源), file.相對路徑)),
+                       .Select(file => new CopyOperation(file.PathOf(FileSide.來源), file.相對路徑)),
                 destDir);
             var delete = DeleteAsync(changes
                 .Where(x => x.狀態 == CompareState.刪除檔案)
@@ -56,10 +56,10 @@ namespace FolderSync.Infrastructure
 
         private Task CopyBackupAsync(IReadOnlyList<FileSnapshot> files, string destHost)
         {
-            return CopyOpsAsync(files.Select(file => ((string?)file.完整路徑, file.相對路徑)), destHost);
+            return CopyOpsAsync(files.Select(file => new CopyOperation(file.完整路徑, file.相對路徑)), destHost);
         }
 
-        internal virtual Task CopyOpsAsync(IEnumerable<(string? Source, string RelativePath)> ops, string destHost)
+        internal virtual Task CopyOpsAsync(IEnumerable<CopyOperation> ops, string destHost)
         {
             var tasks = ops.Select(op => Task.Run(() =>
             {
