@@ -123,6 +123,16 @@ namespace FolderSyncForm.Helpers
             grid.AllowUserToAddRows = false;
             grid.AllowUserToResizeRows = false;
             grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
+            // 欄位自動填滿並隨視窗縮放；路徑類欄位分到較多寬度
+            grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            grid.DataBindingComplete += (_, _) =>
+            {
+                foreach (DataGridViewColumn column in grid.Columns)
+                {
+                    column.FillWeight = column.Name.Contains("路徑") ? 200 : 100;
+                }
+            };
         }
 
         private static Color Darken(Color color, double amount)
