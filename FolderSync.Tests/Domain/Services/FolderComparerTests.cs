@@ -51,6 +51,48 @@ namespace FolderSync.Tests.Domain.Services
             Assert.Equal("keep.txt", result[0].檔名);
         }
 
+        [Fact]
+        public void Compare_全部時間相同_回傳空清單()
+        {
+            // Arrange
+            var source = new[] { Snap("a.txt", Older), Snap("b.txt", Older) };
+            var dest = new[] { Snap("a.txt", Older), Snap("b.txt", Older) };
+
+            // Act
+            var result = new FolderComparer().Compare(source, dest, NoIgnore);
+
+            // Assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void Compare_依狀態再相對路徑排序()
+        {
+            // Arrange
+            var source = new[]
+            {
+                Snap("z_add.txt", Newer),  // 新增
+                Snap("a_add.txt", Newer),  // 新增
+                Snap("diff.txt", Newer),   // 時間不同
+            };
+            var dest = new[]
+            {
+                Snap("diff.txt", Older),   // 時間不同
+                Snap("del.txt", Older),    // 刪除
+            };
+
+            // Act
+            var result = new FolderComparer().Compare(source, dest, NoIgnore);
+
+            // Assert：先依狀態（新增 < 刪除 < 時間不同）排序
+            var states = result.Select(x => x.狀態).ToList();
+            Assert.Equal(states.OrderBy(x => x).ToList(), states);
+
+            // 同狀態內依相對路徑排序
+            var adds = result.Where(x => x.狀態 == CompareState.新增檔案).Select(x => x.檔名).ToList();
+            Assert.Equal(new[] { "a_add.txt", "z_add.txt" }, adds);
+        }
+
         private static FileSnapshot Snap(string relativePath, DateTime time)
         {
             return new FileSnapshot(relativePath, "full\\" + relativePath, time);

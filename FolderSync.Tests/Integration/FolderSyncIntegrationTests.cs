@@ -5,6 +5,7 @@ namespace FolderSync.Tests.Integration
     /// 以真實檔案系統驗證掃描、比對、套用與還原的端到端行為。
     /// 同一類別的測試循序執行，避免共用目前工作目錄造成干擾。
     /// </summary>
+    [Collection("FileSystem")]
     public class FolderSyncIntegrationTests : IDisposable
     {
         private static readonly DateTime OldTime = new(2023, 1, 1, 9, 0, 0);
