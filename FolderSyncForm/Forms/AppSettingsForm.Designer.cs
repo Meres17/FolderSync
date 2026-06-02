@@ -54,8 +54,6 @@
             // 
             // lbSource
             // 
-            lbSource.Font = new Font("Segoe UI", 12F);
-            lbSource.ForeColor = Color.FromArgb(51, 51, 51);
             lbSource.Location = new Point(11, 9);
             lbSource.Margin = new Padding(2, 0, 2, 0);
             lbSource.Name = "lbSource";
@@ -67,7 +65,6 @@
             // txtSource
             // 
             txtSource.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtSource.Font = new Font("Segoe UI", 12F);
             txtSource.Location = new Point(178, 11);
             txtSource.Margin = new Padding(2);
             txtSource.Name = "txtSource";
@@ -78,21 +75,16 @@
             // btnSource
             // 
             btnSource.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSource.BackColor = Color.SlateBlue;
-            btnSource.Font = new Font("Segoe UI", 12F);
-            btnSource.ForeColor = SystemColors.Control;
             btnSource.Location = new Point(749, 11);
             btnSource.Margin = new Padding(2);
             btnSource.Name = "btnSource";
             btnSource.Size = new Size(110, 30);
             btnSource.TabIndex = 2;
             btnSource.Text = "選擇來源";
-            btnSource.UseVisualStyleBackColor = false;
             btnSource.Click += btnSource_Click;
             // 
             // lbDest
             // 
-            lbDest.Font = new Font("Segoe UI", 12F);
             lbDest.Location = new Point(11, 50);
             lbDest.Margin = new Padding(2, 0, 2, 0);
             lbDest.Name = "lbDest";
@@ -104,7 +96,6 @@
             // txtDest
             // 
             txtDest.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtDest.Font = new Font("Segoe UI", 12F);
             txtDest.Location = new Point(178, 52);
             txtDest.Margin = new Padding(2);
             txtDest.Name = "txtDest";
@@ -115,22 +106,16 @@
             // btnDest
             // 
             btnDest.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnDest.BackColor = Color.RoyalBlue;
-            btnDest.Font = new Font("Segoe UI", 12F);
-            btnDest.ForeColor = SystemColors.Control;
             btnDest.Location = new Point(749, 52);
             btnDest.Margin = new Padding(2);
             btnDest.Name = "btnDest";
             btnDest.Size = new Size(110, 30);
             btnDest.TabIndex = 5;
             btnDest.Text = "選擇目標";
-            btnDest.UseVisualStyleBackColor = false;
             btnDest.Click += btnDest_Click;
             // 
             // lbtxtIgnoreFolders
             // 
-            lbtxtIgnoreFolders.Font = new Font("Segoe UI", 12F);
-            lbtxtIgnoreFolders.ForeColor = Color.FromArgb(51, 51, 51);
             lbtxtIgnoreFolders.Location = new Point(11, 96);
             lbtxtIgnoreFolders.Margin = new Padding(2, 0, 2, 0);
             lbtxtIgnoreFolders.Name = "lbtxtIgnoreFolders";
@@ -142,7 +127,6 @@
             // txtIgnoreFolders
             // 
             txtIgnoreFolders.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtIgnoreFolders.Font = new Font("Segoe UI", 12F);
             txtIgnoreFolders.Location = new Point(178, 96);
             txtIgnoreFolders.Margin = new Padding(2);
             txtIgnoreFolders.Multiline = true;
@@ -154,7 +138,6 @@
             // txtIgnoreFiles
             // 
             txtIgnoreFiles.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtIgnoreFiles.Font = new Font("Segoe UI", 12F);
             txtIgnoreFiles.Location = new Point(178, 249);
             txtIgnoreFiles.Margin = new Padding(2);
             txtIgnoreFiles.Multiline = true;
@@ -165,8 +148,6 @@
             // 
             // lbtxtIgnoreFiles
             // 
-            lbtxtIgnoreFiles.Font = new Font("Segoe UI", 12F);
-            lbtxtIgnoreFiles.ForeColor = Color.FromArgb(51, 51, 51);
             lbtxtIgnoreFiles.Location = new Point(11, 247);
             lbtxtIgnoreFiles.Margin = new Padding(2, 0, 2, 0);
             lbtxtIgnoreFiles.Name = "lbtxtIgnoreFiles";
@@ -178,7 +159,6 @@
             // txtSiteDelay
             // 
             txtSiteDelay.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtSiteDelay.Font = new Font("Segoe UI", 12F);
             txtSiteDelay.Margin = new Padding(2);
             txtSiteDelay.PlaceholderText = "站台更新延遲毫秒";
             txtSiteDelay.Location = new Point(178, 401);
@@ -189,21 +169,16 @@
             // btnSave
             // 
             btnSave.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSave.BackColor = Color.RoyalBlue;
-            btnSave.Font = new Font("Segoe UI", 12F);
-            btnSave.ForeColor = SystemColors.Control;
             btnSave.Location = new Point(755, 366);
             btnSave.Margin = new Padding(2);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(110, 30);
             btnSave.TabIndex = 10;
             btnSave.Text = "保存";
-            btnSave.UseVisualStyleBackColor = false;
             btnSave.Click += btnSave_Click;
             // 
             // lbSiteDelay
             // 
-            lbSiteDelay.Font = new Font("Segoe UI", 12F);
             lbSiteDelay.Location = new Point(10, 401);
             lbSiteDelay.Margin = new Padding(2, 0, 2, 0);
             lbSiteDelay.Name = "lbSiteDelay";

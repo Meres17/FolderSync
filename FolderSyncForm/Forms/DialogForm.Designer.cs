@@ -40,7 +40,6 @@
             // 
             lblMessage.Width = 500;
             lblMessage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            lblMessage.Font = new Font("微軟正黑體", 12F);
             lblMessage.Location = new Point(12, 9);
             lblMessage.Name = "lblMessage";
             lblMessage.Size = new Size(213, 86);
@@ -50,27 +49,21 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnOK.BackColor = Color.LightBlue;
-            btnOK.Font = new Font("微軟正黑體", 12F);
             btnOK.Location = new Point(60, 98);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(107, 30);
             btnOK.TabIndex = 1;
             btnOK.Text = "確定";
-            btnOK.UseVisualStyleBackColor = false;
             btnOK.Click += BtnOK_Click;
             // 
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnCancel.BackColor = Color.LightCoral;
-            btnCancel.Font = new Font("微軟正黑體", 12F);
             btnCancel.Location = new Point(60, 134);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(107, 30);
             btnCancel.TabIndex = 2;
             btnCancel.Text = "取消";
-            btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Visible = false;
             btnCancel.Click += BtnCancel_Click;
             // 
