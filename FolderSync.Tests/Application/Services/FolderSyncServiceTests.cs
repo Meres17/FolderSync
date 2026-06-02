@@ -138,8 +138,9 @@ namespace FolderSync.Tests.Application.Services
             var scanner = Substitute.For<IFolderScanner>();
             var factory = Substitute.For<IFolderSynchronizerFactory>();
             var backups = Substitute.For<IBackupRepository>();
-            var ignore = new IgnorePolicy(Array.Empty<string>(), Array.Empty<string>());
-            var diff = new FolderDiffService(scanner, new FolderComparer(), ignore);
+            var repo = Substitute.For<IAppSettingsRepository>();
+            repo.Load().Returns(new AppSettings());
+            var diff = new FolderDiffService(scanner, new FolderComparer(), new AppSettingsProvider(repo));
             var sync = new FolderSynchronizationService(factory, backups);
             var sut = new FolderSyncService(diff, sync);
             return (sut, scanner, factory, backups);

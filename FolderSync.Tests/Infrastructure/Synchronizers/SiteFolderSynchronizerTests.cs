@@ -14,7 +14,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         {
             // Arrange
             var inner = FakeInner();
-            var sut = new SiteFolderSynchronizer(inner, FakeSite(), AppSettings.Empty());
+            var sut = new SiteFolderSynchronizer(inner, FakeSite(), 0);
 
             // Act
             await sut.ApplyAsync(Enumerable.Empty<FileStatus>().ToList(), SourceDir, DestDir);
@@ -28,7 +28,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         {
             // Arrange
             var inner = FakeInner();
-            var sut = new SiteFolderSynchronizer(inner, FakeSite(), AppSettings.Empty());
+            var sut = new SiteFolderSynchronizer(inner, FakeSite(), 0);
 
             // Act
             await sut.RollbackAsync(BackupDir, DestDir);
@@ -41,7 +41,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         public async Task ApplyAsync_透過WithSiteOffline操作站台()
         {
             // Arrange
-            var sut = Substitute.For<SiteFolderSynchronizer>(FakeInner(), FakeSite(), AppSettings.Empty());
+            var sut = Substitute.For<SiteFolderSynchronizer>(FakeInner(), FakeSite(), 0);
 
             // Act
             await sut.ApplyAsync(new List<FileStatus>(), SourceDir, DestDir);
@@ -54,7 +54,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         public async Task RollbackAsync_透過WithSiteOffline操作站台()
         {
             // Arrange
-            var sut = Substitute.For<SiteFolderSynchronizer>(FakeInner(), FakeSite(), AppSettings.Empty());
+            var sut = Substitute.For<SiteFolderSynchronizer>(FakeInner(), FakeSite(), 0);
 
             // Act
             await sut.RollbackAsync(BackupDir, DestDir);
@@ -68,7 +68,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         {
             // Arrange
             var site = FakeSite();
-            var sut = new SiteFolderSynchronizer(FakeInner(), site, AppSettings.Empty());
+            var sut = new SiteFolderSynchronizer(FakeInner(), site, 0);
 
             // Act
             await sut.WithSiteOfflineAsync(DestDir, () => Task.CompletedTask);
@@ -83,7 +83,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         {
             // Arrange
             var site = FakeSite();
-            var sut = new SiteFolderSynchronizer(FakeInner(), site, AppSettings.Empty());
+            var sut = new SiteFolderSynchronizer(FakeInner(), site, 0);
             site.When(x => x.TakeOffline(Arg.Any<string>())).Do(x => throw new Exception("離線失敗"));
 
             // Act & Assert
@@ -97,7 +97,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         {
             // Arrange
             var site = FakeSite();
-            var sut = new SiteFolderSynchronizer(FakeInner(), site, AppSettings.Empty());
+            var sut = new SiteFolderSynchronizer(FakeInner(), site, 0);
 
             // Act & Assert
             await Assert.ThrowsAsync<Exception>(

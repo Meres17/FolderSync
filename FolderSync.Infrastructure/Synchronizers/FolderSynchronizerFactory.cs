@@ -1,12 +1,11 @@
-﻿
 namespace FolderSync.Infrastructure.Synchronizers
 {
     public class FolderSynchronizerFactory : IFolderSynchronizerFactory
     {
         private readonly IBackupRepository _backups;
-        private readonly AppSettings _settings;
+        private readonly AppSettingsProvider _settings;
 
-        public FolderSynchronizerFactory(IBackupRepository backups, AppSettings settings)
+        public FolderSynchronizerFactory(IBackupRepository backups, AppSettingsProvider settings)
         {
             _backups = backups ?? throw new ArgumentNullException(nameof(backups));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -19,7 +18,7 @@ namespace FolderSync.Infrastructure.Synchronizers
             return mode switch
             {
                 SyncMode.資料夾 => new FolderSynchronizer(_backups),
-                SyncMode.站台 => new SiteFolderSynchronizer(new FolderSynchronizer(_backups), new SiteController(), _settings),
+                SyncMode.站台 => new SiteFolderSynchronizer(new FolderSynchronizer(_backups), new SiteController(), _settings.Current.SiteDelay),
                 _ => throw new NotSupportedException($"不支援的同步模式：{mode}")
             };
         }

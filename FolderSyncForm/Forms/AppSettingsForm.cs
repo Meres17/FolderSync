@@ -16,10 +16,10 @@ namespace FolderSyncForm.Forms
             InitializeComponent();
         }
 
-        public AppSettingsForm(IAppSettingsRepository repository, AppSettingsService service)
+        public AppSettingsForm(AppSettingsService service, AppSettingsProvider settings)
         {
             InitializeComponent();
-            var appSettings = repository.Load();
+            var appSettings = settings.Current;
             txtSource.Text = appSettings.Source;
             txtDest.Text = appSettings.Dest;
             txtIgnoreFolders.Text = string.Join(Environment.NewLine, appSettings.IgnoreFolders);

@@ -1,4 +1,3 @@
-﻿
 using FolderSyncForm.Extensions;
 using FolderSyncForm.Helpers;
 
@@ -6,10 +5,9 @@ namespace FolderSyncForm.Forms
 {
     public partial class FolderSyncForm : System.Windows.Forms.Form
     {
-        private readonly Func<FolderSyncService> _serviceFactory = default!;
-        private readonly Func<AppSettings> _settingsFactory = default!;
-        private readonly Func<AppSettingsForm> _settingsFormFactory = default!;
-        private FolderSyncService _service = default!;
+        private readonly FolderSyncService _service = default!;
+        private readonly AppSettingsProvider _settings = default!;
+        private readonly AppSettingsService _settingsService = default!;
         private string _source => txtSource.Text;
         private string _dest => txtDest.Text;
         private SyncMode _mode => cbType.SelectedItem is SyncMode mode ? mode : SyncMode.資料夾;
@@ -22,29 +20,22 @@ namespace FolderSyncForm.Forms
             InitializeComponent();
         }
 
-        public FolderSyncForm(
-            Func<FolderSyncService> serviceFactory,
-            Func<AppSettings> settingsFactory,
-            Func<AppSettingsForm> settingsFormFactory)
+        public FolderSyncForm(FolderSyncService service, AppSettingsProvider settings, AppSettingsService settingsService)
         {
-            _serviceFactory = serviceFactory;
-            _settingsFactory = settingsFactory;
-            _settingsFormFactory = settingsFormFactory;
+            _service = service;
+            _settings = settings;
+            _settingsService = settingsService;
 
             InitializeComponent();
-            InitForm();
+            cbType.DataSource = _service.GetSyncModes().ToList();
+            RefreshFromSettings();
             FormTheme.Apply(this);
         }
 
-        private void InitForm()
+        private void RefreshFromSettings()
         {
-            var settings = _settingsFactory();
-            _service = _serviceFactory();
-
-            txtSource.Text = settings.Source;
-            txtDest.Text = settings.Dest;
-
-            cbType.DataSource = _service.GetSyncModes().ToList();
+            txtSource.Text = _settings.Current.Source;
+            txtDest.Text = _settings.Current.Dest;
         }
 
         private void btnSource_Click(object sender, EventArgs e)
@@ -167,7 +158,7 @@ namespace FolderSyncForm.Forms
         {
             if (gv.SelectedRows.Count == 0)
             {
-                throw new Exception("請選擇備份紀錄");
+                throw new DomainException("請選擇備份紀錄");
             }
 
             return gv.SelectedRows
@@ -180,10 +171,10 @@ namespace FolderSyncForm.Forms
 
         private void btnOpenSettings_Click(object sender, EventArgs e)
         {
-            var form = _settingsFormFactory();
+            using var form = new AppSettingsForm(_settingsService, _settings);
             if (form.ShowDialog() == DialogResult.OK)
             {
-                InitForm();
+                RefreshFromSettings();
             }
         }
     }

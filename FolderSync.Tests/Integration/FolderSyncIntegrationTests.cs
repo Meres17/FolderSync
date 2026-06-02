@@ -52,7 +52,8 @@ namespace FolderSync.Tests.Integration
             SeedScenario();
             var scanner = new FolderScanner();
             var backups = new FileSystemBackupRepository(scanner);
-            var synchronizer = new FolderSynchronizerFactory(backups, new AppSettings()).Create(SyncMode.資料夾);
+            var settings = new AppSettingsProvider(new JsonAppSettingsRepository(Path.Combine(_root, "appsettings.json")));
+            var synchronizer = new FolderSynchronizerFactory(backups, settings).Create(SyncMode.資料夾);
             var diff = new FolderComparer().Compare(
                 scanner.Scan(_source), scanner.Scan(_dest), IgnorePolicy.From(new AppSettings()));
 

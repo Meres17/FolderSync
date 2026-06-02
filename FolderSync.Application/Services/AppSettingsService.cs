@@ -6,10 +6,12 @@ namespace FolderSync.Application.Services
         //無效字元
         private readonly char[] _invalidChars = new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
         private readonly IAppSettingsRepository _repository;
+        private readonly AppSettingsProvider _provider;
 
-        public AppSettingsService(IAppSettingsRepository repository)
+        public AppSettingsService(IAppSettingsRepository repository, AppSettingsProvider provider)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
         public void Save(string source, string dest, string ignoreFolders, string ignoreFiles, string siteDelayText)
@@ -21,6 +23,7 @@ namespace FolderSync.Application.Services
 
             var appSettings = ToAppSettings(source, dest, ignoreFolders, ignoreFiles, siteDelayText);
             _repository.Save(appSettings);
+            _provider.Reload();
         }
 
         private AppSettings ToAppSettings(string source, string dest, string ignoreFolders, string ignoreFiles, string siteDelayText)

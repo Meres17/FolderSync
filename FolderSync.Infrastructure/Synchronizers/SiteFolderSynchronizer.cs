@@ -1,17 +1,16 @@
-﻿
 namespace FolderSync.Infrastructure.Synchronizers
 {
     internal class SiteFolderSynchronizer : IFolderSynchronizer
     {
         private readonly IFolderSynchronizer _inner;
         private readonly ISiteController _site;
-        private readonly AppSettings _settings;
+        private readonly int _offlineDelayMs;
 
-        public SiteFolderSynchronizer(IFolderSynchronizer inner, ISiteController site, AppSettings settings)
+        public SiteFolderSynchronizer(IFolderSynchronizer inner, ISiteController site, int offlineDelayMs)
         {
             _inner = inner ?? throw new ArgumentNullException(nameof(inner));
             _site = site ?? throw new ArgumentNullException(nameof(site));
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _offlineDelayMs = offlineDelayMs;
         }
 
         public Task ApplyAsync(IReadOnlyList<FileStatus> changes, string sourceDir, string destDir)
@@ -29,7 +28,7 @@ namespace FolderSync.Infrastructure.Synchronizers
             try
             {
                 _site.TakeOffline(siteDir);
-                await Task.Delay(_settings.SiteDelay);
+                await Task.Delay(_offlineDelayMs);
                 await action();
             }
             finally
