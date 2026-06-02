@@ -4,53 +4,40 @@ namespace FolderSync.Application
 {
     public class FolderSyncService
     {
-        private readonly IFolderScanner _scanner;
-        private readonly FolderComparer _comparer;
-        private readonly IgnorePolicy _ignore;
-        private readonly IBackupRepository _backups;
-        private readonly IFolderSynchronizerFactory _factory;
+        private readonly FolderDiffService _diff;
+        private readonly FolderSynchronizationService _sync;
 
-        public FolderSyncService(
-            IFolderScanner scanner,
-            FolderComparer comparer,
-            IgnorePolicy ignore,
-            IBackupRepository backups,
-            IFolderSynchronizerFactory factory)
+        public FolderSyncService(FolderDiffService diff, FolderSynchronizationService sync)
         {
-            _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
-            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
-            _ignore = ignore ?? throw new ArgumentNullException(nameof(ignore));
-            _backups = backups ?? throw new ArgumentNullException(nameof(backups));
-            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            _diff = diff ?? throw new ArgumentNullException(nameof(diff));
+            _sync = sync ?? throw new ArgumentNullException(nameof(sync));
         }
 
         public IReadOnlyList<SyncMode> GetSyncModes()
         {
-            return _factory.Modes;
+            return _sync.Modes;
         }
 
         public List<FileStatus> GetDiffFiles(string sourceDir, string destDir)
         {
-            var source = _scanner.Scan(sourceDir);
-            var dest = _scanner.Scan(destDir);
-            return _comparer.Compare(source, dest, _ignore);
+            return _diff.GetDiff(sourceDir, destDir);
         }
 
         public List<BackupFolder> GetBackupFolders(string sourceDir, string destDir)
         {
-            return _backups.ListBackups(sourceDir, destDir).ToList();
+            return _sync.ListBackups(sourceDir, destDir).ToList();
         }
 
         public Task ApplyAsync(string sourceDir, string destDir, SyncMode mode)
         {
-            var changes = GetDiffFiles(sourceDir, destDir);
-            return _factory.Create(mode).ApplyAsync(changes, sourceDir, destDir);
+            var changes = _diff.GetDiff(sourceDir, destDir);
+            return _sync.ApplyAsync(changes, sourceDir, destDir, mode);
         }
 
         public Task RollbackAsync(IReadOnlyList<BackupFolder> selected, string destDir, SyncMode mode)
         {
             var backupDir = SingleBackupPath(selected);
-            return _factory.Create(mode).RollbackAsync(backupDir, destDir);
+            return _sync.RollbackAsync(backupDir, destDir, mode);
         }
 
         public void DeleteBackups(IReadOnlyList<BackupFolder> selected)
@@ -62,7 +49,7 @@ namespace FolderSync.Application
 
             foreach (var folder in selected)
             {
-                _backups.Delete(folder.完整路徑);
+                _sync.DeleteBackup(folder.完整路徑);
             }
         }
 

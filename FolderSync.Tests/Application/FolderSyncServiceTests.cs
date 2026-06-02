@@ -141,7 +141,9 @@ namespace FolderSync.Tests.Application
             var factory = Substitute.For<IFolderSynchronizerFactory>();
             var backups = Substitute.For<IBackupRepository>();
             var ignore = new IgnorePolicy(Array.Empty<string>(), Array.Empty<string>());
-            var sut = new FolderSyncService(scanner, new FolderComparer(), ignore, backups, factory);
+            var diff = new FolderDiffService(scanner, new FolderComparer(), ignore);
+            var sync = new FolderSynchronizationService(factory, backups);
+            var sut = new FolderSyncService(diff, sync);
             return (sut, scanner, factory, backups);
         }
     }

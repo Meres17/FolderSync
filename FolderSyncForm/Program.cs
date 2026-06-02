@@ -33,6 +33,8 @@ namespace FolderSyncForm
             services.AddSingleton<IFolderScanner, FolderScanner>();
             services.AddTransient<IBackupRepository, FileSystemBackupRepository>();
             services.AddTransient<IFolderSynchronizerFactory, FolderSynchronizerFactory>();
+            services.AddTransient<FolderDiffService>();
+            services.AddTransient<FolderSynchronizationService>();
             services.AddTransient<FolderSyncService>();
             services.AddTransient<AppSettingsService>();
             services.AddTransient<AppSettingsForm>();
