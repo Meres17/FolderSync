@@ -28,8 +28,11 @@ namespace FolderSyncForm
 
             services.AddSingleton<IAppSettingsRepository, JsonAppSettingsRepository>();
             services.AddTransient(sp => sp.GetRequiredService<IAppSettingsRepository>().Load());
-            services.AddTransient<IFolderReader, FolderReader>();
-            services.AddTransient<IFolderControlFactory, FolderControlFactory>();
+            services.AddTransient(sp => IgnorePolicy.From(sp.GetRequiredService<AppSettings>()));
+            services.AddSingleton<FolderComparer>();
+            services.AddSingleton<IFolderScanner, FolderScanner>();
+            services.AddTransient<IBackupRepository, FileSystemBackupRepository>();
+            services.AddTransient<IFolderSynchronizerFactory, FolderSynchronizerFactory>();
             services.AddTransient<FolderSyncService>();
             services.AddTransient<AppSettingsService>();
             services.AddTransient<AppSettingsForm>();

@@ -151,7 +151,7 @@ namespace FolderSyncForm
             cbType.Name = "cbType";
             cbType.Size = new Size(110, 29);
             cbType.TabIndex = 6;
-            toolTip.SetToolTip(cbType, ".NET站台模式 先關閉站台再操作資料夾\r\n資料夾模式 直接操作資料夾");
+            toolTip.SetToolTip(cbType, "站台模式 先讓 .NET 站台離線再操作資料夾\r\n資料夾模式 直接操作資料夾");
             // 
             // btnCompare
             // 

@@ -7,6 +7,8 @@ namespace FolderSync.Tests.Application
 {
     public class AppSettingsServiceTests
     {
+        // 註：忽略名稱含無效字元時改拋 DomainException
+
         [Fact]
         public void Save_有效輸入_儲存對應設定()
         {
@@ -34,7 +36,7 @@ namespace FolderSync.Tests.Application
             var sut = new AppSettingsService(repo);
 
             // Act & Assert
-            Assert.Throws<Exception>(() => sut.Save("", "", "bad:name", "", "0"));
+            Assert.Throws<DomainException>(() => sut.Save("", "", "bad:name", "", "0"));
             repo.DidNotReceive().Save(Arg.Any<AppSettings>());
         }
 

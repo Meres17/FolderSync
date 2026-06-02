@@ -13,7 +13,6 @@ namespace FolderSync.Tests.Domain
         public void GetState_測試不同的時間組合(string? sourceTimeStr, string? destTimeStr, CompareState expect)
         {
             // Arrange
-
             DateTime? sourceTime = ToDateTime(sourceTimeStr);
             DateTime? destTime = ToDateTime(destTimeStr);
 
@@ -24,6 +23,21 @@ namespace FolderSync.Tests.Domain
 
             // Assert
             Assert.Equal(expect, result);
+        }
+
+        [Theory]
+        [InlineData(FileSide.來源, "source/test.txt")]
+        [InlineData(FileSide.目標, "dest/test.txt")]
+        public void PathOf_回傳對應側的路徑(FileSide side, string expected)
+        {
+            // Arrange
+            var sut = new FileStatus("test.txt", "source/test.txt", null, "dest/test.txt", null);
+
+            // Act
+            var result = sut.PathOf(side);
+
+            // Assert
+            Assert.Equal(expected, result);
         }
 
         private static DateTime? ToDateTime(string? sourceTimeStr)

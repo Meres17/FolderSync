@@ -28,6 +28,14 @@ namespace FolderSync.Domain
             };
         }
 
+        /// <summary>
+        /// 取得指定側的實體路徑，供複製時選用來源或目標。
+        /// </summary>
+        public string? PathOf(FileSide side)
+        {
+            return side == FileSide.來源 ? 來源路徑 : 目標路徑;
+        }
+
         public virtual CompareState 狀態 { get; }
         public string 檔名 { get; } = "";
         public virtual string 相對路徑 { get; } = "";

@@ -61,7 +61,7 @@ namespace FolderSync.Application
                 {
                     if (name.Contains(invalidChar))
                     {
-                        throw new Exception($"「{name}」有無效符號「{invalidChar}」");
+                        throw new DomainException($"「{name}」有無效符號「{invalidChar}」");
                     }
                 }
             }

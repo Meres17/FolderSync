@@ -4,10 +4,10 @@ using FolderSync.Infrastructure;
 namespace FolderSync.Tests.Integration
 {
     /// <summary>
-    /// 以真實檔案系統驗證比對、更新與還原的端到端行為。
-    /// 同一類別的測試會循序執行，避免共用目前工作目錄造成干擾。
+    /// 以真實檔案系統驗證掃描、比對、套用與還原的端到端行為。
+    /// 同一類別的測試循序執行，避免共用目前工作目錄造成干擾。
     /// </summary>
-    public class FolderControlIntegrationTests : IDisposable
+    public class FolderSyncIntegrationTests : IDisposable
     {
         private static readonly DateTime OldTime = new(2023, 1, 1, 9, 0, 0);
         private static readonly DateTime NewTime = new(2023, 6, 1, 9, 0, 0);
@@ -17,7 +17,7 @@ namespace FolderSync.Tests.Integration
         private readonly string _source;
         private readonly string _dest;
 
-        public FolderControlIntegrationTests()
+        public FolderSyncIntegrationTests()
         {
             _originalCurrentDir = Directory.GetCurrentDirectory();
             _root = Path.Combine(Path.GetTempPath(), "FolderSyncTest_" + Guid.NewGuid().ToString("N"));
@@ -30,14 +30,15 @@ namespace FolderSync.Tests.Integration
         }
 
         [Fact]
-        public void GetDiffFiles_回傳新增刪除與時間不同的檔案()
+        public void Compare_回傳新增刪除與時間不同的檔案()
         {
             // Arrange
             SeedScenario();
-            var reader = new FolderReader(AppSettings.Empty());
+            var scanner = new FolderScanner();
 
             // Act
-            var diff = reader.GetDiffFiles(_source, _dest);
+            var diff = new FolderComparer().Compare(
+                scanner.Scan(_source), scanner.Scan(_dest), IgnorePolicy.From(new AppSettings()));
 
             // Assert
             Assert.Equal(3, diff.Count);
@@ -47,16 +48,18 @@ namespace FolderSync.Tests.Integration
         }
 
         [Fact]
-        public void Overwrite後再Restore_目標資料夾還原到更新前()
+        public async Task ApplyThenRollback_目標資料夾還原到更新前()
         {
             // Arrange
             SeedScenario();
-            var reader = new FolderReader(AppSettings.Empty());
-            var control = new FolderControlFactory(reader, AppSettings.Empty()).CreateControl("資料夾");
+            var scanner = new FolderScanner();
+            var backups = new FileSystemBackupRepository(scanner);
+            var synchronizer = new FolderSynchronizerFactory(backups, new AppSettings()).Create(SyncMode.資料夾);
+            var diff = new FolderComparer().Compare(
+                scanner.Scan(_source), scanner.Scan(_dest), IgnorePolicy.From(new AppSettings()));
 
-            // Act：更新
-            var diff = reader.GetDiffFiles(_source, _dest);
-            control.Overwrite(diff, _source, _dest);
+            // Act：套用
+            await synchronizer.ApplyAsync(diff, _source, _dest);
 
             // Assert：目標已套用來源差異
             Assert.Equal("SRC-A", File.ReadAllText(Path.Combine(_dest, "a.txt")));
@@ -64,8 +67,8 @@ namespace FolderSync.Tests.Integration
             Assert.False(File.Exists(Path.Combine(_dest, "c.txt")));
 
             // Act：還原
-            var backup = reader.GetBackupFolders(_source, _dest).Single();
-            control.Restore(backup.完整路徑, _dest);
+            var backup = backups.ListBackups(_source, _dest).Single();
+            await synchronizer.RollbackAsync(backup.完整路徑, _dest);
 
             // Assert：目標回到更新前
             Assert.Equal("DST-A", File.ReadAllText(Path.Combine(_dest, "a.txt")));

@@ -7,175 +7,142 @@ namespace FolderSync.Tests.Application
 {
     public class FolderSyncServiceTests
     {
-        private const string SourceDir = "sourceDir";
-        private const string DestDir = "destDir";
-        private const string Type = "資料夾";
+        private const string Src = "src";
+        private const string Dst = "dst";
 
         [Fact]
-        public void GetNames_委派給Factory()
+        public void GetSyncModes_委派給Factory()
         {
             // Arrange
-            var reader = Substitute.For<IFolderReader>();
-            var factory = Substitute.For<IFolderControlFactory>();
-            factory.GetNames().Returns(new[] { "a", "b" });
-            var sut = new FolderSyncService(reader, factory);
-
-            // Act
-            var result = sut.GetNames();
-
-            // Assert
-            Assert.Equal(new[] { "a", "b" }, result);
-        }
-
-        [Fact]
-        public void GetDiffFiles_委派給Reader()
-        {
-            // Arrange
-            var reader = Substitute.For<IFolderReader>();
-            var factory = Substitute.For<IFolderControlFactory>();
-            var files = new List<FileStatus>();
-            reader.GetDiffFiles(SourceDir, DestDir).Returns(files);
-            var sut = new FolderSyncService(reader, factory);
-
-            // Act
-            var result = sut.GetDiffFiles(SourceDir, DestDir);
-
-            // Assert
-            Assert.Same(files, result);
-        }
-
-        [Fact]
-        public void Overwrite_取得差異後呼叫Control的Overwrite()
-        {
-            // Arrange
-            var reader = Substitute.For<IFolderReader>();
-            var factory = Substitute.For<IFolderControlFactory>();
-            var control = Substitute.For<IFolderControl>();
-            var files = new List<FileStatus>();
-            reader.GetDiffFiles(SourceDir, DestDir).Returns(files);
-            factory.CreateControl(Type).Returns(control);
-            var sut = new FolderSyncService(reader, factory);
-
-            // Act
-            sut.Overwrite(SourceDir, DestDir, Type);
-
-            // Assert
-            control.Received(1).Overwrite(files, SourceDir, DestDir);
-        }
-
-        [Fact]
-        public void Restore_沒有選取_拋出例外()
-        {
-            // Arrange
-            var sut = NewService(out _, out _, out _);
+            var (sut, _, factory, _) = NewService();
+            factory.Modes.Returns(new[] { SyncMode.資料夾, SyncMode.站台 });
 
             // Act & Assert
-            Assert.Throws<Exception>(() => sut.Restore(new List<BackupFolder>(), DestDir, Type));
+            Assert.Equal(new[] { SyncMode.資料夾, SyncMode.站台 }, sut.GetSyncModes());
         }
 
         [Fact]
-        public void Restore_選取多筆_拋出例外()
+        public void GetDiffFiles_掃描來源與目標後比對產生差異()
         {
             // Arrange
-            var sut = NewService(out _, out _, out _);
-            var selected = new List<BackupFolder> { new("a"), new("b") };
+            var (sut, scanner, _, _) = NewService();
+            scanner.Scan(Src).Returns(new[] { Snap("a.txt") });
+            scanner.Scan(Dst).Returns(Array.Empty<FileSnapshot>());
 
-            // Act & Assert
-            var ex = Assert.Throws<Exception>(() => sut.Restore(selected, DestDir, Type));
-            Assert.Equal("要還原的檔案只能選一個", ex.Message);
+            // Act
+            var diff = sut.GetDiffFiles(Src, Dst);
+
+            // Assert
+            Assert.Single(diff);
+            Assert.Equal(CompareState.新增檔案, diff[0].狀態);
         }
 
         [Fact]
-        public void Restore_選取一筆_呼叫Control的Restore()
+        public async Task ApplyAsync_取得差異後呼叫Synchronizer的ApplyAsync()
         {
             // Arrange
-            var sut = NewService(out _, out var factory, out var control);
-            factory.CreateControl(Type).Returns(control);
+            var (sut, scanner, factory, _) = NewService();
+            scanner.Scan(Src).Returns(new[] { Snap("a.txt") });
+            scanner.Scan(Dst).Returns(Array.Empty<FileSnapshot>());
+            var sync = Substitute.For<IFolderSynchronizer>();
+            factory.Create(SyncMode.資料夾).Returns(sync);
+
+            // Act
+            await sut.ApplyAsync(Src, Dst, SyncMode.資料夾);
+
+            // Assert
+            await sync.Received(1).ApplyAsync(Arg.Is<IReadOnlyList<FileStatus>>(x => x.Count == 1), Src, Dst);
+        }
+
+        [Fact]
+        public async Task RollbackAsync_選取一筆_呼叫Synchronizer的RollbackAsync()
+        {
+            // Arrange
+            var (sut, _, factory, _) = NewService();
+            var sync = Substitute.For<IFolderSynchronizer>();
+            factory.Create(SyncMode.站台).Returns(sync);
             var selected = new List<BackupFolder> { new("C:\\backup\\20230101_1200") };
 
             // Act
-            sut.Restore(selected, DestDir, Type);
+            await sut.RollbackAsync(selected, Dst, SyncMode.站台);
 
             // Assert
-            control.Received(1).Restore("C:\\backup\\20230101_1200", DestDir);
+            await sync.Received(1).RollbackAsync("C:\\backup\\20230101_1200", Dst);
         }
 
         [Fact]
-        public void DeleteBackups_沒有選取_拋出例外()
+        public async Task RollbackAsync_沒有選取_拋出DomainException()
         {
             // Arrange
-            var sut = NewService(out _, out _, out _);
+            var (sut, _, _, _) = NewService();
 
             // Act & Assert
-            Assert.Throws<Exception>(() => sut.DeleteBackups(new List<BackupFolder>()));
+            await Assert.ThrowsAsync<DomainException>(
+                () => sut.RollbackAsync(new List<BackupFolder>(), Dst, SyncMode.資料夾));
+        }
+
+        [Fact]
+        public async Task RollbackAsync_選取多筆_拋出DomainException()
+        {
+            // Arrange
+            var (sut, _, _, _) = NewService();
+            var selected = new List<BackupFolder> { new("a"), new("b") };
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<DomainException>(
+                () => sut.RollbackAsync(selected, Dst, SyncMode.資料夾));
+            Assert.Equal("要還原的檔案只能選一個", ex.Message);
         }
 
         [Fact]
         public void DeleteBackups_逐筆刪除()
         {
             // Arrange
-            var sut = NewService(out var reader, out _, out _);
+            var (sut, _, _, backups) = NewService();
             var selected = new List<BackupFolder> { new("a"), new("b") };
 
             // Act
             sut.DeleteBackups(selected);
 
             // Assert
-            reader.Received(1).DeleteBackupFolder("a");
-            reader.Received(1).DeleteBackupFolder("b");
+            backups.Received(1).Delete("a");
+            backups.Received(1).Delete("b");
         }
 
         [Fact]
-        public async Task OverwriteAsync_取得差異後呼叫AsyncControl的OverwriteAsync()
+        public void DeleteBackups_沒有選取_拋出DomainException()
         {
             // Arrange
-            var reader = Substitute.For<IFolderReader>();
-            var factory = Substitute.For<IFolderControlFactory>();
-            var control = Substitute.For<IAsyncFolderControl>();
-            var files = new List<FileStatus>();
-            reader.GetDiffFiles(SourceDir, DestDir).Returns(files);
-            factory.CreateAsyncControl(Type).Returns(control);
-            var sut = new FolderSyncService(reader, factory);
-
-            // Act
-            await sut.OverwriteAsync(SourceDir, DestDir, Type);
-
-            // Assert
-            await control.Received(1).OverwriteAsync(files, SourceDir, DestDir);
-        }
-
-        [Fact]
-        public async Task RestoreAsync_選取一筆_呼叫AsyncControl的RestoreAsync()
-        {
-            // Arrange
-            var sut = NewService(out _, out var factory, out _);
-            var asyncControl = Substitute.For<IAsyncFolderControl>();
-            factory.CreateAsyncControl(Type).Returns(asyncControl);
-            var selected = new List<BackupFolder> { new("C:\\backup\\20230101_1200") };
-
-            // Act
-            await sut.RestoreAsync(selected, DestDir, Type);
-
-            // Assert
-            await asyncControl.Received(1).RestoreAsync("C:\\backup\\20230101_1200", DestDir);
-        }
-
-        [Fact]
-        public async Task RestoreAsync_沒有選取_拋出例外()
-        {
-            // Arrange
-            var sut = NewService(out _, out _, out _);
+            var (sut, _, _, _) = NewService();
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => sut.RestoreAsync(new List<BackupFolder>(), DestDir, Type));
+            Assert.Throws<DomainException>(() => sut.DeleteBackups(new List<BackupFolder>()));
         }
 
-        private static FolderSyncService NewService(out IFolderReader reader, out IFolderControlFactory factory, out IFolderControl control)
+        [Fact]
+        public void GetBackupFolders_委派給Backups()
         {
-            reader = Substitute.For<IFolderReader>();
-            factory = Substitute.For<IFolderControlFactory>();
-            control = Substitute.For<IFolderControl>();
-            return new FolderSyncService(reader, factory);
+            // Arrange
+            var (sut, _, _, backups) = NewService();
+            backups.ListBackups(Src, Dst).Returns(new List<BackupFolder> { new("a") });
+
+            // Act & Assert
+            Assert.Single(sut.GetBackupFolders(Src, Dst));
+        }
+
+        private static FileSnapshot Snap(string relativePath)
+        {
+            return new FileSnapshot(relativePath, "full\\" + relativePath, new DateTime(2023, 1, 1));
+        }
+
+        private static (FolderSyncService, IFolderScanner, IFolderSynchronizerFactory, IBackupRepository) NewService()
+        {
+            var scanner = Substitute.For<IFolderScanner>();
+            var factory = Substitute.For<IFolderSynchronizerFactory>();
+            var backups = Substitute.For<IBackupRepository>();
+            var ignore = new IgnorePolicy(Array.Empty<string>(), Array.Empty<string>());
+            var sut = new FolderSyncService(scanner, new FolderComparer(), ignore, backups, factory);
+            return (sut, scanner, factory, backups);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace FolderSyncForm
         private FolderSyncService _service = default!;
         private string _source => txtSource.Text;
         private string _dest => txtDest.Text;
-        private string _type => cbType.Text;
+        private SyncMode _mode => cbType.SelectedItem is SyncMode mode ? mode : SyncMode.資料夾;
 
         /// <summary>
         /// 設計工具專用建構子，執行期請使用 DI 注入的多參數建構子。
@@ -46,9 +46,7 @@ namespace FolderSyncForm
             txtSource.Text = settings.Source;
             txtDest.Text = settings.Dest;
 
-            cbType.Items.Clear();
-            cbType.Items.AddRange(_service.GetNames());
-            cbType.SelectedIndex = 0;
+            cbType.DataSource = _service.GetSyncModes().ToList();
         }
 
         private void btnSource_Click(object sender, EventArgs e)
@@ -76,8 +74,8 @@ namespace FolderSyncForm
             try
             {
                 SetBusy(true);
-                await _service.OverwriteAsync(_source, _dest, _type);
-                Dialog.Alert(_type + "更新成功");
+                await _service.ApplyAsync(_source, _dest, _mode);
+                Dialog.Alert($"{_mode}更新成功");
                 ShowCompareList();
             }
             catch (Exception ex)
@@ -95,8 +93,8 @@ namespace FolderSyncForm
             try
             {
                 SetBusy(true);
-                await _service.RestoreAsync(GetSelectedBackupFolders(), _dest, _type);
-                Dialog.Alert(_type + "還原成功");
+                await _service.RollbackAsync(GetSelectedBackupFolders(), _dest, _mode);
+                Dialog.Alert($"{_mode}還原成功");
                 ShowCompareList();
             }
             catch (Exception ex)
