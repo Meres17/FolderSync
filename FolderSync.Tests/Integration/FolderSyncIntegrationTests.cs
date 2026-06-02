@@ -1,6 +1,4 @@
-using FolderSync.Domain;
-using FolderSync.Infrastructure;
-
+﻿
 namespace FolderSync.Tests.Integration
 {
     /// <summary>

@@ -1,7 +1,4 @@
-using FolderSync.Application;
-using FolderSync.Domain;
-using FolderSync.Infrastructure;
-
+﻿
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FolderSyncForm
@@ -19,7 +16,7 @@ namespace FolderSyncForm
             ApplicationConfiguration.Initialize();
 
             using var provider = BuildServiceProvider();
-            Application.Run(provider.GetRequiredService<FolderSyncForm>());
+            Application.Run(provider.GetRequiredService<Forms.FolderSyncForm>());
         }
 
         private static ServiceProvider BuildServiceProvider()
@@ -38,7 +35,7 @@ namespace FolderSyncForm
             services.AddTransient<FolderSyncService>();
             services.AddTransient<AppSettingsService>();
             services.AddTransient<AppSettingsForm>();
-            services.AddTransient<FolderSyncForm>();
+            services.AddTransient<Forms.FolderSyncForm>();
 
             // 設定可能在執行期被修改，提供工廠以便用最新設定重新建立相依物件
             services.AddSingleton<Func<FolderSyncService>>(sp => sp.GetRequiredService<FolderSyncService>);
