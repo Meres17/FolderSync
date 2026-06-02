@@ -1,4 +1,3 @@
-﻿
 namespace FolderSync.Infrastructure.Synchronizers
 {
     internal class FolderSynchronizer : IFolderSynchronizer
@@ -18,22 +17,22 @@ namespace FolderSync.Infrastructure.Synchronizers
             }
 
             var backupDir = _backups.CreateBackupDirectory(sourceDir, destDir);
-            await BackupAsync(changes, backupDir, sourceDir, destDir);
-            await ApplyToDestAsync(changes, destDir);
+            await BackupChangesAsync(changes, backupDir, sourceDir, destDir);
+            await ApplyToDestinationAsync(changes, destDir);
         }
 
-        private Task BackupAsync(IReadOnlyList<FileStatus> changes, string backupDir, string sourceDir, string destDir)
+        private Task BackupChangesAsync(IReadOnlyList<FileStatus> changes, string backupDir, string sourceDir, string destDir)
         {
             var rules = BackupPlan.ForOverwrite(Path.GetFileName(sourceDir), Path.GetFileName(destDir));
-            var tasks = rules.Select(rule => CopyOpsAsync(
+            var tasks = rules.Select(rule => CopyAsync(
                 changes.Where(rule.Matches).Select(file => new CopyOperation(file.PathOf(rule.Side), file.相對路徑)),
-                Path.Combine(backupDir, rule.Folder)));
+                Path.Combine(backupDir, rule.FolderName)));
             return Task.WhenAll(tasks);
         }
 
-        private Task ApplyToDestAsync(IReadOnlyList<FileStatus> changes, string destDir)
+        private Task ApplyToDestinationAsync(IReadOnlyList<FileStatus> changes, string destDir)
         {
-            var copy = CopyOpsAsync(
+            var copy = CopyAsync(
                 changes.Where(x => x.狀態 is CompareState.新增檔案 or CompareState.時間不同)
                        .Select(file => new CopyOperation(file.PathOf(FileSide.來源), file.相對路徑)),
                 destDir);
@@ -55,10 +54,10 @@ namespace FolderSync.Infrastructure.Synchronizers
 
         private Task CopyBackupAsync(IReadOnlyList<FileSnapshot> files, string destHost)
         {
-            return CopyOpsAsync(files.Select(file => new CopyOperation(file.完整路徑, file.相對路徑)), destHost);
+            return CopyAsync(files.Select(file => new CopyOperation(file.完整路徑, file.相對路徑)), destHost);
         }
 
-        internal virtual Task CopyOpsAsync(IEnumerable<CopyOperation> ops, string destHost)
+        internal virtual Task CopyAsync(IEnumerable<CopyOperation> ops, string destHost)
         {
             var tasks = ops.Select(op => Task.Run(() =>
             {

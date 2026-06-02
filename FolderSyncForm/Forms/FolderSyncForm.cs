@@ -163,9 +163,8 @@ namespace FolderSyncForm.Forms
 
             return gv.SelectedRows
                 .OfType<DataGridViewRow>()
-                .Select(x => x.DataBoundItem as BackupFolder)
-                .Where(x => x != null)
-                .Select(x => x!)
+                .Select(x => x.DataBoundItem)
+                .OfType<BackupFolder>()
                 .ToList();
         }
 

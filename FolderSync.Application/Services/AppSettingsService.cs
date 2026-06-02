@@ -16,29 +16,29 @@ namespace FolderSync.Application.Services
 
         public void Save(string source, string dest, string ignoreFolders, string ignoreFiles, string siteDelayText)
         {
-            CheckDirectory(source);
-            CheckDirectory(dest);
-            CheckName(ignoreFolders);
-            CheckName(ignoreFiles);
+            ValidateDirectoryExists(source);
+            ValidateDirectoryExists(dest);
+            ValidateNoInvalidChars(ignoreFolders);
+            ValidateNoInvalidChars(ignoreFiles);
 
-            var appSettings = ToAppSettings(source, dest, ignoreFolders, ignoreFiles, siteDelayText);
+            var appSettings = BuildSettings(source, dest, ignoreFolders, ignoreFiles, siteDelayText);
             _repository.Save(appSettings);
             _provider.Reload();
         }
 
-        private AppSettings ToAppSettings(string source, string dest, string ignoreFolders, string ignoreFiles, string siteDelayText)
+        private AppSettings BuildSettings(string source, string dest, string ignoreFolders, string ignoreFiles, string siteDelayText)
         {
             var appSettings = _repository.Load();
             appSettings.Source = source;
             appSettings.Dest = dest;
-            appSettings.IgnoreFolders = ToArray(ignoreFolders);
-            appSettings.IgnoreFiles = ToArray(ignoreFiles);
+            appSettings.IgnoreFolders = SplitLines(ignoreFolders);
+            appSettings.IgnoreFiles = SplitLines(ignoreFiles);
             int.TryParse(siteDelayText, out int siteDelay);
             appSettings.SiteDelay = siteDelay;
             return appSettings;
         }
 
-        private void CheckDirectory(string path)
+        private void ValidateDirectoryExists(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -53,9 +53,9 @@ namespace FolderSync.Application.Services
             throw new DirectoryNotFoundException($"資料夾不存在或路徑無效：{path}");
         }
 
-        private void CheckName(string nameString)
+        private void ValidateNoInvalidChars(string nameString)
         {
-            string[] names = ToArray(nameString);
+            string[] names = SplitLines(nameString);
 
             foreach (var invalidChar in _invalidChars)
             {
@@ -69,7 +69,7 @@ namespace FolderSync.Application.Services
             }
         }
 
-        private static string[] ToArray(string nameString)
+        private static string[] SplitLines(string nameString)
         {
             return nameString.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
         }

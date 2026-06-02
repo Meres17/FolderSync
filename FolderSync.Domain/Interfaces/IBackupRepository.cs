@@ -8,6 +8,6 @@
         string CreateBackupDirectory(string sourceDir, string destDir);
         IReadOnlyList<BackupFolder> ListBackups(string sourceDir, string destDir);
         IReadOnlyList<FileSnapshot> ReadBackup(string backupDir, string category);
-        void Delete(string fullPath);
+        void DeleteBackup(string fullPath);
     }
 }

@@ -103,8 +103,8 @@ namespace FolderSync.Tests.Application.Services
             sut.DeleteBackups(selected);
 
             // Assert
-            backups.Received(1).Delete("a");
-            backups.Received(1).Delete("b");
+            backups.Received(1).DeleteBackup("a");
+            backups.Received(1).DeleteBackup("b");
         }
 
         [Fact]

@@ -34,7 +34,7 @@ namespace FolderSync.Application.Services
 
         public void DeleteBackup(string fullPath)
         {
-            _backups.Delete(fullPath);
+            _backups.DeleteBackup(fullPath);
         }
     }
 }

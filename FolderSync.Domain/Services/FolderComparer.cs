@@ -17,13 +17,13 @@
             foreach (var (relativePath, sourceFile) in sourceMap)
             {
                 destMap.Remove(relativePath, out var destFile);
-                result.Add(Build(relativePath, sourceFile, destFile));
+                result.Add(CreateFileStatus(relativePath, sourceFile, destFile));
             }
 
             // 剩餘的 destMap 即為僅存在於目標的檔案
             foreach (var (relativePath, destFile) in destMap)
             {
-                result.Add(Build(relativePath, null, destFile));
+                result.Add(CreateFileStatus(relativePath, null, destFile));
             }
 
             return result
@@ -40,7 +40,7 @@
                 .ToDictionary(x => x.相對路徑);
         }
 
-        private static FileStatus Build(string relativePath, FileSnapshot? source, FileSnapshot? dest)
+        private static FileStatus CreateFileStatus(string relativePath, FileSnapshot? source, FileSnapshot? dest)
         {
             return new FileStatus(
                 relativePath,

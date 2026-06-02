@@ -35,7 +35,7 @@ namespace FolderSync.Application.Services
 
         public Task RollbackAsync(IReadOnlyList<BackupFolder> selected, string destDir, SyncMode mode)
         {
-            var backupDir = SingleBackupPath(selected);
+            var backupDir = RequireSingleBackupPath(selected);
             return _sync.RollbackAsync(backupDir, destDir, mode);
         }
 
@@ -52,7 +52,7 @@ namespace FolderSync.Application.Services
             }
         }
 
-        private static string SingleBackupPath(IReadOnlyList<BackupFolder> selected)
+        private static string RequireSingleBackupPath(IReadOnlyList<BackupFolder> selected)
         {
             if (selected.Count == 0)
             {

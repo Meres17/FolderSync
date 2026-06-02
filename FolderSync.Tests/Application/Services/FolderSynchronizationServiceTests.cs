@@ -71,7 +71,7 @@ namespace FolderSync.Tests.Application.Services
             sut.DeleteBackup("a");
 
             // Assert
-            backups.Received(1).Delete("a");
+            backups.Received(1).DeleteBackup("a");
         }
 
         private static (FolderSynchronizationService, IFolderSynchronizerFactory, IBackupRepository) New()

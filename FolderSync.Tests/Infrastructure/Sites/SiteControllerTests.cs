@@ -12,7 +12,7 @@ namespace FolderSync.Tests.Infrastructure.Sites
         {
             // Arrange
             var sut = Substitute.For<SiteController>();
-            sut.NotFoundDirectory(Arg.Any<string>()).Returns(true);
+            sut.DirectoryMissing(Arg.Any<string>()).Returns(true);
 
             // Act & Assert
             Assert.Throws<DirectoryNotFoundException>(() => sut.TakeOffline(SiteDir));
@@ -23,8 +23,8 @@ namespace FolderSync.Tests.Infrastructure.Sites
         {
             // Arrange
             var sut = Substitute.For<SiteController>();
-            sut.NotFoundDirectory(Arg.Any<string>()).Returns(false);
-            sut.NotFoundFile(Arg.Any<string>()).Returns(true);
+            sut.DirectoryMissing(Arg.Any<string>()).Returns(false);
+            sut.FileMissing(Arg.Any<string>()).Returns(true);
 
             // Act & Assert
             Assert.Throws<FileNotFoundException>(() => sut.TakeOffline(SiteDir));
@@ -35,15 +35,15 @@ namespace FolderSync.Tests.Infrastructure.Sites
         {
             // Arrange
             var sut = Substitute.For<SiteController>();
-            sut.When(x => x.Copy(Arg.Any<string>(), Arg.Any<string>())).DoNotCallBase();
-            sut.NotFoundDirectory(Arg.Any<string>()).Returns(false);
-            sut.NotFoundFile(Arg.Any<string>()).Returns(false);
+            sut.When(x => x.CopyOfflineFile(Arg.Any<string>(), Arg.Any<string>())).DoNotCallBase();
+            sut.DirectoryMissing(Arg.Any<string>()).Returns(false);
+            sut.FileMissing(Arg.Any<string>()).Returns(false);
 
             // Act
             sut.TakeOffline(SiteDir);
 
             // Assert
-            sut.Received(1).Copy(Arg.Any<string>(), Arg.Any<string>());
+            sut.Received(1).CopyOfflineFile(Arg.Any<string>(), Arg.Any<string>());
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace FolderSync.Tests.Infrastructure.Sites
         {
             // Arrange
             var sut = Substitute.For<SiteController>();
-            sut.NotFoundDirectory(Arg.Any<string>()).Returns(true);
+            sut.DirectoryMissing(Arg.Any<string>()).Returns(true);
 
             // Act & Assert
             Assert.Throws<DirectoryNotFoundException>(() => sut.BringOnline(SiteDir));
@@ -64,15 +64,15 @@ namespace FolderSync.Tests.Infrastructure.Sites
         {
             // Arrange
             var sut = Substitute.For<SiteController>();
-            sut.When(x => x.Delete(Arg.Any<string>())).DoNotCallBase();
-            sut.NotFoundDirectory(Arg.Any<string>()).Returns(false);
-            sut.NotFoundFile(Arg.Any<string>()).Returns(offlineMissing);
+            sut.When(x => x.DeleteOfflineFile(Arg.Any<string>())).DoNotCallBase();
+            sut.DirectoryMissing(Arg.Any<string>()).Returns(false);
+            sut.FileMissing(Arg.Any<string>()).Returns(offlineMissing);
 
             // Act
             sut.BringOnline(SiteDir);
 
             // Assert
-            sut.Received(received).Delete(Arg.Any<string>());
+            sut.Received(received).DeleteOfflineFile(Arg.Any<string>());
         }
     }
 }

@@ -72,7 +72,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
 
         private static void AssertCopy(FolderSynchronizer sut, string destHost, int count)
         {
-            sut.Received(1).CopyOpsAsync(
+            sut.Received(1).CopyAsync(
                 Arg.Is<IEnumerable<CopyOperation>>(x => x.Count() == count),
                 destHost);
         }
@@ -101,7 +101,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         {
             var result = Substitute.For<FolderSynchronizer>(backups);
             // 實際 IO 不執行
-            result.When(x => x.CopyOpsAsync(Arg.Any<IEnumerable<CopyOperation>>(), Arg.Any<string>()))
+            result.When(x => x.CopyAsync(Arg.Any<IEnumerable<CopyOperation>>(), Arg.Any<string>()))
                 .DoNotCallBase();
             result.When(x => x.DeleteAsync(Arg.Any<IEnumerable<string?>>()))
                 .DoNotCallBase();

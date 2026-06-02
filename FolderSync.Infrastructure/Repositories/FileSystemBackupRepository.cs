@@ -15,14 +15,14 @@ namespace FolderSync.Infrastructure.Repositories
 
         public string CreateBackupDirectory(string sourceDir, string destDir)
         {
-            var host = BuildBackupHost(sourceDir, destDir);
+            var host = GetBackupRoot(sourceDir, destDir);
             var time = DateTime.Now.ToString(Format);
             return Path.Combine(host, time);
         }
 
         public IReadOnlyList<BackupFolder> ListBackups(string sourceDir, string destDir)
         {
-            var host = BuildBackupHost(sourceDir, destDir);
+            var host = GetBackupRoot(sourceDir, destDir);
             return Directory
                 .EnumerateDirectories(host, "*", SearchOption.TopDirectoryOnly)
                 .Where(x => DateTime.TryParseExact(Path.GetFileName(x), Format, null, DateTimeStyles.None, out _))
@@ -40,17 +40,17 @@ namespace FolderSync.Infrastructure.Repositories
             return _scanner.Scan(dir);
         }
 
-        public void Delete(string fullPath)
+        public void DeleteBackup(string fullPath)
         {
             Directory.Delete(fullPath, true);
         }
 
-        private static string BuildBackupHost(string sourceDir, string destDir)
+        private static string GetBackupRoot(string sourceDir, string destDir)
         {
-            var host = Directory.GetCurrentDirectory();
+            var current = Directory.GetCurrentDirectory();
             var sourceName = Path.GetFileName(sourceDir);
             var destName = Path.GetFileName(destDir);
-            var result = Path.Combine(host, "Backup", $"{sourceName}_{destName}");
+            var result = Path.Combine(current, "Backup", $"{sourceName}_{destName}");
             if (!Directory.Exists(result))
             {
                 Directory.CreateDirectory(result);

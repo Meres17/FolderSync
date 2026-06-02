@@ -1,4 +1,3 @@
-﻿
 namespace FolderSync.Infrastructure.Sites
 {
     internal class SiteController : ISiteController
@@ -10,12 +9,12 @@ namespace FolderSync.Infrastructure.Sites
             EnsureSiteExists(siteDir);
 
             var source = Path.Combine(Directory.GetCurrentDirectory(), OfflineFileName);
-            if (NotFoundFile(source))
+            if (FileMissing(source))
             {
                 throw new FileNotFoundException("找不到App_offline.htm，請將檔案放置本執行檔旁邊");
             }
 
-            Copy(siteDir, source);
+            CopyOfflineFile(siteDir, source);
         }
 
         public void BringOnline(string siteDir)
@@ -23,35 +22,35 @@ namespace FolderSync.Infrastructure.Sites
             EnsureSiteExists(siteDir);
 
             var offlineFile = GetOfflineFile(siteDir);
-            if (NotFoundFile(offlineFile)) return;//沒有此檔案代表站台已經開啟
+            if (FileMissing(offlineFile)) return;//沒有此檔案代表站台已經開啟
 
-            Delete(offlineFile);
+            DeleteOfflineFile(offlineFile);
         }
 
         private void EnsureSiteExists(string siteDir)
         {
-            if (NotFoundDirectory(siteDir))
+            if (DirectoryMissing(siteDir))
             {
                 throw new DirectoryNotFoundException($"找不到站台資料夾：{siteDir}");
             }
         }
 
-        internal virtual bool NotFoundDirectory(string siteDir)
+        internal virtual bool DirectoryMissing(string siteDir)
         {
             return !Directory.Exists(siteDir);
         }
 
-        internal virtual bool NotFoundFile(string path)
+        internal virtual bool FileMissing(string path)
         {
             return !File.Exists(path);
         }
 
-        internal virtual void Copy(string siteDir, string source)
+        internal virtual void CopyOfflineFile(string siteDir, string source)
         {
             File.Copy(source, GetOfflineFile(siteDir), true);
         }
 
-        internal virtual void Delete(string offlineFile)
+        internal virtual void DeleteOfflineFile(string offlineFile)
         {
             File.Delete(offlineFile);
         }

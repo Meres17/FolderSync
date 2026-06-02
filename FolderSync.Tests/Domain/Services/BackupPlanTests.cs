@@ -13,11 +13,11 @@ namespace FolderSync.Tests.Domain.Services
 
             // Assert
             Assert.Equal(5, rules.Count);
-            Assert.Contains(rules, r => r.Folder == "src" && r.Side == FileSide.來源);
-            Assert.Contains(rules, r => r.Folder == "dst" && r.Side == FileSide.目標);
-            Assert.Contains(rules, r => r.Folder == BackupCategory.Delete && r.Side == FileSide.目標);
-            Assert.Contains(rules, r => r.Folder == BackupCategory.Diff && r.Side == FileSide.目標);
-            Assert.Contains(rules, r => r.Folder == BackupCategory.Add && r.Side == FileSide.來源);
+            Assert.Contains(rules, r => r.FolderName == "src" && r.Side == FileSide.來源);
+            Assert.Contains(rules, r => r.FolderName == "dst" && r.Side == FileSide.目標);
+            Assert.Contains(rules, r => r.FolderName == BackupCategory.Delete && r.Side == FileSide.目標);
+            Assert.Contains(rules, r => r.FolderName == BackupCategory.Diff && r.Side == FileSide.目標);
+            Assert.Contains(rules, r => r.FolderName == BackupCategory.Add && r.Side == FileSide.來源);
         }
 
         [Fact]
