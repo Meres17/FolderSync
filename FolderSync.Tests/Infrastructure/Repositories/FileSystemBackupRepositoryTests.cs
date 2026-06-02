@@ -1,3 +1,5 @@
+using NSubstitute;
+
 namespace FolderSync.Tests.Infrastructure.Repositories
 {
     /// <summary>
@@ -25,7 +27,7 @@ namespace FolderSync.Tests.Infrastructure.Repositories
         public void ListBackups_只回傳時間戳命名的資料夾()
         {
             // Arrange
-            var sut = new FileSystemBackupRepository(new FolderScanner());
+            var sut = NewRepository();
             var backupRoot = Path.Combine(_root, "Backup", "src_dst");
             Directory.CreateDirectory(Path.Combine(backupRoot, "20230101_1200"));
             Directory.CreateDirectory(Path.Combine(backupRoot, "not-a-timestamp"));
@@ -42,7 +44,7 @@ namespace FolderSync.Tests.Infrastructure.Repositories
         public void ReadBackup_分類資料夾不存在_回傳空清單()
         {
             // Arrange
-            var sut = new FileSystemBackupRepository(new FolderScanner());
+            var sut = NewRepository();
 
             // Act
             var result = sut.ReadBackup(Path.Combine(_root, "nonexistent"), BackupCategory.Delete);
@@ -55,13 +57,39 @@ namespace FolderSync.Tests.Infrastructure.Repositories
         public void CreateBackupDirectory_位於來源_目標的備份根目錄下()
         {
             // Arrange
-            var sut = new FileSystemBackupRepository(new FolderScanner());
+            var sut = NewRepository();
 
             // Act
             var dir = sut.CreateBackupDirectory(_source, _dest);
 
             // Assert
             Assert.StartsWith(Path.Combine(_root, "Backup", "src_dst"), dir);
+        }
+
+        [Fact]
+        public void CreateBackupDirectory_超過保留數_清理最舊備份()
+        {
+            // Arrange
+            var sut = NewRepository(retention: 3);
+            var backupRoot = Path.Combine(_root, "Backup", "src_dst");
+            foreach (var name in new[] { "20230101_1200", "20230102_1200", "20230103_1200", "20230104_1200", "20230105_1200" })
+            {
+                Directory.CreateDirectory(Path.Combine(backupRoot, name));
+            }
+
+            // Act
+            sut.CreateBackupDirectory(_source, _dest);
+
+            // Assert：保留最新 retention-1 = 2 個（加上即將建立的新備份共 3）
+            var remaining = sut.ListBackups(_source, _dest).Select(x => x.備份名稱).OrderBy(x => x).ToList();
+            Assert.Equal(new[] { "20230104_1200", "20230105_1200" }, remaining);
+        }
+
+        private static FileSystemBackupRepository NewRepository(int retention = 10)
+        {
+            var repo = Substitute.For<IAppSettingsRepository>();
+            repo.Load().Returns(new AppSettings { RetentionCount = retention });
+            return new FileSystemBackupRepository(new FolderScanner(), new AppSettingsProvider(repo));
         }
 
         public void Dispose()

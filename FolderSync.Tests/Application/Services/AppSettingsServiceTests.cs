@@ -13,7 +13,7 @@ namespace FolderSync.Tests.Application.Services
             // Arrange
             var repo = Substitute.For<IAppSettingsRepository>();
             repo.Load().Returns(new AppSettings());
-            var sut = new AppSettingsService(repo, new AppSettingsProvider(repo));
+            var sut = new AppSettingsService(repo, new AppSettingsProvider(repo), Substitute.For<IDirectoryProbe>());
 
             // Act
             sut.Save("", "", $"bin{Environment.NewLine}obj", "web.config", "3000");
@@ -31,7 +31,7 @@ namespace FolderSync.Tests.Application.Services
             // Arrange
             var repo = Substitute.For<IAppSettingsRepository>();
             repo.Load().Returns(new AppSettings());
-            var sut = new AppSettingsService(repo, new AppSettingsProvider(repo));
+            var sut = new AppSettingsService(repo, new AppSettingsProvider(repo), Substitute.For<IDirectoryProbe>());
 
             // Act & Assert
             Assert.Throws<DomainException>(() => sut.Save("", "", "bad:name", "", "0"));
@@ -43,7 +43,7 @@ namespace FolderSync.Tests.Application.Services
         {
             // Arrange
             var repo = Substitute.For<IAppSettingsRepository>();
-            var sut = new AppSettingsService(repo, new AppSettingsProvider(repo));
+            var sut = new AppSettingsService(repo, new AppSettingsProvider(repo), Substitute.For<IDirectoryProbe>());
 
             // Act & Assert
             Assert.Throws<DirectoryNotFoundException>(
@@ -56,7 +56,7 @@ namespace FolderSync.Tests.Application.Services
             // Arrange
             var repo = Substitute.For<IAppSettingsRepository>();
             repo.Load().Returns(new AppSettings());
-            var sut = new AppSettingsService(repo, new AppSettingsProvider(repo));
+            var sut = new AppSettingsService(repo, new AppSettingsProvider(repo), Substitute.For<IDirectoryProbe>());
 
             // Act
             sut.Save("", "", "", "", "abc");

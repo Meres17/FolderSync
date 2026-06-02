@@ -70,6 +70,26 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             AssertDelete(sut, 1);
         }
 
+        [Fact]
+        public async Task ApplyAsync_套用失敗_自動還原並重拋()
+        {
+            // Arrange
+            var backups = FakeBackups();
+            backups.CreateBackupDirectory(Arg.Any<string>(), Arg.Any<string>()).Returns(BackupDir);
+            backups.ReadBackup(Arg.Any<string>(), Arg.Any<string>()).Returns(Array.Empty<FileSnapshot>());
+            var sut = FakeSynchronizer(backups);
+            // 套用到目標的複製失敗 → 觸發自動還原
+            sut.When(x => x.CopyAsync(Arg.Any<IEnumerable<CopyOperation>>(), DestDir))
+               .Do(_ => throw new IOException("磁碟錯誤"));
+            var files = new List<FileStatus> { FakeFileStatus(CompareState.新增檔案) };
+
+            // Act & Assert
+            await Assert.ThrowsAsync<IOException>(() => sut.ApplyAsync(files, SourceDir, DestDir));
+
+            // 還原被觸發：讀取備份分類以回復目標
+            backups.Received().ReadBackup(BackupDir, BackupCategory.Delete);
+        }
+
         private static void AssertCopy(FolderSynchronizer sut, string destHost, int count)
         {
             sut.Received(1).CopyAsync(

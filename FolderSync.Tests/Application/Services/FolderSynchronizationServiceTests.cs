@@ -74,11 +74,30 @@ namespace FolderSync.Tests.Application.Services
             backups.Received(1).DeleteBackup("a");
         }
 
+        [Fact]
+        public async Task ApplyAsync_失敗_記錄錯誤並重拋()
+        {
+            // Arrange
+            var factory = Substitute.For<IFolderSynchronizerFactory>();
+            var backups = Substitute.For<IBackupRepository>();
+            var log = Substitute.For<IActivityLog>();
+            var synchronizer = Substitute.For<IFolderSynchronizer>();
+            synchronizer.ApplyAsync(Arg.Any<IReadOnlyList<FileStatus>>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromException(new IOException("磁碟錯誤")));
+            factory.Create(SyncMode.資料夾).Returns(synchronizer);
+            var sut = new FolderSynchronizationService(factory, backups, log);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<IOException>(
+                () => sut.ApplyAsync(new List<FileStatus>(), Src, Dst, SyncMode.資料夾));
+            log.Received(1).Error(Arg.Any<string>(), Arg.Any<IOException>());
+        }
+
         private static (FolderSynchronizationService, IFolderSynchronizerFactory, IBackupRepository) New()
         {
             var factory = Substitute.For<IFolderSynchronizerFactory>();
             var backups = Substitute.For<IBackupRepository>();
-            var sut = new FolderSynchronizationService(factory, backups);
+            var sut = new FolderSynchronizationService(factory, backups, Substitute.For<IActivityLog>());
             return (sut, factory, backups);
         }
     }

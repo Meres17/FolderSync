@@ -7,11 +7,13 @@ namespace FolderSync.Application.Services
         private readonly char[] _invalidChars = new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
         private readonly IAppSettingsRepository _repository;
         private readonly AppSettingsProvider _provider;
+        private readonly IDirectoryProbe _directories;
 
-        public AppSettingsService(IAppSettingsRepository repository, AppSettingsProvider provider)
+        public AppSettingsService(IAppSettingsRepository repository, AppSettingsProvider provider, IDirectoryProbe directories)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            _directories = directories ?? throw new ArgumentNullException(nameof(directories));
         }
 
         public void Save(string source, string dest, string ignoreFolders, string ignoreFiles, string siteDelayText)
@@ -45,7 +47,7 @@ namespace FolderSync.Application.Services
                 return;
             }
 
-            if (Directory.Exists(path))
+            if (_directories.Exists(path))
             {
                 return;
             }

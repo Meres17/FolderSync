@@ -19,6 +19,8 @@ namespace FolderSyncForm.Composition
         private static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             services.AddSingleton<IAppSettingsRepository, JsonAppSettingsRepository>();
+            services.AddSingleton<IActivityLog, FileActivityLog>();
+            services.AddSingleton<IDirectoryProbe, FileSystemDirectoryProbe>();
             services.AddSingleton<IFolderScanner, FolderScanner>();
             services.AddTransient<IBackupRepository, FileSystemBackupRepository>();
             services.AddTransient<IFolderSynchronizerFactory, FolderSynchronizerFactory>();

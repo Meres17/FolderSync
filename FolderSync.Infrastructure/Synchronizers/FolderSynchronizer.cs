@@ -18,7 +18,17 @@ namespace FolderSync.Infrastructure.Synchronizers
 
             var backupDir = _backups.CreateBackupDirectory(sourceDir, destDir);
             await BackupChangesAsync(changes, backupDir, sourceDir, destDir);
-            await ApplyToDestinationAsync(changes, destDir);
+
+            try
+            {
+                await ApplyToDestinationAsync(changes, destDir);
+            }
+            catch
+            {
+                // 套用中途失敗時，用剛建立的備份把目標還原回更新前
+                await RollbackAsync(backupDir, destDir);
+                throw;
+            }
         }
 
         private Task BackupChangesAsync(IReadOnlyList<FileStatus> changes, string backupDir, string sourceDir, string destDir)

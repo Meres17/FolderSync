@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-
+using System.Globalization;
 
 namespace FolderSync.Infrastructure.Repositories
 {
@@ -7,25 +6,25 @@ namespace FolderSync.Infrastructure.Repositories
     {
         private const string Format = "yyyyMMdd_HHmm";
         private readonly IFolderScanner _scanner;
+        private readonly AppSettingsProvider _settings;
 
-        public FileSystemBackupRepository(IFolderScanner scanner)
+        public FileSystemBackupRepository(IFolderScanner scanner, AppSettingsProvider settings)
         {
             _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         public string CreateBackupDirectory(string sourceDir, string destDir)
         {
-            var host = GetBackupRoot(sourceDir, destDir);
-            var time = DateTime.Now.ToString(Format);
-            return Path.Combine(host, time);
+            var root = GetBackupRoot(sourceDir, destDir);
+            PruneOldBackups(root);
+            return Path.Combine(root, DateTime.Now.ToString(Format));
         }
 
         public IReadOnlyList<BackupFolder> ListBackups(string sourceDir, string destDir)
         {
-            var host = GetBackupRoot(sourceDir, destDir);
-            return Directory
-                .EnumerateDirectories(host, "*", SearchOption.TopDirectoryOnly)
-                .Where(x => DateTime.TryParseExact(Path.GetFileName(x), Format, null, DateTimeStyles.None, out _))
+            var root = GetBackupRoot(sourceDir, destDir);
+            return EnumerateBackupDirs(root)
                 .Select(x => new BackupFolder(x))
                 .ToList();
         }
@@ -43,6 +42,36 @@ namespace FolderSync.Infrastructure.Repositories
         public void DeleteBackup(string fullPath)
         {
             Directory.Delete(fullPath, true);
+        }
+
+        /// <summary>
+        /// 依保留設定清理舊備份，保留最新的 (RetentionCount - 1) 個，
+        /// 連同即將建立的新備份共 RetentionCount 個；設為 0 表示不限制。
+        /// </summary>
+        private void PruneOldBackups(string root)
+        {
+            var keep = _settings.Current.RetentionCount;
+            if (keep <= 0)
+            {
+                return;
+            }
+
+            var stale = EnumerateBackupDirs(root)
+                .OrderByDescending(Path.GetFileName)
+                .Skip(keep - 1)
+                .ToList();
+
+            foreach (var dir in stale)
+            {
+                Directory.Delete(dir, true);
+            }
+        }
+
+        private static IEnumerable<string> EnumerateBackupDirs(string root)
+        {
+            return Directory
+                .EnumerateDirectories(root, "*", SearchOption.TopDirectoryOnly)
+                .Where(x => DateTime.TryParseExact(Path.GetFileName(x), Format, null, DateTimeStyles.None, out _));
         }
 
         private static string GetBackupRoot(string sourceDir, string destDir)
