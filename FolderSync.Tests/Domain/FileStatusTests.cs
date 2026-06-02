@@ -17,7 +17,7 @@ namespace FolderSync.Tests.Domain
             DateTime? sourceTime = ToDateTime(sourceTimeStr);
             DateTime? destTime = ToDateTime(destTimeStr);
 
-            var sut = new FileStatus("test.txt", "source/test.txt", "dest/test.txt");
+            var sut = new FileStatus("test.txt", "source/test.txt", null, "dest/test.txt", null);
 
             // Act
             var result = sut.GetState(sourceTime, destTime);

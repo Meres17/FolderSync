@@ -34,7 +34,25 @@ namespace FolderSync.Application
             _factory.CreateControl(type).Overwrite(files, sourceDir, destDir);
         }
 
+        public Task OverwriteAsync(string sourceDir, string destDir, string type)
+        {
+            var files = _reader.GetDiffFiles(sourceDir, destDir);
+            return _factory.CreateAsyncControl(type).OverwriteAsync(files, sourceDir, destDir);
+        }
+
         public void Restore(IReadOnlyList<BackupFolder> selected, string destDir, string type)
+        {
+            var backupDir = SingleBackupPath(selected);
+            _factory.CreateControl(type).Restore(backupDir, destDir);
+        }
+
+        public Task RestoreAsync(IReadOnlyList<BackupFolder> selected, string destDir, string type)
+        {
+            var backupDir = SingleBackupPath(selected);
+            return _factory.CreateAsyncControl(type).RestoreAsync(backupDir, destDir);
+        }
+
+        private static string SingleBackupPath(IReadOnlyList<BackupFolder> selected)
         {
             if (selected.Count == 0)
             {
@@ -46,7 +64,7 @@ namespace FolderSync.Application
                 throw new Exception("要還原的檔案只能選一個");
             }
 
-            _factory.CreateControl(type).Restore(selected[0].完整路徑, destDir);
+            return selected[0].完整路徑;
         }
 
         public void DeleteBackups(IReadOnlyList<BackupFolder> selected)

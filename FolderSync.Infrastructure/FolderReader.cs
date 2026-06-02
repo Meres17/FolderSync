@@ -80,16 +80,30 @@ namespace FolderSync.Infrastructure
                 // 移除已比對的項目，同時將找到的值傳給 destFullPath
                 // destFullPath 可以為 null，表示 dest 資料夾中沒有這個檔案
                 destDic.Remove(sourcePath, out var destFullPath);
-                result.Add(new FileStatus(sourcePath, sourceFullPath, destFullPath));
+                result.Add(BuildFileStatus(sourcePath, sourceFullPath, destFullPath));
             }
 
             // 剩餘的 destDic 即為 dest 資料夾中多出的檔案
             var remaining = destDic
-                .Select(dest => new FileStatus(dest.Key, null, dest.Value));
+                .Select(dest => BuildFileStatus(dest.Key, null, dest.Value));
 
             result.AddRange(remaining);
 
             return result;
+        }
+
+        internal static FileStatus BuildFileStatus(string relativePath, string? sourcePath, string? destPath)
+        {
+            return new FileStatus(relativePath, sourcePath, GetLastWriteTime(sourcePath), destPath, GetLastWriteTime(destPath));
+        }
+
+        private static DateTime? GetLastWriteTime(string? path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+            return new FileInfo(path).LastWriteTime;
         }
 
         public List<FileStatus> GetBackupFiles(string host, string name)
@@ -98,7 +112,7 @@ namespace FolderSync.Infrastructure
             try
             {
                 return GetPathDictionary(backupDir)
-                    .Select(x => new FileStatus(x.Key, x.Value, null))
+                    .Select(x => BuildFileStatus(x.Key, x.Value, null))
                     .ToList();
             }
             catch (DirectoryNotFoundException) //還原時，未必會有新/刪/修資料夾

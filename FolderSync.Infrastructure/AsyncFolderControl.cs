@@ -101,7 +101,7 @@ namespace FolderSync.Infrastructure
             var restoreCopyTask = CopyAsync(diffFiles, destDir, x => x.來源路徑);
 
             var addFiles = _reader.GetBackupFiles(backupDir, BackupCategory.Add)
-                .Select(x => new FileStatus(x.相對路徑, Path.Combine(destDir, x.相對路徑), null))
+                .Select(x => new FileStatus(x.相對路徑, Path.Combine(destDir, x.相對路徑), null, null, null))
                 .ToList();
             var restoreAddTask = DeleteAsync(addFiles, x => x.來源路徑);
             return Task.WhenAll(restoreDeleteTask, restoreCopyTask, restoreAddTask);

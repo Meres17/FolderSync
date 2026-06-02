@@ -1,5 +1,5 @@
 ﻿using FolderSync.Application;
-using FolderSync.Infrastructure;
+using FolderSync.Domain;
 
 using FolderSyncForm.Extensions;
 using FolderSyncForm.Helpers;
@@ -8,19 +8,26 @@ namespace FolderSyncForm
 {
     public partial class AppSettingsForm : Form
     {
-        private readonly AppSettingsService _service;
+        private readonly AppSettingsService _service = default!;
 
+        /// <summary>
+        /// 設計工具專用建構子，執行期請使用 DI 注入的多參數建構子。
+        /// </summary>
         public AppSettingsForm()
         {
             InitializeComponent();
-            var repository = new JsonAppSettingsRepository();
+        }
+
+        public AppSettingsForm(IAppSettingsRepository repository, AppSettingsService service)
+        {
+            InitializeComponent();
             var appSettings = repository.Load();
             txtSource.Text = appSettings.Source;
             txtDest.Text = appSettings.Dest;
             txtIgnoreFolders.Text = string.Join(Environment.NewLine, appSettings.IgnoreFolders);
             txtIgnoreFiles.Text = string.Join(Environment.NewLine, appSettings.IgnoreFiles);
             txtSiteDelay.Text = appSettings.SiteDelay.ToString();
-            _service = new AppSettingsService(repository);
+            _service = service;
             FormTheme.Apply(this);
         }
 

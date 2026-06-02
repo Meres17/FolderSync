@@ -125,6 +125,51 @@ namespace FolderSync.Tests.Application
             reader.Received(1).DeleteBackupFolder("b");
         }
 
+        [Fact]
+        public async Task OverwriteAsync_取得差異後呼叫AsyncControl的OverwriteAsync()
+        {
+            // Arrange
+            var reader = Substitute.For<IFolderReader>();
+            var factory = Substitute.For<IFolderControlFactory>();
+            var control = Substitute.For<IAsyncFolderControl>();
+            var files = new List<FileStatus>();
+            reader.GetDiffFiles(SourceDir, DestDir).Returns(files);
+            factory.CreateAsyncControl(Type).Returns(control);
+            var sut = new FolderSyncService(reader, factory);
+
+            // Act
+            await sut.OverwriteAsync(SourceDir, DestDir, Type);
+
+            // Assert
+            await control.Received(1).OverwriteAsync(files, SourceDir, DestDir);
+        }
+
+        [Fact]
+        public async Task RestoreAsync_選取一筆_呼叫AsyncControl的RestoreAsync()
+        {
+            // Arrange
+            var sut = NewService(out _, out var factory, out _);
+            var asyncControl = Substitute.For<IAsyncFolderControl>();
+            factory.CreateAsyncControl(Type).Returns(asyncControl);
+            var selected = new List<BackupFolder> { new("C:\\backup\\20230101_1200") };
+
+            // Act
+            await sut.RestoreAsync(selected, DestDir, Type);
+
+            // Assert
+            await asyncControl.Received(1).RestoreAsync("C:\\backup\\20230101_1200", DestDir);
+        }
+
+        [Fact]
+        public async Task RestoreAsync_沒有選取_拋出例外()
+        {
+            // Arrange
+            var sut = NewService(out _, out _, out _);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<Exception>(() => sut.RestoreAsync(new List<BackupFolder>(), DestDir, Type));
+        }
+
         private static FolderSyncService NewService(out IFolderReader reader, out IFolderControlFactory factory, out IFolderControl control)
         {
             reader = Substitute.For<IFolderReader>();

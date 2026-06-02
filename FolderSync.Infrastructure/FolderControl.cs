@@ -94,7 +94,7 @@ namespace FolderSync.Infrastructure
             Copy(diffFiles, destDir, x => x.來源路徑);
 
             var addFiles = _reader.GetBackupFiles(backupDir, BackupCategory.Add)
-                .Select(x => new FileStatus(x.相對路徑, Path.Combine(destDir, x.相對路徑), null))
+                .Select(x => new FileStatus(x.相對路徑, Path.Combine(destDir, x.相對路徑), null, null, null))
                 .ToList();
             Delete(addFiles, x => x.來源路徑);
         }

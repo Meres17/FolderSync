@@ -6,24 +6,15 @@ namespace FolderSync.Domain
         {
 
         }
-        public FileStatus(string path, string? sourcePath, string? destPath)
+        public FileStatus(string path, string? sourcePath, DateTime? sourceTime, string? destPath, DateTime? destTime)
         {
             相對路徑 = path;
             檔名 = Path.GetFileName(path);
-            來源時間 = GetLastWriteTime(sourcePath);
-            目標時間 = GetLastWriteTime(destPath);
             來源路徑 = sourcePath;
             目標路徑 = destPath;
-            狀態 = GetState(來源時間, 目標時間);
-        }
-
-        private DateTime? GetLastWriteTime(string? path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                return null;
-            }
-            return new FileInfo(path).LastWriteTime;
+            來源時間 = sourceTime;
+            目標時間 = destTime;
+            狀態 = GetState(sourceTime, destTime);
         }
 
         internal CompareState GetState(DateTime? sourceTime, DateTime? destTime)
