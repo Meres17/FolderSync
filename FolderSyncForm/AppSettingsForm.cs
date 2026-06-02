@@ -1,4 +1,5 @@
-﻿using FolderSyncCore;
+﻿using FolderSync.Application;
+using FolderSync.Infrastructure;
 
 using FolderSyncForm.Extensions;
 using FolderSyncForm.Helpers;
@@ -7,18 +8,20 @@ namespace FolderSyncForm
 {
     public partial class AppSettingsForm : Form
     {
-        private readonly AppSettingsAppService _service;
+        private readonly AppSettingsService _service;
 
         public AppSettingsForm()
         {
             InitializeComponent();
-            var appSettings = AppSettings.Build();
+            var repository = new JsonAppSettingsRepository();
+            var appSettings = repository.Load();
             txtSource.Text = appSettings.Source;
             txtDest.Text = appSettings.Dest;
             txtIgnoreFolders.Text = string.Join(Environment.NewLine, appSettings.IgnoreFolders);
             txtIgnoreFiles.Text = string.Join(Environment.NewLine, appSettings.IgnoreFiles);
             txtSiteDelay.Text = appSettings.SiteDelay.ToString();
-            _service = new AppSettingsAppService();
+            _service = new AppSettingsService(repository);
+            FormTheme.Apply(this);
         }
 
         private void btnSource_Click(object sender, EventArgs e)

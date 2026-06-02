@@ -9,7 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FolderSyncCore\FolderSyncCore.csproj" />
+    <ProjectReference Include="..\FolderSync.Application\FolderSync.Application.csproj" />
+    <ProjectReference Include="..\FolderSync.Infrastructure\FolderSync.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

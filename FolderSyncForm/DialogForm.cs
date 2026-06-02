@@ -1,4 +1,6 @@
-﻿namespace FolderSyncForm
+﻿using FolderSyncForm.Helpers;
+
+namespace FolderSyncForm
 {
     public partial class DialogForm : Form
     {
@@ -7,6 +9,7 @@
             InitializeComponent();
             lblMessage.Text = message;
             btnCancel.Visible = buttons == MessageBoxButtons.OKCancel;
+            FormTheme.Apply(this);
         }
 
         protected void BtnOK_Click(object sender, EventArgs e)

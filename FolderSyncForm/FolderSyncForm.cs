@@ -1,4 +1,6 @@
-using FolderSyncCore;
+﻿using FolderSync.Application;
+using FolderSync.Domain;
+using FolderSync.Infrastructure;
 
 using FolderSyncForm.Extensions;
 using FolderSyncForm.Helpers;
@@ -7,7 +9,7 @@ namespace FolderSyncForm
 {
     public partial class FolderSyncForm : System.Windows.Forms.Form
     {
-        private FolderSyncAppService _service = default!;
+        private FolderSyncService _service = default!;
         private string _source => txtSource.Text;
         private string _dest => txtDest.Text;
         private string _type => cbType.Text;
@@ -16,15 +18,18 @@ namespace FolderSyncForm
         {
             InitializeComponent();
             InitForm();
+            FormTheme.Apply(this);
         }
 
         private void InitForm()
         {
-            var appSettings = AppSettings.Build();
-            _service = new FolderSyncAppService(appSettings);
+            var settings = new JsonAppSettingsRepository().Load();
+            var reader = new FolderReader(settings);
+            var factory = new FolderControlFactory(reader, settings);
+            _service = new FolderSyncService(reader, factory);
 
-            txtSource.Text = appSettings.Source;
-            txtDest.Text = appSettings.Dest;
+            txtSource.Text = settings.Source;
+            txtDest.Text = settings.Dest;
 
             cbType.Items.Clear();
             cbType.Items.AddRange(_service.GetNames());
@@ -56,7 +61,7 @@ namespace FolderSyncForm
             try
             {
                 _service.Overwrite(_source, _dest, _type);
-                Dialog.Alert(_type + "��s���\");
+                Dialog.Alert(_type + "更新成功");
                 ShowCompareList();
             }
             catch (Exception ex)
@@ -69,8 +74,8 @@ namespace FolderSyncForm
         {
             try
             {
-                _service.Restore(gv, _dest, _type);
-                Dialog.Alert(_type + "�٭즨�\");
+                _service.Restore(GetSelectedBackupFolders(), _dest, _type);
+                Dialog.Alert(_type + "還原成功");
                 ShowCompareList();
             }
             catch (Exception ex)
@@ -84,9 +89,11 @@ namespace FolderSyncForm
         {
             try
             {
-                if (_service.DeleteBackup(gv))
+                var selected = GetSelectedBackupFolders();
+                if (Dialog.Confirm("確定刪除備份紀錄嗎"))
                 {
-                    Dialog.Alert("�R�����\");
+                    _service.DeleteBackups(selected);
+                    Dialog.Alert("刪除成功");
                 }
             }
             catch (Exception ex)
@@ -109,7 +116,6 @@ namespace FolderSyncForm
             {
                 Dialog.Error(ex);
             }
-
         }
 
         private void ShowBackupList()
@@ -122,6 +128,21 @@ namespace FolderSyncForm
             {
                 Dialog.Error(ex);
             }
+        }
+
+        private List<BackupFolder> GetSelectedBackupFolders()
+        {
+            if (gv.SelectedRows.Count == 0)
+            {
+                throw new Exception("請選擇備份紀錄");
+            }
+
+            return gv.SelectedRows
+                .OfType<DataGridViewRow>()
+                .Select(x => x.DataBoundItem as BackupFolder)
+                .Where(x => x != null)
+                .Select(x => x!)
+                .ToList();
         }
 
         private void btnOpenSettings_Click(object sender, EventArgs e)
