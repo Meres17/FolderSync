@@ -7,17 +7,18 @@ namespace FolderSync.Infrastructure.Scanning
         {
             if (string.IsNullOrEmpty(dir))
             {
-                throw new ArgumentException("請輸入資料夾路徑");
+                throw new DomainException("請輸入資料夾路徑");
             }
 
             if (!Directory.Exists(dir))
             {
-                throw new DirectoryNotFoundException($"找不到資料夾：{dir}");
+                throw new DomainException($"找不到資料夾：{dir}");
             }
 
-            return Directory
-                .EnumerateFiles(dir, "*", SearchOption.AllDirectories)
-                .Select(path => new FileSnapshot(Path.GetRelativePath(dir, path), path, new FileInfo(path).LastWriteTime))
+            // 直接列舉 FileInfo，沿用列舉時已取得的時間戳，省去逐檔再 stat 一次。
+            return new DirectoryInfo(dir)
+                .EnumerateFiles("*", SearchOption.AllDirectories)
+                .Select(file => new FileSnapshot(Path.GetRelativePath(dir, file.FullName), file.FullName, file.LastWriteTime))
                 .ToList();
         }
     }

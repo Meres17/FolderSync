@@ -48,24 +48,42 @@ namespace FolderSyncForm.Forms
             txtDest.BindFolderDialog();
         }
 
-        private void btnCompare_Click(object sender, EventArgs e)
+        private async void btnCompare_Click(object sender, EventArgs e)
         {
-            ShowCompareList();
+            SetBusy(true);
+            try
+            {
+                await ShowCompareListAsync();
+            }
+            finally
+            {
+                SetBusy(false);
+            }
         }
 
-        private void btnBackupList_Click(object sender, EventArgs e)
+        private async void btnBackupList_Click(object sender, EventArgs e)
         {
-            ShowBackupList();
+            SetBusy(true);
+            try
+            {
+                await ShowBackupListAsync();
+            }
+            finally
+            {
+                SetBusy(false);
+            }
         }
 
         private async void btnOverwrite_Click(object sender, EventArgs e)
         {
+            SetBusy(true);
             try
             {
-                SetBusy(true);
-                await _service.ApplyAsync(_source, _dest, _mode);
-                Dialog.Alert($"{_mode}更新成功");
-                ShowCompareList();
+                string source = _source, dest = _dest;
+                SyncMode mode = _mode;
+                await Task.Run(() => _service.ApplyAsync(source, dest, mode));
+                Dialog.Alert($"{mode}更新成功");
+                await ShowCompareListAsync();
             }
             catch (Exception ex)
             {
@@ -79,17 +97,20 @@ namespace FolderSyncForm.Forms
 
         private async void btnRestore_Click(object sender, EventArgs e)
         {
+            SetBusy(true);
             try
             {
-                SetBusy(true);
-                await _service.RollbackAsync(GetSelectedBackupFolders(), _dest, _mode);
-                Dialog.Alert($"{_mode}還原成功");
-                ShowCompareList();
+                var selected = GetSelectedBackupFolders();
+                string dest = _dest;
+                SyncMode mode = _mode;
+                await Task.Run(() => _service.RollbackAsync(selected, dest, mode));
+                Dialog.Alert($"{mode}還原成功");
+                await ShowCompareListAsync();
             }
             catch (Exception ex)
             {
                 Dialog.Error(ex);
-                ShowBackupList();
+                await ShowBackupListAsync();
             }
             finally
             {
@@ -109,14 +130,15 @@ namespace FolderSyncForm.Forms
             }
         }
 
-        private void btnDeleteBackup_Click(object sender, EventArgs e)
+        private async void btnDeleteBackup_Click(object sender, EventArgs e)
         {
+            SetBusy(true);
             try
             {
                 var selected = GetSelectedBackupFolders();
                 if (Dialog.Confirm("確定刪除備份紀錄嗎"))
                 {
-                    _service.DeleteBackups(selected);
+                    await Task.Run(() => _service.DeleteBackups(selected));
                     Dialog.Alert("刪除成功");
                 }
             }
@@ -126,15 +148,18 @@ namespace FolderSyncForm.Forms
             }
             finally
             {
-                ShowBackupList();
+                await ShowBackupListAsync();
+                SetBusy(false);
             }
         }
 
-        private void ShowCompareList()
+        // 掃描可能很慢，卸載到背景執行緒避免凍結 UI；輸入先在 UI 執行緒擷取，避免跨緒存取控制項。
+        private async Task ShowCompareListAsync()
         {
+            string source = _source, dest = _dest;
             try
             {
-                gv.DataSource = _service.GetDiffFiles(_source, _dest);
+                gv.DataSource = await Task.Run(() => _service.GetDiffFiles(source, dest));
             }
             catch (Exception ex)
             {
@@ -142,11 +167,12 @@ namespace FolderSyncForm.Forms
             }
         }
 
-        private void ShowBackupList()
+        private async Task ShowBackupListAsync()
         {
+            string source = _source, dest = _dest;
             try
             {
-                gv.DataSource = _service.GetBackupFolders(_source, _dest);
+                gv.DataSource = await Task.Run(() => _service.GetBackupFolders(source, dest));
             }
             catch (Exception ex)
             {

@@ -1,7 +1,7 @@
 ﻿
 namespace FolderSyncForm.Helpers
 {
-    public class Dialog
+    public static class Dialog
     {
         public static DialogResult Alert(string text)
         {
