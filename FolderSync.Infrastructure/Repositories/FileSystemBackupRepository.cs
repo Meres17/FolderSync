@@ -4,21 +4,23 @@ namespace FolderSync.Infrastructure.Repositories
 {
     public class FileSystemBackupRepository : IBackupRepository
     {
-        private const string Format = "yyyyMMdd_HHmm";
+        private const string Format = "yyyyMMdd_HHmmss";
         private readonly IFolderScanner _scanner;
         private readonly AppSettingsProvider _settings;
+        private readonly TimeProvider _clock;
 
-        public FileSystemBackupRepository(IFolderScanner scanner, AppSettingsProvider settings)
+        public FileSystemBackupRepository(IFolderScanner scanner, AppSettingsProvider settings, TimeProvider clock)
         {
             _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         }
 
         public string CreateBackupDirectory(string sourceDir, string destDir)
         {
             var root = GetBackupRoot(sourceDir, destDir);
             PruneOldBackups(root);
-            return Path.Combine(root, DateTime.Now.ToString(Format));
+            return Path.Combine(root, _clock.GetLocalNow().ToString(Format));
         }
 
         public IReadOnlyList<BackupFolder> ListBackups(string sourceDir, string destDir)

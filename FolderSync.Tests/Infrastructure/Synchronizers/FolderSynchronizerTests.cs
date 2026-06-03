@@ -79,8 +79,8 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             backups.CreateBackupDirectory(Arg.Any<string>(), Arg.Any<string>()).Returns(BackupDir);
             backups.ReadBackup(Arg.Any<string>(), Arg.Any<string>()).Returns(Array.Empty<FileSnapshot>());
             var ops = FakeFiles();
-            // 套用到目標的複製失敗 → 觸發自動還原
-            ops.When(x => x.CopyAsync(Arg.Any<IEnumerable<CopyOperation>>(), DestDir))
+            // 僅前向套用（複製非空變更到目標）失敗 → 觸發自動還原；還原是空集合複製，可成功
+            ops.When(x => x.CopyAsync(Arg.Is<IEnumerable<CopyOperation>>(c => c.Any()), DestDir))
                .Do(_ => throw new IOException("磁碟錯誤"));
             var sut = new FolderSynchronizer(backups, ops);
             var files = new List<FileStatus> { FakeFileStatus(CompareState.新增檔案) };

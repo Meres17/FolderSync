@@ -5,31 +5,33 @@
     /// </summary>
     public class FileOperations : IFileOperations
     {
+        // 限制同時進行的檔案 IO 數，避免大量檔案時塞爆 thread pool 與磁碟爭用。
+        private static readonly ParallelOptions Parallelism = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
+
         public Task CopyAsync(IEnumerable<CopyOperation> operations, string destinationRoot)
         {
-            var tasks = operations.Select(op => Task.Run(() =>
+            return Parallel.ForEachAsync(operations, Parallelism, (op, _) =>
             {
-                if (op.Source is null)
+                if (op.Source is not null)
                 {
-                    return;
+                    var destPath = Path.Combine(destinationRoot, op.RelativePath);
+                    EnsureDirectory(Path.GetDirectoryName(destPath));
+                    File.Copy(op.Source, destPath, true);
                 }
-                var destPath = Path.Combine(destinationRoot, op.RelativePath);
-                EnsureDirectory(Path.GetDirectoryName(destPath));
-                File.Copy(op.Source, destPath, true);
-            }));
-            return Task.WhenAll(tasks);
+                return ValueTask.CompletedTask;
+            });
         }
 
         public Task DeleteAsync(IEnumerable<string?> paths)
         {
-            var tasks = paths.Select(path => Task.Run(() =>
+            return Parallel.ForEachAsync(paths, Parallelism, (path, _) =>
             {
                 if (path is not null)
                 {
                     File.Delete(path);
                 }
-            }));
-            return Task.WhenAll(tasks);
+                return ValueTask.CompletedTask;
+            });
         }
 
         private static void EnsureDirectory(string? dir)

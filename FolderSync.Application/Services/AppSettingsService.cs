@@ -52,7 +52,7 @@ namespace FolderSync.Application.Services
                 return;
             }
 
-            throw new DirectoryNotFoundException($"資料夾不存在或路徑無效：{path}");
+            throw new DomainException($"資料夾不存在或路徑無效：{path}");
         }
 
         private void ValidateNoInvalidChars(string nameString)

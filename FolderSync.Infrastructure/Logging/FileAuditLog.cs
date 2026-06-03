@@ -7,10 +7,12 @@
     {
         private static readonly object Gate = new();
         private readonly string _path;
+        private readonly TimeProvider _clock;
 
-        public FileAuditLog(string? path = null)
+        public FileAuditLog(string? path = null, TimeProvider? clock = null)
         {
             _path = path ?? Path.Combine(Directory.GetCurrentDirectory(), "logs", "foldersync.log");
+            _clock = clock ?? TimeProvider.System;
         }
 
         public void Info(string message)
@@ -34,7 +36,7 @@
                     {
                         Directory.CreateDirectory(dir);
                     }
-                    File.AppendAllText(_path, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [{level}] {message}{Environment.NewLine}");
+                    File.AppendAllText(_path, $"{_clock.GetLocalNow():yyyy-MM-dd HH:mm:ss} [{level}] {message}{Environment.NewLine}");
                 }
             }
             catch

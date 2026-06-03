@@ -25,10 +25,18 @@
             {
                 await ApplyToDestinationAsync(changes, destDir);
             }
-            catch
+            catch (Exception applyEx)
             {
                 // 套用中途失敗時，用剛建立的備份把目標還原回更新前
-                await RollbackAsync(backupDir, destDir);
+                try
+                {
+                    await RollbackAsync(backupDir, destDir);
+                }
+                catch (Exception rollbackEx)
+                {
+                    // 還原也失敗：保留兩個例外，避免原始失敗原因被覆蓋
+                    throw new AggregateException("套用失敗後自動還原也失敗", applyEx, rollbackEx);
+                }
                 throw;
             }
         }

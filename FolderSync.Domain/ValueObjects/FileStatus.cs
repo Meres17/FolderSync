@@ -17,7 +17,7 @@
             狀態 = GetState(sourceTime, destTime);
         }
 
-        internal CompareState GetState(DateTime? sourceTime, DateTime? destTime)
+        internal static CompareState GetState(DateTime? sourceTime, DateTime? destTime)
         {
             return (sourceTime, destTime) switch
             {

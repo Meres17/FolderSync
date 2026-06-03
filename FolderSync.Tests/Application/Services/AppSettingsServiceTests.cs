@@ -39,14 +39,14 @@ namespace FolderSync.Tests.Application.Services
         }
 
         [Fact]
-        public void Save_來源資料夾不存在_拋出DirectoryNotFoundException()
+        public void Save_來源資料夾不存在_拋出DomainException()
         {
             // Arrange
             var repo = Substitute.For<IAppSettingsRepository>();
             var sut = new AppSettingsService(repo, new AppSettingsProvider(repo), Substitute.For<IDirectoryProbe>());
 
             // Act & Assert
-            Assert.Throws<DirectoryNotFoundException>(
+            Assert.Throws<DomainException>(
                 () => sut.Save("X:\\not\\exist\\path", "", "", "", "0"));
         }
 

@@ -29,7 +29,7 @@ namespace FolderSync.Tests.Infrastructure.Repositories
             // Arrange
             var sut = NewRepository();
             var backupRoot = Path.Combine(_root, "Backup", "src_dst");
-            Directory.CreateDirectory(Path.Combine(backupRoot, "20230101_1200"));
+            Directory.CreateDirectory(Path.Combine(backupRoot, "20230101_120000"));
             Directory.CreateDirectory(Path.Combine(backupRoot, "not-a-timestamp"));
 
             // Act
@@ -37,7 +37,7 @@ namespace FolderSync.Tests.Infrastructure.Repositories
 
             // Assert
             Assert.Single(backups);
-            Assert.Equal("20230101_1200", backups[0].備份名稱);
+            Assert.Equal("20230101_120000", backups[0].備份名稱);
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace FolderSync.Tests.Infrastructure.Repositories
             // Arrange
             var sut = NewRepository(retention: 3);
             var backupRoot = Path.Combine(_root, "Backup", "src_dst");
-            foreach (var name in new[] { "20230101_1200", "20230102_1200", "20230103_1200", "20230104_1200", "20230105_1200" })
+            foreach (var name in new[] { "20230101_120000", "20230102_120000", "20230103_120000", "20230104_120000", "20230105_120000" })
             {
                 Directory.CreateDirectory(Path.Combine(backupRoot, name));
             }
@@ -82,14 +82,14 @@ namespace FolderSync.Tests.Infrastructure.Repositories
 
             // Assert：保留最新 retention-1 = 2 個（加上即將建立的新備份共 3）
             var remaining = sut.ListBackups(_source, _dest).Select(x => x.備份名稱).OrderBy(x => x).ToList();
-            Assert.Equal(new[] { "20230104_1200", "20230105_1200" }, remaining);
+            Assert.Equal(new[] { "20230104_120000", "20230105_120000" }, remaining);
         }
 
         private static FileSystemBackupRepository NewRepository(int retention = 10)
         {
             var repo = Substitute.For<IAppSettingsRepository>();
             repo.Load().Returns(new AppSettings { RetentionCount = retention });
-            return new FileSystemBackupRepository(new FolderScanner(), new AppSettingsProvider(repo));
+            return new FileSystemBackupRepository(new FolderScanner(), new AppSettingsProvider(repo), TimeProvider.System);
         }
 
         public void Dispose()

@@ -1,6 +1,6 @@
 namespace FolderSync.Infrastructure.Sites
 {
-    internal class SiteController : ISiteController
+    public class SiteController : ISiteController
     {
         private const string OfflineFileName = "App_offline.htm";
 
