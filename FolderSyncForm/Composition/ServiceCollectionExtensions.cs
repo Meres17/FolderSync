@@ -22,6 +22,7 @@ namespace FolderSyncForm.Composition
             services.AddSingleton<IActivityLog, FileActivityLog>();
             services.AddSingleton<IDirectoryProbe, FileSystemDirectoryProbe>();
             services.AddSingleton<IFolderScanner, FolderScanner>();
+            services.AddSingleton<IFileOps, FileOps>();
             services.AddTransient<IBackupRepository, FileSystemBackupRepository>();
             services.AddTransient<IFolderSynchronizerFactory, FolderSynchronizerFactory>();
             return services;

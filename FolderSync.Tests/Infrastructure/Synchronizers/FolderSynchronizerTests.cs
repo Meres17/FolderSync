@@ -1,4 +1,3 @@
-﻿
 using NSubstitute;
 
 namespace FolderSync.Tests.Infrastructure.Synchronizers
@@ -13,7 +12,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         public async Task ApplyAsync_沒有檔案_拋出DomainException()
         {
             // Arrange
-            var sut = FakeSynchronizer(FakeBackups());
+            var sut = new FolderSynchronizer(FakeBackups(), FakeFiles());
 
             // Act & Assert
             await Assert.ThrowsAsync<DomainException>(
@@ -35,20 +34,21 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             };
             var backups = FakeBackups();
             backups.CreateBackupDirectory(Arg.Any<string>(), Arg.Any<string>()).Returns(BackupDir);
-            var sut = FakeSynchronizer(backups);
+            var ops = FakeFiles();
+            var sut = new FolderSynchronizer(backups, ops);
 
             // Act
             await sut.ApplyAsync(files, SourceDir, DestDir);
 
             // Assert
-            AssertCopy(sut, $"{BackupDir}\\{SourceDir}", 3);
-            AssertCopy(sut, $"{BackupDir}\\{DestDir}", 5);
-            AssertCopy(sut, $"{BackupDir}\\{BackupCategory.Delete}", 3);
-            AssertCopy(sut, $"{BackupDir}\\{BackupCategory.Diff}", 2);
-            AssertCopy(sut, $"{BackupDir}\\{BackupCategory.Add}", 1);
+            AssertCopy(ops, $"{BackupDir}\\{SourceDir}", 3);
+            AssertCopy(ops, $"{BackupDir}\\{DestDir}", 5);
+            AssertCopy(ops, $"{BackupDir}\\{BackupCategory.Delete}", 3);
+            AssertCopy(ops, $"{BackupDir}\\{BackupCategory.Diff}", 2);
+            AssertCopy(ops, $"{BackupDir}\\{BackupCategory.Add}", 1);
 
-            AssertCopy(sut, DestDir, 3);
-            AssertDelete(sut, 3);
+            AssertCopy(ops, DestDir, 3);
+            AssertDelete(ops, 3);
         }
 
         [Fact]
@@ -59,15 +59,16 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             backups.ReadBackup(Arg.Any<string>(), BackupCategory.Delete).Returns(Snapshots(3));
             backups.ReadBackup(Arg.Any<string>(), BackupCategory.Diff).Returns(Snapshots(2));
             backups.ReadBackup(Arg.Any<string>(), BackupCategory.Add).Returns(Snapshots(1));
-            var sut = FakeSynchronizer(backups);
+            var ops = FakeFiles();
+            var sut = new FolderSynchronizer(backups, ops);
 
             // Act
             await sut.RollbackAsync(BackupDir, DestDir);
 
             // Assert
-            AssertCopy(sut, DestDir, 3);
-            AssertCopy(sut, DestDir, 2);
-            AssertDelete(sut, 1);
+            AssertCopy(ops, DestDir, 3);
+            AssertCopy(ops, DestDir, 2);
+            AssertDelete(ops, 1);
         }
 
         [Fact]
@@ -77,10 +78,11 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             var backups = FakeBackups();
             backups.CreateBackupDirectory(Arg.Any<string>(), Arg.Any<string>()).Returns(BackupDir);
             backups.ReadBackup(Arg.Any<string>(), Arg.Any<string>()).Returns(Array.Empty<FileSnapshot>());
-            var sut = FakeSynchronizer(backups);
+            var ops = FakeFiles();
             // 套用到目標的複製失敗 → 觸發自動還原
-            sut.When(x => x.CopyAsync(Arg.Any<IEnumerable<CopyOperation>>(), DestDir))
+            ops.When(x => x.CopyAsync(Arg.Any<IEnumerable<CopyOperation>>(), DestDir))
                .Do(_ => throw new IOException("磁碟錯誤"));
+            var sut = new FolderSynchronizer(backups, ops);
             var files = new List<FileStatus> { FakeFileStatus(CompareState.新增檔案) };
 
             // Act & Assert
@@ -90,16 +92,16 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             backups.Received().ReadBackup(BackupDir, BackupCategory.Delete);
         }
 
-        private static void AssertCopy(FolderSynchronizer sut, string destHost, int count)
+        private static void AssertCopy(IFileOps files, string destHost, int count)
         {
-            sut.Received(1).CopyAsync(
+            files.Received(1).CopyAsync(
                 Arg.Is<IEnumerable<CopyOperation>>(x => x.Count() == count),
                 destHost);
         }
 
-        private static void AssertDelete(FolderSynchronizer sut, int count)
+        private static void AssertDelete(IFileOps files, int count)
         {
-            sut.Received(1).DeleteAsync(Arg.Is<IEnumerable<string?>>(x => x.Count() == count));
+            files.Received(1).DeleteAsync(Arg.Is<IEnumerable<string?>>(x => x.Count() == count));
         }
 
         private static IReadOnlyList<FileSnapshot> Snapshots(int count)
@@ -117,15 +119,9 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             return result;
         }
 
-        private static FolderSynchronizer FakeSynchronizer(IBackupRepository backups)
+        private static IFileOps FakeFiles()
         {
-            var result = Substitute.For<FolderSynchronizer>(backups);
-            // 實際 IO 不執行
-            result.When(x => x.CopyAsync(Arg.Any<IEnumerable<CopyOperation>>(), Arg.Any<string>()))
-                .DoNotCallBase();
-            result.When(x => x.DeleteAsync(Arg.Any<IEnumerable<string?>>()))
-                .DoNotCallBase();
-            return result;
+            return Substitute.For<IFileOps>();
         }
 
         private static IBackupRepository FakeBackups()

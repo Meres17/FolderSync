@@ -32,7 +32,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             var backups = Substitute.For<IBackupRepository>();
             var repo = Substitute.For<IAppSettingsRepository>();
             repo.Load().Returns(new AppSettings());
-            return new FolderSynchronizerFactory(backups, new AppSettingsProvider(repo));
+            return new FolderSynchronizerFactory(backups, new AppSettingsProvider(repo), Substitute.For<IFileOps>());
         }
     }
 }

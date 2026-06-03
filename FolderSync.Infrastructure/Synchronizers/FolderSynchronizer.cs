@@ -3,10 +3,12 @@ namespace FolderSync.Infrastructure.Synchronizers
     internal class FolderSynchronizer : IFolderSynchronizer
     {
         private readonly IBackupRepository _backups;
+        private readonly IFileOps _files;
 
-        public FolderSynchronizer(IBackupRepository backups)
+        public FolderSynchronizer(IBackupRepository backups, IFileOps files)
         {
             _backups = backups ?? throw new ArgumentNullException(nameof(backups));
+            _files = files ?? throw new ArgumentNullException(nameof(files));
         }
 
         public async Task ApplyAsync(IReadOnlyList<FileStatus> changes, string sourceDir, string destDir)
@@ -34,7 +36,7 @@ namespace FolderSync.Infrastructure.Synchronizers
         private Task BackupChangesAsync(IReadOnlyList<FileStatus> changes, string backupDir, string sourceDir, string destDir)
         {
             var rules = BackupPlan.ForOverwrite(Path.GetFileName(sourceDir), Path.GetFileName(destDir));
-            var tasks = rules.Select(rule => CopyAsync(
+            var tasks = rules.Select(rule => _files.CopyAsync(
                 changes.Where(rule.Matches).Select(file => new CopyOperation(file.PathOf(rule.Side), file.相對路徑)),
                 Path.Combine(backupDir, rule.FolderName)));
             return Task.WhenAll(tasks);
@@ -42,11 +44,11 @@ namespace FolderSync.Infrastructure.Synchronizers
 
         private Task ApplyToDestinationAsync(IReadOnlyList<FileStatus> changes, string destDir)
         {
-            var copy = CopyAsync(
+            var copy = _files.CopyAsync(
                 changes.Where(x => x.狀態 is CompareState.新增檔案 or CompareState.時間不同)
                        .Select(file => new CopyOperation(file.PathOf(FileSide.來源), file.相對路徑)),
                 destDir);
-            var delete = DeleteAsync(changes
+            var delete = _files.DeleteAsync(changes
                 .Where(x => x.狀態 == CompareState.刪除檔案)
                 .Select(x => x.目標路徑));
             return Task.WhenAll(copy, delete);
@@ -57,49 +59,14 @@ namespace FolderSync.Infrastructure.Synchronizers
             //反向操作：還原被刪除與被修改的檔案，移除新增的檔案
             var restoreDeleted = CopyBackupAsync(_backups.ReadBackup(backupDir, BackupCategory.Delete), destDir);
             var restoreDiff = CopyBackupAsync(_backups.ReadBackup(backupDir, BackupCategory.Diff), destDir);
-            var removeAdded = DeleteAsync(_backups.ReadBackup(backupDir, BackupCategory.Add)
+            var removeAdded = _files.DeleteAsync(_backups.ReadBackup(backupDir, BackupCategory.Add)
                 .Select(x => Path.Combine(destDir, x.相對路徑)));
             await Task.WhenAll(restoreDeleted, restoreDiff, removeAdded);
         }
 
         private Task CopyBackupAsync(IReadOnlyList<FileSnapshot> files, string destHost)
         {
-            return CopyAsync(files.Select(file => new CopyOperation(file.完整路徑, file.相對路徑)), destHost);
-        }
-
-        internal virtual Task CopyAsync(IEnumerable<CopyOperation> ops, string destHost)
-        {
-            var tasks = ops.Select(op => Task.Run(() =>
-            {
-                if (op.Source is null)
-                {
-                    return;
-                }
-                var destPath = Path.Combine(destHost, op.RelativePath);
-                EnsureDirectory(Path.GetDirectoryName(destPath));
-                File.Copy(op.Source, destPath, true);
-            }));
-            return Task.WhenAll(tasks);
-        }
-
-        internal virtual Task DeleteAsync(IEnumerable<string?> paths)
-        {
-            var tasks = paths.Select(path => Task.Run(() =>
-            {
-                if (path is not null)
-                {
-                    File.Delete(path);
-                }
-            }));
-            return Task.WhenAll(tasks);
-        }
-
-        private static void EnsureDirectory(string? dir)
-        {
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
+            return _files.CopyAsync(files.Select(file => new CopyOperation(file.完整路徑, file.相對路徑)), destHost);
         }
     }
 }
