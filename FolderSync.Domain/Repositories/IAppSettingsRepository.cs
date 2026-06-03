@@ -1,4 +1,4 @@
-﻿namespace FolderSync.Domain.Interfaces
+﻿namespace FolderSync.Domain.Repositories
 {
     public interface IAppSettingsRepository
     {

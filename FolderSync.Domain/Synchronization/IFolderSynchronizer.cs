@@ -1,4 +1,4 @@
-﻿namespace FolderSync.Domain.Interfaces
+﻿namespace FolderSync.Domain.Synchronization
 {
     /// <summary>
     /// 將來源差異套用到目標（Apply），或從備份還原目標（Rollback）。

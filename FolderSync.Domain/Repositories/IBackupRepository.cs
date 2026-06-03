@@ -1,4 +1,4 @@
-﻿namespace FolderSync.Domain.Interfaces
+﻿namespace FolderSync.Domain.Repositories
 {
     /// <summary>
     /// 備份的讀寫倉儲：建立備份目錄、列出與刪除備份、讀取備份內容供還原。

@@ -1,4 +1,4 @@
-namespace FolderSync.Domain.Interfaces
+﻿namespace FolderSync.Domain.FileSystem
 {
     /// <summary>
     /// 查詢資料夾是否存在（檔案系統存取的 port）。

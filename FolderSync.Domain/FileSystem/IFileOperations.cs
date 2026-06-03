@@ -1,4 +1,4 @@
-﻿namespace FolderSync.Domain.Interfaces
+﻿namespace FolderSync.Domain.FileSystem
 {
     /// <summary>
     /// 檔案系統的複製與刪除操作（port）；目標相對路徑會接到指定的根目錄下。

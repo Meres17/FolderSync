@@ -1,4 +1,4 @@
-﻿namespace FolderSync.Domain.Interfaces
+﻿namespace FolderSync.Domain.Synchronization
 {
     /// <summary>
     /// 依同步模式建立對應的 <see cref="IFolderSynchronizer"/>。

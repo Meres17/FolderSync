@@ -1,4 +1,4 @@
-﻿namespace FolderSync.Domain.Interfaces
+﻿namespace FolderSync.Domain.Logging
 {
     /// <summary>
     /// 操作稽核日誌：記錄更新／還原／刪除等行為與錯誤。

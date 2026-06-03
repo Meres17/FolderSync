@@ -1,9 +1,13 @@
-global using FolderSync.Application.Services;
+﻿global using FolderSync.Application.Services;
 
 global using FolderSync.Domain.Constants;
 global using FolderSync.Domain.Enums;
 global using FolderSync.Domain.Exceptions;
-global using FolderSync.Domain.Interfaces;
+global using FolderSync.Domain.FileSystem;
+global using FolderSync.Domain.Logging;
+global using FolderSync.Domain.Repositories;
+global using FolderSync.Domain.Sites;
+global using FolderSync.Domain.Synchronization;
 global using FolderSync.Domain.Services;
 global using FolderSync.Domain.ValueObjects;
 
