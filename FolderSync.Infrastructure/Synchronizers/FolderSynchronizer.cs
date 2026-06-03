@@ -1,11 +1,11 @@
-namespace FolderSync.Infrastructure.Synchronizers
+﻿namespace FolderSync.Infrastructure.Synchronizers
 {
     internal class FolderSynchronizer : IFolderSynchronizer
     {
         private readonly IBackupRepository _backups;
-        private readonly IFileOps _files;
+        private readonly IFileOperations _files;
 
-        public FolderSynchronizer(IBackupRepository backups, IFileOps files)
+        public FolderSynchronizer(IBackupRepository backups, IFileOperations files)
         {
             _backups = backups ?? throw new ArgumentNullException(nameof(backups));
             _files = files ?? throw new ArgumentNullException(nameof(files));

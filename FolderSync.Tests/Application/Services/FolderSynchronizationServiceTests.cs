@@ -80,7 +80,7 @@ namespace FolderSync.Tests.Application.Services
             // Arrange
             var factory = Substitute.For<IFolderSynchronizerFactory>();
             var backups = Substitute.For<IBackupRepository>();
-            var log = Substitute.For<IActivityLog>();
+            var log = Substitute.For<IAuditLog>();
             var synchronizer = Substitute.For<IFolderSynchronizer>();
             synchronizer.ApplyAsync(Arg.Any<IReadOnlyList<FileStatus>>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromException(new IOException("磁碟錯誤")));
@@ -97,7 +97,7 @@ namespace FolderSync.Tests.Application.Services
         {
             var factory = Substitute.For<IFolderSynchronizerFactory>();
             var backups = Substitute.For<IBackupRepository>();
-            var sut = new FolderSynchronizationService(factory, backups, Substitute.For<IActivityLog>());
+            var sut = new FolderSynchronizationService(factory, backups, Substitute.For<IAuditLog>());
             return (sut, factory, backups);
         }
     }

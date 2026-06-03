@@ -141,7 +141,7 @@ namespace FolderSync.Tests.Application.Services
             var repo = Substitute.For<IAppSettingsRepository>();
             repo.Load().Returns(new AppSettings());
             var diff = new FolderDiffService(scanner, new FolderComparer(), new AppSettingsProvider(repo));
-            var sync = new FolderSynchronizationService(factory, backups, Substitute.For<IActivityLog>());
+            var sync = new FolderSynchronizationService(factory, backups, Substitute.For<IAuditLog>());
             var sut = new FolderSyncService(diff, sync);
             return (sut, scanner, factory, backups);
         }

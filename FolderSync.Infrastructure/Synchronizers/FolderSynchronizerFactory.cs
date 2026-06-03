@@ -1,12 +1,12 @@
-namespace FolderSync.Infrastructure.Synchronizers
+﻿namespace FolderSync.Infrastructure.Synchronizers
 {
     public class FolderSynchronizerFactory : IFolderSynchronizerFactory
     {
         private readonly IBackupRepository _backups;
         private readonly AppSettingsProvider _settings;
-        private readonly IFileOps _files;
+        private readonly IFileOperations _files;
 
-        public FolderSynchronizerFactory(IBackupRepository backups, AppSettingsProvider settings, IFileOps files)
+        public FolderSynchronizerFactory(IBackupRepository backups, AppSettingsProvider settings, IFileOperations files)
         {
             _backups = backups ?? throw new ArgumentNullException(nameof(backups));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));

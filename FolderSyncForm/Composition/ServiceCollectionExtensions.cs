@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace FolderSyncForm.Composition
 {
@@ -19,10 +19,10 @@ namespace FolderSyncForm.Composition
         private static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             services.AddSingleton<IAppSettingsRepository, JsonAppSettingsRepository>();
-            services.AddSingleton<IActivityLog, FileActivityLog>();
+            services.AddSingleton<IAuditLog, FileAuditLog>();
             services.AddSingleton<IDirectoryProbe, FileSystemDirectoryProbe>();
             services.AddSingleton<IFolderScanner, FolderScanner>();
-            services.AddSingleton<IFileOps, FileOps>();
+            services.AddSingleton<IFileOperations, FileOperations>();
             services.AddTransient<IBackupRepository, FileSystemBackupRepository>();
             services.AddTransient<IFolderSynchronizerFactory, FolderSynchronizerFactory>();
             return services;

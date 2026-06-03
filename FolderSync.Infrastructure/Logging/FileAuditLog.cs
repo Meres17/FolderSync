@@ -1,14 +1,14 @@
-namespace FolderSync.Infrastructure.Logging
+﻿namespace FolderSync.Infrastructure.Logging
 {
     /// <summary>
     /// 將操作日誌附加寫入檔案；記錄失敗絕不影響主流程。
     /// </summary>
-    public class FileActivityLog : IActivityLog
+    public class FileAuditLog : IAuditLog
     {
         private static readonly object Gate = new();
         private readonly string _path;
 
-        public FileActivityLog(string? path = null)
+        public FileAuditLog(string? path = null)
         {
             _path = path ?? Path.Combine(Directory.GetCurrentDirectory(), "logs", "foldersync.log");
         }

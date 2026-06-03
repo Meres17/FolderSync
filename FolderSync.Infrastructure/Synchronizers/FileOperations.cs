@@ -1,9 +1,9 @@
-namespace FolderSync.Infrastructure.Synchronizers
+﻿namespace FolderSync.Infrastructure.Synchronizers
 {
     /// <summary>
     /// 以實際檔案系統執行複製/刪除的 adapter；每個檔案並行處理，來源為 null 則略過。
     /// </summary>
-    public class FileOps : IFileOps
+    public class FileOperations : IFileOperations
     {
         public Task CopyAsync(IEnumerable<CopyOperation> operations, string destinationRoot)
         {

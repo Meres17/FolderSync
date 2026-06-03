@@ -1,4 +1,4 @@
-namespace FolderSync.Application.Services
+﻿namespace FolderSync.Application.Services
 {
     /// <summary>
     /// 依模式執行同步（套用／還原）並管理備份紀錄，並記錄操作稽核。
@@ -7,9 +7,9 @@ namespace FolderSync.Application.Services
     {
         private readonly IFolderSynchronizerFactory _factory;
         private readonly IBackupRepository _backups;
-        private readonly IActivityLog _log;
+        private readonly IAuditLog _log;
 
-        public FolderSynchronizationService(IFolderSynchronizerFactory factory, IBackupRepository backups, IActivityLog log)
+        public FolderSynchronizationService(IFolderSynchronizerFactory factory, IBackupRepository backups, IAuditLog log)
         {
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
             _backups = backups ?? throw new ArgumentNullException(nameof(backups));

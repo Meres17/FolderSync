@@ -1,4 +1,4 @@
-using NSubstitute;
+﻿using NSubstitute;
 
 namespace FolderSync.Tests.Infrastructure.Synchronizers
 {
@@ -92,14 +92,14 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             backups.Received().ReadBackup(BackupDir, BackupCategory.Delete);
         }
 
-        private static void AssertCopy(IFileOps files, string destHost, int count)
+        private static void AssertCopy(IFileOperations files, string destHost, int count)
         {
             files.Received(1).CopyAsync(
                 Arg.Is<IEnumerable<CopyOperation>>(x => x.Count() == count),
                 destHost);
         }
 
-        private static void AssertDelete(IFileOps files, int count)
+        private static void AssertDelete(IFileOperations files, int count)
         {
             files.Received(1).DeleteAsync(Arg.Is<IEnumerable<string?>>(x => x.Count() == count));
         }
@@ -119,9 +119,9 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             return result;
         }
 
-        private static IFileOps FakeFiles()
+        private static IFileOperations FakeFiles()
         {
-            return Substitute.For<IFileOps>();
+            return Substitute.For<IFileOperations>();
         }
 
         private static IBackupRepository FakeBackups()
