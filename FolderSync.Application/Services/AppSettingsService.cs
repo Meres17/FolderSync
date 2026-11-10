@@ -5,6 +5,8 @@ namespace FolderSync.Application.Services
     {
         //無效字元
         private readonly char[] _invalidChars = new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+        //忽略檔名的無效字元（可用萬用字元 * ?）
+        private readonly char[] _invalidFilePatternChars = new[] { '\\', '/', ':', '"', '<', '>', '|' };
         private readonly IAppSettingsRepository _repository;
         private readonly AppSettingsProvider _provider;
         private readonly IDirectoryProbe _directories;
@@ -20,8 +22,8 @@ namespace FolderSync.Application.Services
         {
             ValidateDirectoryExists(source);
             ValidateDirectoryExists(dest);
-            ValidateNoInvalidChars(ignoreFolders);
-            ValidateNoInvalidChars(ignoreFiles);
+            ValidateNoInvalidChars(ignoreFolders, _invalidChars);
+            ValidateNoInvalidChars(ignoreFiles, _invalidFilePatternChars);
 
             var appSettings = BuildSettings(source, dest, ignoreFolders, ignoreFiles, siteDelayText);
             _repository.Save(appSettings);
@@ -55,11 +57,11 @@ namespace FolderSync.Application.Services
             throw new DomainException($"資料夾不存在或路徑無效：{path}");
         }
 
-        private void ValidateNoInvalidChars(string nameString)
+        private static void ValidateNoInvalidChars(string nameString, char[] invalidChars)
         {
             string[] names = SplitLines(nameString);
 
-            foreach (var invalidChar in _invalidChars)
+            foreach (var invalidChar in invalidChars)
             {
                 foreach (var name in names)
                 {
