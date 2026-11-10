@@ -1,4 +1,6 @@
-﻿namespace FolderSync.Domain.Services
+﻿using System.IO.Enumeration;
+
+namespace FolderSync.Domain.Services
 {
     /// <summary>
     /// 判斷檔案是否應被忽略（不納入比對）的領域規則。
@@ -26,7 +28,8 @@
 
         private bool IsIgnoredFile(string relativePath)
         {
-            return _ignoreFiles.Any(name => relativePath.EndsWith(name, StringComparison.InvariantCultureIgnoreCase));
+            var fileName = Path.GetFileName(relativePath);
+            return _ignoreFiles.Any(pattern => FileSystemName.MatchesSimpleExpression(pattern, fileName, ignoreCase: true));
         }
 
         private bool IsUnderIgnoredFolder(string relativePath)
