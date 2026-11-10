@@ -64,5 +64,73 @@ namespace FolderSync.Tests.Application.Services
             // Assert
             repo.Received(1).Save(Arg.Is<AppSettings>(s => s.SiteDelay == 0));
         }
+
+        [Theory]
+        [InlineData("appsettings*.json")]
+        [InlineData("*.pdb")]
+        [InlineData("a?.txt")]
+        public void Save_忽略檔名含萬用字元_儲存設定(string ignoreFiles)
+        {
+            // arrange
+            var mock = CreateRepository();
+            var sut = CreateService(mock);
+
+            // act
+            sut.Save("", "", "", ignoreFiles, "0");
+
+            // assert
+            mock.Received(1).Save(Arg.Is<AppSettings>(s => s.IgnoreFiles.Single() == ignoreFiles));
+        }
+
+        [Theory]
+        [InlineData("a\\b.txt")]
+        [InlineData("a/b.txt")]
+        [InlineData("a:b.txt")]
+        [InlineData("a\"b.txt")]
+        [InlineData("a<b.txt")]
+        [InlineData("a>b.txt")]
+        [InlineData("a|b.txt")]
+        public void Save_忽略檔名含其他無效字元_拋出例外且不儲存(string ignoreFiles)
+        {
+            // arrange
+            var mock = CreateRepository();
+            var sut = CreateService(mock);
+
+            // act
+            var act = () => sut.Save("", "", "", ignoreFiles, "0");
+
+            // assert
+            Assert.Throws<DomainException>(act);
+            mock.DidNotReceive().Save(Arg.Any<AppSettings>());
+        }
+
+        [Theory]
+        [InlineData("log*")]
+        [InlineData("log?")]
+        public void Save_忽略資料夾含萬用字元_拋出例外且不儲存(string ignoreFolders)
+        {
+            // arrange
+            var mock = CreateRepository();
+            var sut = CreateService(mock);
+
+            // act
+            var act = () => sut.Save("", "", ignoreFolders, "", "0");
+
+            // assert
+            Assert.Throws<DomainException>(act);
+            mock.DidNotReceive().Save(Arg.Any<AppSettings>());
+        }
+
+        private static IAppSettingsRepository CreateRepository()
+        {
+            var repository = Substitute.For<IAppSettingsRepository>();
+            repository.Load().Returns(new AppSettings());
+            return repository;
+        }
+
+        private static AppSettingsService CreateService(IAppSettingsRepository repository)
+        {
+            return new AppSettingsService(repository, new AppSettingsProvider(repository), Substitute.For<IDirectoryProbe>());
+        }
     }
 }
