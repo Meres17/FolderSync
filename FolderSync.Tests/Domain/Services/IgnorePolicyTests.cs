@@ -19,6 +19,45 @@ namespace FolderSync.Tests.Domain.Services
         }
 
         [Theory]
+        [InlineData("appsettings.json", true)]
+        [InlineData("appsettings.Production.json", true)]
+        [InlineData("sub\\appsettings.Staging.json", true)]
+        [InlineData("APPSETTINGS.JSON", true)]//不分大小寫
+        [InlineData("IMO.pdb", true)]
+        [InlineData("sub\\IMO.PDB", true)]
+        [InlineData("myappsettings.json", false)]//星號前的字首不符
+        [InlineData("appsettings.txt", false)]//副檔名不符
+        [InlineData("IMO.pdb.txt", false)]//pdb 不在結尾
+        [InlineData("appsettings.json\\a.txt", false)]//符合的是資料夾名稱，不是檔名
+        public void ShouldIgnore_忽略清單含萬用字元_依完整檔名判斷(string relativePath, bool expected)
+        {
+            // arrange
+            var sut = new IgnorePolicy(new[] { "appsettings*.json", "*.pdb" }, Array.Empty<string>());
+
+            // act
+            var result = sut.ShouldIgnore(relativePath);
+
+            // assert
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData("web.config", true)]
+        [InlineData("Views\\Web.Config", true)]
+        [InlineData("xweb.config", false)]//只有結尾相同不算符合
+        public void ShouldIgnore_忽略清單為一般檔名_需完整檔名相符(string relativePath, bool expected)
+        {
+            // arrange
+            var sut = new IgnorePolicy(new[] { "web.config" }, Array.Empty<string>());
+
+            // act
+            var result = sut.ShouldIgnore(relativePath);
+
+            // assert
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
         [InlineData("bin\\file.txt", true)]
         [InlineData("obj\\file.txt", true)]
         [InlineData("src\\bin\\file.txt", true)]
