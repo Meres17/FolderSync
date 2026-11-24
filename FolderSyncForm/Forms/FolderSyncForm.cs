@@ -105,9 +105,27 @@ namespace FolderSyncForm.Forms
             var skipped = await Task.Run(() => _service.GetIgnoredDiffFiles(source, dest));
             var message = skipped.Count == 0
                 ? $"確定要執行{mode}更新嗎？\n沒有符合忽略規則而略過的檔案。"
-                : $"確定要執行{mode}更新嗎？\n以下 {skipped.Count} 個檔案符合忽略規則，不會被覆蓋：";
-            var lines = skipped.Select(x => $"[{x.狀態}] {x.相對路徑}");
-            return Dialog.ConfirmList(message, lines);
+                : $"確定要執行{mode}更新嗎？\n以下 {skipped.Count} 個檔案符合忽略規則，更新時一律略過（不覆蓋、不刪除、不複製）：";
+            var lines = skipped.Select(x => $"[{SkipAction(x.狀態)}] {x.相對路徑}");
+            return Dialog.ConfirmList($"{message}\n{IgnoreRulesText()}", lines);
+        }
+
+        private string IgnoreRulesText()
+        {
+            var settings = _settings.Current;
+            return $"忽略檔名：{string.Join("、", settings.IgnoreFiles)}\n忽略資料夾：{string.Join("、", settings.IgnoreFolders)}";
+        }
+
+        // 顯示略過後實際的處理結果，避免比對狀態（如「刪除檔案」）被誤讀成將執行的動作。
+        private static string SkipAction(CompareState state)
+        {
+            return state switch
+            {
+                CompareState.新增檔案 => "不複製｜來源才有",
+                CompareState.刪除檔案 => "不刪除｜目標才有",
+                CompareState.時間不同 => "不覆蓋｜兩邊不同",
+                _ => state.ToString(),
+            };
         }
 
         private async void btnRestore_Click(object sender, EventArgs e)

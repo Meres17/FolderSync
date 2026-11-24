@@ -43,19 +43,19 @@
             lblMessage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             lblMessage.Location = new Point(12, 9);
             lblMessage.Name = "lblMessage";
-            lblMessage.Size = new Size(676, 56);
+            lblMessage.Size = new Size(676, 108);
             lblMessage.TabIndex = 0;
             lblMessage.Text = "訊息";
             //
             // txtList
             //
             txtList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            txtList.Location = new Point(12, 68);
+            txtList.Location = new Point(12, 120);
             txtList.Multiline = true;
             txtList.Name = "txtList";
             txtList.ReadOnly = true;
             txtList.ScrollBars = ScrollBars.Both;
-            txtList.Size = new Size(676, 340);
+            txtList.Size = new Size(676, 288);
             txtList.TabIndex = 1;
             txtList.WordWrap = false;
             //
