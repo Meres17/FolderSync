@@ -10,6 +10,7 @@ namespace FolderSyncForm.Forms
         private readonly AppSettingsService _settingsService = default!;
         private string _source => txtSource.Text;
         private string _dest => txtDest.Text;
+        private bool _busy;
         private SyncMode _mode =>cbType.SelectedItem is SyncMode mode ? mode : SyncMode.資料夾;
 
         /// <summary>
@@ -180,8 +181,18 @@ namespace FolderSyncForm.Forms
             }
         }
 
+        // 作業無法中途取消，關閉只警告不擋死：誤按可取消，真的卡住仍能關；系統關機/登出不攔。
+        private void FolderSyncForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_busy && e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = Dialog.Confirm("作業進行中，強制關閉可能造成更新不完整、站台維持離線。\n確定要關閉嗎？") == false;
+            }
+        }
+
         private void SetBusy(bool busy)
         {
+            _busy = busy;
             UseWaitCursor = busy;
             foreach (Control control in Controls)
             {

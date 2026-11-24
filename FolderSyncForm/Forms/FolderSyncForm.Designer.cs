@@ -265,6 +265,7 @@ namespace FolderSyncForm.Forms
             Margin = new Padding(2);
             Name = "MainForm";
             Text = "資料夾比對";
+            FormClosing += FolderSyncForm_FormClosing;
             ((System.ComponentModel.ISupportInitialize)gv).EndInit();
             ResumeLayout(false);
             PerformLayout();
