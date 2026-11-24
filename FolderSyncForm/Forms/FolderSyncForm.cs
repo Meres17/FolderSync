@@ -81,6 +81,9 @@ namespace FolderSyncForm.Forms
             {
                 string source = _source, dest = _dest;
                 SyncMode mode = _mode;
+                if (await ConfirmOverwriteAsync(source, dest, mode) == false)
+                    return;
+
                 await Task.Run(() => _service.ApplyAsync(source, dest, mode));
                 Dialog.Alert($"{mode}更新成功");
                 await ShowCompareListAsync();
@@ -93,6 +96,17 @@ namespace FolderSyncForm.Forms
             {
                 SetBusy(false);
             }
+        }
+
+        // 更新前列出「有差異但符合忽略規則」的檔案，讓使用者做最終確認。
+        private async Task<bool> ConfirmOverwriteAsync(string source, string dest, SyncMode mode)
+        {
+            var skipped = await Task.Run(() => _service.GetIgnoredDiffFiles(source, dest));
+            var message = skipped.Count == 0
+                ? $"確定要執行{mode}更新嗎？\n沒有符合忽略規則而略過的檔案。"
+                : $"確定要執行{mode}更新嗎？\n以下 {skipped.Count} 個檔案符合忽略規則，不會被覆蓋：";
+            var lines = skipped.Select(x => $"[{x.狀態}] {x.相對路徑}");
+            return Dialog.ConfirmList(message, lines);
         }
 
         private async void btnRestore_Click(object sender, EventArgs e)

@@ -22,6 +22,14 @@ namespace FolderSync.Application.Services
             return _diff.GetDiff(sourceDir, destDir);
         }
 
+        /// <summary>
+        /// 有差異但符合忽略規則、更新時不會被覆蓋的檔案。
+        /// </summary>
+        public List<FileStatus> GetIgnoredDiffFiles(string sourceDir, string destDir)
+        {
+            return _diff.GetIgnoredDiff(sourceDir, destDir);
+        }
+
         public List<BackupFolder> GetBackupFolders(string sourceDir, string destDir)
         {
             return _sync.ListBackups(sourceDir, destDir).ToList();

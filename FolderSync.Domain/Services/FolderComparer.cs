@@ -10,8 +10,27 @@
             IEnumerable<FileSnapshot> dest,
             IgnorePolicy ignore)
         {
-            var sourceMap = ToMap(source, ignore);
-            var destMap = ToMap(dest, ignore);
+            return Diff(source, dest, path => ignore.ShouldIgnore(path) == false);
+        }
+
+        /// <summary>
+        /// 只比對符合忽略規則的檔案，產出「有差異但不會被同步」的清單。
+        /// </summary>
+        public List<FileStatus> CompareIgnored(
+            IEnumerable<FileSnapshot> source,
+            IEnumerable<FileSnapshot> dest,
+            IgnorePolicy ignore)
+        {
+            return Diff(source, dest, ignore.ShouldIgnore);
+        }
+
+        private static List<FileStatus> Diff(
+            IEnumerable<FileSnapshot> source,
+            IEnumerable<FileSnapshot> dest,
+            Func<string, bool> include)
+        {
+            var sourceMap = ToMap(source, include);
+            var destMap = ToMap(dest, include);
 
             var result = new List<FileStatus>();
             foreach (var (relativePath, sourceFile) in sourceMap)
@@ -33,10 +52,10 @@
                 .ToList();
         }
 
-        private static Dictionary<string, FileSnapshot> ToMap(IEnumerable<FileSnapshot> snapshots, IgnorePolicy ignore)
+        private static Dictionary<string, FileSnapshot> ToMap(IEnumerable<FileSnapshot> snapshots, Func<string, bool> include)
         {
             return snapshots
-                .Where(x => !ignore.ShouldIgnore(x.相對路徑))
+                .Where(x => include(x.相對路徑))
                 .ToDictionary(x => x.相對路徑);
         }
 

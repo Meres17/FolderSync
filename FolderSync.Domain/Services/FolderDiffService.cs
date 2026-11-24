@@ -23,5 +23,13 @@ namespace FolderSync.Domain.Services
             var ignore = IgnorePolicy.From(_settings.Current);
             return _comparer.Compare(source, dest, ignore);
         }
+
+        public List<FileStatus> GetIgnoredDiff(string sourceDir, string destDir)
+        {
+            var source = _scanner.Scan(sourceDir);
+            var dest = _scanner.Scan(destDir);
+            var ignore = IgnorePolicy.From(_settings.Current);
+            return _comparer.CompareIgnored(source, dest, ignore);
+        }
     }
 }

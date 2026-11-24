@@ -19,6 +19,14 @@ namespace FolderSyncForm.Helpers
             return DialogResult.OK == result;
         }
 
+        public static bool ConfirmList(string text, IEnumerable<string> lines)
+        {
+            using (var dialog = new ConfirmListForm(text, lines))
+            {
+                return DialogResult.OK == dialog.ShowDialog();
+            }
+        }
+
         private static DialogResult DialogForm(string text, MessageBoxButtons buttons)
         {
             using (var dialog = new DialogForm(text, buttons))
