@@ -28,6 +28,7 @@ namespace FolderSyncForm.Forms
 
             InitializeComponent();
             cbType.DataSource = _service.GetSyncModes().ToList();
+            cbType.SelectedItem = SyncMode.站台;
             RefreshFromSettings();
             FormTheme.Apply(this);
         }
