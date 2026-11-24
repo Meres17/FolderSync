@@ -82,6 +82,7 @@ namespace FolderSyncForm.Forms
             txtSource.PlaceholderText = "新檔案 的資料夾路徑";
             txtSource.Size = new Size(471, 29);
             txtSource.TabIndex = 1;
+            txtSource.TextChanged += txtPath_TextChanged;
             // 
             // btnSource
             // 
@@ -114,6 +115,7 @@ namespace FolderSyncForm.Forms
             txtDest.PlaceholderText = "被覆蓋 的資料夾路徑";
             txtDest.Size = new Size(471, 29);
             txtDest.TabIndex = 4;
+            txtDest.TextChanged += txtPath_TextChanged;
             // 
             // btnDest
             // 

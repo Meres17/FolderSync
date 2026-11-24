@@ -128,12 +128,153 @@ namespace FolderSync.Tests.Application.Services
             Assert.Single(sut.GetBackupFolders(Src, Dst));
         }
 
+        [Fact]
+        public void GetDiffFiles_來源空白_拋出請選擇來源資料夾()
+        {
+            // arrange
+            var (sut, _, _, _) = NewService();
+
+            // act
+            var ex = Assert.Throws<DomainException>(() => sut.GetDiffFiles(" ", Dst));
+
+            // assert
+            Assert.Equal("請選擇來源資料夾", ex.Message);
+        }
+
+        [Fact]
+        public void GetDiffFiles_目標已被刪除_拋出找不到目標資料夾()
+        {
+            // arrange
+            var (sut, _, _, _) = NewService(ExistOnly(Src));
+
+            // act
+            var ex = Assert.Throws<DomainException>(() => sut.GetDiffFiles(Src, Dst));
+
+            // assert
+            Assert.Equal("找不到目標資料夾：dst", ex.Message);
+        }
+
+        [Fact]
+        public void GetDiffFiles_路徑結尾有反斜線_去除後再掃描()
+        {
+            // arrange
+            var (sut, scanner, _, _) = NewService();
+            scanner.Scan(Src).Returns(new[] { Snap("a.txt") });
+            scanner.Scan(Dst).Returns(Array.Empty<FileSnapshot>());
+
+            // act
+            var result = sut.GetDiffFiles(Src + "\\", Dst + "\\");
+
+            // assert
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public void GetIgnoredDiffFiles_來源已被刪除_拋出找不到來源資料夾()
+        {
+            // arrange
+            var (sut, _, _, _) = NewService(ExistOnly(Dst));
+
+            // act
+            var ex = Assert.Throws<DomainException>(() => sut.GetIgnoredDiffFiles(Src, Dst));
+
+            // assert
+            Assert.Equal("找不到來源資料夾：src", ex.Message);
+        }
+
+        [Fact]
+        public async Task ApplyAsync_目標已被刪除_不呼叫Synchronizer()
+        {
+            // arrange
+            var (sut, _, factory, _) = NewService(ExistOnly(Src));
+
+            // act
+            var ex = await Assert.ThrowsAsync<DomainException>(() => sut.ApplyAsync(Src, Dst, SyncMode.資料夾));
+
+            // assert
+            Assert.Equal("找不到目標資料夾：dst", ex.Message);
+            factory.DidNotReceive().Create(Arg.Any<SyncMode>());
+        }
+
+        [Fact]
+        public void GetBackupFolders_來源已被刪除_仍列出備份()
+        {
+            // arrange
+            var (sut, _, _, backups) = NewService(ExistOnly(Dst));
+            backups.ListBackups(Src, Dst).Returns(new List<BackupFolder> { new("a") });
+
+            // act
+            var result = sut.GetBackupFolders(Src, Dst);
+
+            // assert
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public void GetBackupFolders_來源空白_拋出請選擇來源資料夾()
+        {
+            // arrange
+            var (sut, _, _, backups) = NewService();
+
+            // act
+            var ex = Assert.Throws<DomainException>(() => sut.GetBackupFolders("", Dst));
+
+            // assert
+            Assert.Equal("請選擇來源資料夾", ex.Message);
+            backups.DidNotReceive().ListBackups(Arg.Any<string>(), Arg.Any<string>());
+        }
+
+        [Fact]
+        public async Task RollbackAsync_備份已被刪除_不呼叫Synchronizer()
+        {
+            // arrange
+            var (sut, _, factory, _) = NewService(ExistOnly(Dst));
+            var selected = new List<BackupFolder> { new("C:\\backup\\20230101_1200") };
+
+            // act
+            var ex = await Assert.ThrowsAsync<DomainException>(() => sut.RollbackAsync(selected, Dst, SyncMode.資料夾));
+
+            // assert
+            Assert.Equal("備份紀錄已不存在：20230101_1200，請重新按「備份紀錄」", ex.Message);
+            factory.DidNotReceive().Create(Arg.Any<SyncMode>());
+        }
+
+        [Fact]
+        public async Task RollbackAsync_目標已被刪除_不呼叫Synchronizer()
+        {
+            // arrange
+            var (sut, _, factory, _) = NewService(ExistOnly("C:\\backup\\20230101_1200"));
+            var selected = new List<BackupFolder> { new("C:\\backup\\20230101_1200") };
+
+            // act
+            var ex = await Assert.ThrowsAsync<DomainException>(() => sut.RollbackAsync(selected, Dst, SyncMode.資料夾));
+
+            // assert
+            Assert.Equal("找不到目標資料夾：dst", ex.Message);
+            factory.DidNotReceive().Create(Arg.Any<SyncMode>());
+        }
+
+        [Fact]
+        public void DeleteBackups_其中一筆已被刪除_全部不刪除()
+        {
+            // arrange
+            var (sut, _, _, backups) = NewService(ExistOnly("a"));
+            var selected = new List<BackupFolder> { new("a"), new("b") };
+
+            // act
+            var ex = Assert.Throws<DomainException>(() => sut.DeleteBackups(selected));
+
+            // assert
+            Assert.Equal("備份紀錄已不存在：b，請重新按「備份紀錄」", ex.Message);
+            backups.DidNotReceive().DeleteBackup(Arg.Any<string>());
+        }
+
         private static FileSnapshot Snap(string relativePath)
         {
             return new FileSnapshot(relativePath, "full\\" + relativePath, new DateTime(2023, 1, 1));
         }
 
-        private static (FolderSyncService, IFolderScanner, IFolderSynchronizerFactory, IBackupRepository) NewService()
+        private static (FolderSyncService, IFolderScanner, IFolderSynchronizerFactory, IBackupRepository) NewService(IDirectoryProbe? directories = null)
         {
             var scanner = Substitute.For<IFolderScanner>();
             var factory = Substitute.For<IFolderSynchronizerFactory>();
@@ -142,8 +283,22 @@ namespace FolderSync.Tests.Application.Services
             repo.Load().Returns(new AppSettings());
             var diff = new FolderDiffService(scanner, new FolderComparer(), new AppSettingsProvider(repo));
             var sync = new FolderSynchronizationService(factory, backups, Substitute.For<IAuditLog>());
-            var sut = new FolderSyncService(diff, sync);
+            var sut = new FolderSyncService(diff, sync, directories ?? AllExist());
             return (sut, scanner, factory, backups);
+        }
+
+        private static IDirectoryProbe AllExist()
+        {
+            var stub = Substitute.For<IDirectoryProbe>();
+            stub.Exists(Arg.Any<string>()).Returns(true);
+            return stub;
+        }
+
+        private static IDirectoryProbe ExistOnly(string path)
+        {
+            var stub = Substitute.For<IDirectoryProbe>();
+            stub.Exists(path).Returns(true);
+            return stub;
         }
     }
 }

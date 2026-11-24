@@ -39,6 +39,12 @@ namespace FolderSyncForm.Forms
             txtDest.Text = _settings.Current.Dest;
         }
 
+        // 路徑改了，清單（差異或備份紀錄）就不再對應目前路徑，清空以免還原或刪除到別組資料夾。
+        private void txtPath_TextChanged(object sender, EventArgs e)
+        {
+            gv.DataSource = null;
+        }
+
         private void btnSource_Click(object sender, EventArgs e)
         {
             txtSource.BindFolderDialog();
@@ -142,8 +148,9 @@ namespace FolderSyncForm.Forms
             }
             catch (Exception ex)
             {
+                // 不重新列出：路徑失效時會再跳一次相同錯誤，清空讓使用者重新按「備份紀錄」。
                 Dialog.Error(ex);
-                await ShowBackupListAsync();
+                gv.DataSource = null;
             }
             finally
             {
@@ -174,14 +181,16 @@ namespace FolderSyncForm.Forms
                     await Task.Run(() => _service.DeleteBackups(selected));
                     Dialog.Alert("刪除成功");
                 }
+                await ShowBackupListAsync();
             }
             catch (Exception ex)
             {
+                // 不重新列出：路徑失效時會再跳一次相同錯誤，清空讓使用者重新按「備份紀錄」。
                 Dialog.Error(ex);
+                gv.DataSource = null;
             }
             finally
             {
-                await ShowBackupListAsync();
                 SetBusy(false);
             }
         }
