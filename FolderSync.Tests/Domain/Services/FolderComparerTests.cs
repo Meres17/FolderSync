@@ -93,6 +93,57 @@ namespace FolderSync.Tests.Domain.Services
             Assert.Equal(new[] { "a_add.txt", "z_add.txt" }, adds);
         }
 
+        [Fact]
+        public void CompareIgnored_只回傳符合忽略規則的差異檔案()
+        {
+            // arrange
+            var ignore = new IgnorePolicy(new[] { "secret.txt" }, Array.Empty<string>());
+            var source = new[] { Snap("secret.txt", Newer), Snap("keep.txt", Newer) };
+            var dest = Array.Empty<FileSnapshot>();
+
+            // act
+            var result = new FolderComparer().CompareIgnored(source, dest, ignore);
+
+            // assert
+            var file = Assert.Single(result);
+            Assert.Equal("secret.txt", file.檔名);
+            Assert.Equal(CompareState.新增檔案, file.狀態);
+        }
+
+        [Fact]
+        public void CompareIgnored_忽略檔案時間相同_不列出()
+        {
+            // arrange
+            var ignore = new IgnorePolicy(new[] { "appsettings*.json", "web.config" }, Array.Empty<string>());
+            var source = new[] { Snap("appsettings.json", Older), Snap("web.config", Newer) };
+            var dest = new[] { Snap("appsettings.json", Older), Snap("web.config", Older) };
+
+            // act
+            var result = new FolderComparer().CompareIgnored(source, dest, ignore);
+
+            // assert
+            var file = Assert.Single(result);
+            Assert.Equal("web.config", file.檔名);
+            Assert.Equal(CompareState.時間不同, file.狀態);
+        }
+
+        [Fact]
+        public void CompareIgnored_忽略資料夾下僅存在目標的檔案_列為刪除檔案()
+        {
+            // arrange
+            var ignore = new IgnorePolicy(Array.Empty<string>(), new[] { "logs" });
+            var source = Array.Empty<FileSnapshot>();
+            var dest = new[] { Snap("logs\\app.log", Older), Snap("other.txt", Older) };
+
+            // act
+            var result = new FolderComparer().CompareIgnored(source, dest, ignore);
+
+            // assert
+            var file = Assert.Single(result);
+            Assert.Equal("logs\\app.log", file.相對路徑);
+            Assert.Equal(CompareState.刪除檔案, file.狀態);
+        }
+
         private static FileSnapshot Snap(string relativePath, DateTime time)
         {
             return new FileSnapshot(relativePath, "full\\" + relativePath, time);
