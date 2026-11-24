@@ -18,12 +18,12 @@
 
         public IReadOnlyList<SyncMode> Modes => _factory.Modes;
 
-        public async Task ApplyAsync(IReadOnlyList<FileStatus> changes, string sourceDir, string destDir, SyncMode mode)
+        public async Task ApplyAsync(IReadOnlyList<FileStatus> changes, string sourceDir, string destDir, SyncMode mode, IProgress<SyncProgress>? progress = null)
         {
             _log.Info($"更新開始：{sourceDir} → {destDir}（{mode}，{changes.Count} 個檔案）");
             try
             {
-                await _factory.Create(mode).ApplyAsync(changes, sourceDir, destDir);
+                await _factory.Create(mode).ApplyAsync(changes, sourceDir, destDir, progress);
                 _log.Info($"更新完成：{destDir}");
             }
             catch (Exception ex)
@@ -33,12 +33,12 @@
             }
         }
 
-        public async Task RollbackAsync(string backupDir, string destDir, SyncMode mode)
+        public async Task RollbackAsync(string backupDir, string destDir, SyncMode mode, IProgress<SyncProgress>? progress = null)
         {
             _log.Info($"還原開始：{backupDir} → {destDir}（{mode}）");
             try
             {
-                await _factory.Create(mode).RollbackAsync(backupDir, destDir);
+                await _factory.Create(mode).RollbackAsync(backupDir, destDir, progress);
                 _log.Info($"還原完成：{destDir}");
             }
             catch (Exception ex)

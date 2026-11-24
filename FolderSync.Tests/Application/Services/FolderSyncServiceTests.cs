@@ -36,20 +36,53 @@ namespace FolderSync.Tests.Application.Services
         }
 
         [Fact]
-        public async Task ApplyAsync_取得差異後呼叫Synchronizer的ApplyAsync()
+        public async Task ApplyAsync_依計畫呼叫Synchronizer的ApplyAsync()
         {
-            // Arrange
-            var (sut, scanner, factory, _) = NewService();
-            scanner.Scan(Src).Returns(new[] { Snap("a.txt") });
-            scanner.Scan(Dst).Returns(Array.Empty<FileSnapshot>());
+            // arrange
+            var (sut, _, factory, _) = NewService();
             var sync = Substitute.For<IFolderSynchronizer>();
             factory.Create(SyncMode.資料夾).Returns(sync);
+            var plan = CreatePlan(new List<FileStatus> { new("a.txt", "full\\a.txt", new DateTime(2023, 1, 1), null, null) });
+            var progress = Substitute.For<IProgress<SyncProgress>>();
 
-            // Act
-            await sut.ApplyAsync(Src, Dst, SyncMode.資料夾);
+            // act
+            await sut.ApplyAsync(plan, SyncMode.資料夾, progress);
 
-            // Assert
-            await sync.Received(1).ApplyAsync(Arg.Is<IReadOnlyList<FileStatus>>(x => x.Count == 1), Src, Dst);
+            // assert
+            await sync.Received(1).ApplyAsync(plan.變更, Src, Dst, progress);
+        }
+
+        [Fact]
+        public void PrepareUpdate_掃描一次_同時產出變更與略過清單()
+        {
+            // arrange
+            var (sut, scanner, _, _) = NewService();
+            scanner.Scan(Src).Returns(new[] { Snap("a.txt"), Snap("appsettings.json") });
+            scanner.Scan(Dst).Returns(Array.Empty<FileSnapshot>());
+
+            // act
+            var result = sut.PrepareUpdate(Src, Dst);
+
+            // assert
+            Assert.Equal("a.txt", Assert.Single(result.變更).檔名);
+            Assert.Equal("appsettings.json", Assert.Single(result.略過).檔名);
+            scanner.Received(1).Scan(Src);
+            scanner.Received(1).Scan(Dst);
+        }
+
+        [Fact]
+        public void PrepareUpdate_沒有變更_拋出沒有需要更新的檔案()
+        {
+            // arrange
+            var (sut, scanner, _, _) = NewService();
+            scanner.Scan(Src).Returns(new[] { Snap("appsettings.json") });
+            scanner.Scan(Dst).Returns(Array.Empty<FileSnapshot>());
+
+            // act
+            var ex = Assert.Throws<DomainException>(() => sut.PrepareUpdate(Src, Dst));
+
+            // assert
+            Assert.Equal("沒有需要更新的檔案", ex.Message);
         }
 
         [Fact]
@@ -170,26 +203,27 @@ namespace FolderSync.Tests.Application.Services
         }
 
         [Fact]
-        public void GetIgnoredDiffFiles_來源已被刪除_拋出找不到來源資料夾()
+        public void PrepareUpdate_來源已被刪除_拋出找不到來源資料夾()
         {
             // arrange
             var (sut, _, _, _) = NewService(ExistOnly(Dst));
 
             // act
-            var ex = Assert.Throws<DomainException>(() => sut.GetIgnoredDiffFiles(Src, Dst));
+            var ex = Assert.Throws<DomainException>(() => sut.PrepareUpdate(Src, Dst));
 
             // assert
             Assert.Equal("找不到來源資料夾：src", ex.Message);
         }
 
         [Fact]
-        public async Task ApplyAsync_目標已被刪除_不呼叫Synchronizer()
+        public async Task ApplyAsync_確認期間目標被刪除_不呼叫Synchronizer()
         {
             // arrange
             var (sut, _, factory, _) = NewService(ExistOnly(Src));
+            var plan = CreatePlan(new List<FileStatus>());
 
             // act
-            var ex = await Assert.ThrowsAsync<DomainException>(() => sut.ApplyAsync(Src, Dst, SyncMode.資料夾));
+            var ex = await Assert.ThrowsAsync<DomainException>(() => sut.ApplyAsync(plan, SyncMode.資料夾));
 
             // assert
             Assert.Equal("找不到目標資料夾：dst", ex.Message);
@@ -285,6 +319,11 @@ namespace FolderSync.Tests.Application.Services
             var sync = new FolderSynchronizationService(factory, backups, Substitute.For<IAuditLog>());
             var sut = new FolderSyncService(diff, sync, directories ?? AllExist());
             return (sut, scanner, factory, backups);
+        }
+
+        private static UpdatePlan CreatePlan(IReadOnlyList<FileStatus> changes)
+        {
+            return new UpdatePlan(Src, Dst, changes, new List<FileStatus>());
         }
 
         private static IDirectoryProbe AllExist()

@@ -60,6 +60,7 @@ namespace FolderSyncForm.Forms
             btnDeleteBackup = new Button();
             toolTip = new ToolTip(components);
             btnOpenSettings = new Button();
+            lblStatus = new Label();
             ((System.ComponentModel.ISupportInitialize)gv).BeginInit();
             SuspendLayout();
             // 
@@ -194,7 +195,7 @@ namespace FolderSyncForm.Forms
             gv.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             gv.Location = new Point(12, 90);
             gv.Name = "gv";
-            gv.Size = new Size(606, 336);
+            gv.Size = new Size(606, 306);
             gv.TabIndex = 13;
             // 
             // btnDeleteBackup
@@ -232,6 +233,15 @@ namespace FolderSyncForm.Forms
             toolTip.SetToolTip(btnOpenSettings, "比較 檔案 差異");
             btnOpenSettings.Click += btnOpenSettings_Click;
             // 
+            // lblStatus
+            // 
+            lblStatus.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            lblStatus.Location = new Point(12, 402);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(606, 24);
+            lblStatus.TabIndex = 16;
+            lblStatus.TextAlign = ContentAlignment.MiddleLeft;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -251,6 +261,7 @@ namespace FolderSyncForm.Forms
             Controls.Add(btnBackupList);
             Controls.Add(btnRestore);
             Controls.Add(gv);
+            Controls.Add(lblStatus);
             Margin = new Padding(2);
             Name = "MainForm";
             Text = "資料夾比對";
@@ -265,5 +276,6 @@ namespace FolderSyncForm.Forms
 
 
         private Button btnOpenSettings;
+        private Label lblStatus;
     }
 }

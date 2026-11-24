@@ -13,14 +13,21 @@ namespace FolderSync.Infrastructure.Synchronizers
             _offlineDelayMs = offlineDelayMs;
         }
 
-        public Task ApplyAsync(IReadOnlyList<FileStatus> changes, string sourceDir, string destDir)
+        public Task ApplyAsync(IReadOnlyList<FileStatus> changes, string sourceDir, string destDir, IProgress<SyncProgress>? progress = null)
         {
-            return WithSiteOfflineAsync(destDir, () => _inner.ApplyAsync(changes, sourceDir, destDir));
+            ReportOfflineWait(progress);
+            return WithSiteOfflineAsync(destDir, () => _inner.ApplyAsync(changes, sourceDir, destDir, progress));
         }
 
-        public Task RollbackAsync(string backupDir, string destDir)
+        public Task RollbackAsync(string backupDir, string destDir, IProgress<SyncProgress>? progress = null)
         {
-            return WithSiteOfflineAsync(destDir, () => _inner.RollbackAsync(backupDir, destDir));
+            ReportOfflineWait(progress);
+            return WithSiteOfflineAsync(destDir, () => _inner.RollbackAsync(backupDir, destDir, progress));
+        }
+
+        private void ReportOfflineWait(IProgress<SyncProgress>? progress)
+        {
+            progress?.Report(new SyncProgress($"站台離線，等待 {_offlineDelayMs / 1000.0:0.#} 秒", 0, 0));
         }
 
         internal virtual async Task WithSiteOfflineAsync(string siteDir, Func<Task> action)

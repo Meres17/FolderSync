@@ -10,7 +10,7 @@ namespace FolderSyncForm.Forms
         private readonly AppSettingsService _settingsService = default!;
         private string _source => txtSource.Text;
         private string _dest => txtDest.Text;
-        private SyncMode _mode => cbType.SelectedItem is SyncMode mode ? mode : SyncMode.資料夾;
+        private SyncMode _mode =>cbType.SelectedItem is SyncMode mode ? mode : SyncMode.資料夾;
 
         /// <summary>
         /// 設計工具專用建構子，執行期請使用 DI 注入的多參數建構子。
@@ -88,15 +88,24 @@ namespace FolderSyncForm.Forms
             {
                 string source = _source, dest = _dest;
                 SyncMode mode = _mode;
-                if (await ConfirmOverwriteAsync(source, dest, mode) == false)
+                ShowStatus("掃描中…");
+                var plan = await Task.Run(() => _service.PrepareUpdate(source, dest));
+                if (ConfirmOverwrite(plan, mode) == false)
+                {
+                    ShowStatus("");
                     return;
+                }
 
-                await Task.Run(() => _service.ApplyAsync(source, dest, mode));
+                // Progress 在 UI 執行緒建立，回報會自動切回 UI 執行緒更新狀態列。
+                var progress = new Progress<SyncProgress>(p => ShowStatus(p.ToString()));
+                await Task.Run(() => _service.ApplyAsync(plan, mode, progress));
+                ShowStatus($"{mode}更新完成：{plan.變更.Count} 個檔案");
                 Dialog.Alert($"{mode}更新成功");
                 await ShowCompareListAsync();
             }
             catch (Exception ex)
             {
+                ShowStatus("");
                 Dialog.Error(ex);
             }
             finally
@@ -105,13 +114,19 @@ namespace FolderSyncForm.Forms
             }
         }
 
-        // 更新前列出「有差異但符合忽略規則」的檔案，讓使用者做最終確認。
-        private async Task<bool> ConfirmOverwriteAsync(string source, string dest, SyncMode mode)
+        private void ShowStatus(string text)
         {
-            var skipped = await Task.Run(() => _service.GetIgnoredDiffFiles(source, dest));
+            lblStatus.Text = text;
+        }
+
+        // 更新前列出「有差異但符合忽略規則」的檔案，讓使用者做最終確認。
+        private bool ConfirmOverwrite(UpdatePlan plan, SyncMode mode)
+        {
+            var skipped = plan.略過;
+            var title = $"確定要執行{mode}更新嗎？共 {plan.變更.Count} 個檔案要更新。";
             var message = skipped.Count == 0
-                ? $"確定要執行{mode}更新嗎？\n沒有符合忽略規則而略過的檔案。"
-                : $"確定要執行{mode}更新嗎？\n以下 {skipped.Count} 個檔案符合忽略規則，更新時一律略過（不覆蓋、不刪除、不複製）：";
+                ? $"{title}\n沒有符合忽略規則而略過的檔案。"
+                : $"{title}\n以下 {skipped.Count} 個檔案符合忽略規則，更新時一律略過（不覆蓋、不刪除、不複製）：";
             var lines = skipped.Select(x => $"[{SkipAction(x.狀態)}] {x.相對路徑}");
             return Dialog.ConfirmList($"{message}\n{IgnoreRulesText()}", lines);
         }
@@ -142,13 +157,20 @@ namespace FolderSyncForm.Forms
                 var selected = GetSelectedBackupFolders();
                 string dest = _dest;
                 SyncMode mode = _mode;
-                await Task.Run(() => _service.RollbackAsync(selected, dest, mode));
+                var names = string.Join("、", selected.Select(x => x.備份名稱));
+                if (Dialog.Confirm($"確定要將備份 {names} {mode}還原到\n{dest}\n嗎？") == false)
+                    return;
+
+                var progress = new Progress<SyncProgress>(p => ShowStatus(p.ToString()));
+                await Task.Run(() => _service.RollbackAsync(selected, dest, mode, progress));
+                ShowStatus($"{mode}還原完成：{names}");
                 Dialog.Alert($"{mode}還原成功");
                 await ShowCompareListAsync();
             }
             catch (Exception ex)
             {
                 // 不重新列出：路徑失效時會再跳一次相同錯誤，清空讓使用者重新按「備份紀錄」。
+                ShowStatus("");
                 Dialog.Error(ex);
                 gv.DataSource = null;
             }

@@ -72,6 +72,48 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         }
 
         [Fact]
+        public async Task RollbackAsync_有進度_回報讀取備份與還原總數()
+        {
+            // arrange
+            var backups = FakeBackups();
+            backups.ReadBackup(Arg.Any<string>(), BackupCategory.Delete).Returns(Snapshots(3));
+            backups.ReadBackup(Arg.Any<string>(), BackupCategory.Diff).Returns(Snapshots(2));
+            backups.ReadBackup(Arg.Any<string>(), BackupCategory.Add).Returns(Snapshots(1));
+            var mock = Substitute.For<IProgress<SyncProgress>>();
+            var sut = new FolderSynchronizer(backups, FakeFiles());
+
+            // act
+            await sut.RollbackAsync(BackupDir, DestDir, mock);
+
+            // assert
+            mock.Received(1).Report(new SyncProgress("讀取備份中…", 0, 0));
+            mock.Received(1).Report(new SyncProgress("還原", 0, 6));
+        }
+
+        [Fact]
+        public async Task ApplyAsync_有進度_回報備份與更新總數()
+        {
+            // arrange
+            var files = new List<FileStatus>
+            {
+                FakeFileStatus(CompareState.新增檔案),
+                FakeFileStatus(CompareState.時間不同),
+                FakeFileStatus(CompareState.刪除檔案),
+            };
+            var backups = FakeBackups();
+            backups.CreateBackupDirectory(Arg.Any<string>(), Arg.Any<string>()).Returns(BackupDir);
+            var mock = Substitute.For<IProgress<SyncProgress>>();
+            var sut = new FolderSynchronizer(backups, FakeFiles());
+
+            // act
+            await sut.ApplyAsync(files, SourceDir, DestDir, mock);
+
+            // assert：備份 = 來源2 + 目標2 + Delete1 + Diff1 + Add1
+            mock.Received(1).Report(new SyncProgress("備份", 0, 7));
+            mock.Received(1).Report(new SyncProgress("更新", 0, 3));
+        }
+
+        [Fact]
         public async Task ApplyAsync_套用失敗_自動還原並重拋()
         {
             // Arrange
@@ -80,7 +122,7 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
             backups.ReadBackup(Arg.Any<string>(), Arg.Any<string>()).Returns(Array.Empty<FileSnapshot>());
             var ops = FakeFiles();
             // 僅前向套用（複製非空變更到目標）失敗 → 觸發自動還原；還原是空集合複製，可成功
-            ops.When(x => x.CopyAsync(Arg.Is<IEnumerable<CopyOperation>>(c => c.Any()), DestDir))
+            ops.When(x => x.CopyAsync(Arg.Is<IEnumerable<CopyOperation>>(c => c.Any()), DestDir, Arg.Any<Action?>()))
                .Do(_ => throw new IOException("磁碟錯誤"));
             var sut = new FolderSynchronizer(backups, ops);
             var files = new List<FileStatus> { FakeFileStatus(CompareState.新增檔案) };
@@ -96,12 +138,13 @@ namespace FolderSync.Tests.Infrastructure.Synchronizers
         {
             files.Received(1).CopyAsync(
                 Arg.Is<IEnumerable<CopyOperation>>(x => x.Count() == count),
-                destHost);
+                destHost,
+                Arg.Any<Action?>());
         }
 
         private static void AssertDelete(IFileOperations files, int count)
         {
-            files.Received(1).DeleteAsync(Arg.Is<IEnumerable<string?>>(x => x.Count() == count));
+            files.Received(1).DeleteAsync(Arg.Is<IEnumerable<string?>>(x => x.Count() == count), Arg.Any<Action?>());
         }
 
         private static IReadOnlyList<FileSnapshot> Snapshots(int count)

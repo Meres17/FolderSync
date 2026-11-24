@@ -25,7 +25,7 @@ namespace FolderSync.Tests.Domain.Services
         }
 
         [Fact]
-        public void GetIgnoredDiff_依設定的忽略規則_回傳不會被同步的差異檔案()
+        public void GetPlan_依設定的忽略規則_分出變更與略過清單()
         {
             // arrange
             var stub = Substitute.For<IFolderScanner>();
@@ -38,11 +38,11 @@ namespace FolderSync.Tests.Domain.Services
             var sut = new FolderDiffService(stub, new FolderComparer(), CreateSettings(new AppSettings()));
 
             // act
-            var result = sut.GetIgnoredDiff("src", "dst");
+            var result = sut.GetPlan("src", "dst");
 
             // assert
-            var file = Assert.Single(result);
-            Assert.Equal("appsettings.Production.json", file.檔名);
+            Assert.Equal("a.txt", Assert.Single(result.變更).檔名);
+            Assert.Equal("appsettings.Production.json", Assert.Single(result.略過).檔名);
         }
 
         private static AppSettingsProvider CreateSettings(AppSettings settings)

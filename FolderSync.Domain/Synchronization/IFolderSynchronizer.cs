@@ -5,7 +5,7 @@
     /// </summary>
     public interface IFolderSynchronizer
     {
-        Task ApplyAsync(IReadOnlyList<FileStatus> changes, string sourceDir, string destDir);
-        Task RollbackAsync(string backupDir, string destDir);
+        Task ApplyAsync(IReadOnlyList<FileStatus> changes, string sourceDir, string destDir, IProgress<SyncProgress>? progress = null);
+        Task RollbackAsync(string backupDir, string destDir, IProgress<SyncProgress>? progress = null);
     }
 }

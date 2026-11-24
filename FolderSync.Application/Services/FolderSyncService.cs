@@ -28,11 +28,17 @@ namespace FolderSync.Application.Services
         }
 
         /// <summary>
-        /// 有差異但符合忽略規則、更新時不會被覆蓋的檔案。
+        /// 掃描一次產生更新計畫（含略過清單）供確認；沒有變更時直接擋下，不必進確認視窗。
         /// </summary>
-        public List<FileStatus> GetIgnoredDiffFiles(string sourceDir, string destDir)
+        public UpdatePlan PrepareUpdate(string sourceDir, string destDir)
         {
-            return _diff.GetIgnoredDiff(RequireExisting(sourceDir, Source), RequireExisting(destDir, Dest));
+            var plan = _diff.GetPlan(RequireExisting(sourceDir, Source), RequireExisting(destDir, Dest));
+            if (plan.變更.Count == 0)
+            {
+                throw new DomainException("沒有需要更新的檔案");
+            }
+
+            return plan;
         }
 
         /// <summary>
@@ -43,19 +49,21 @@ namespace FolderSync.Application.Services
             return _sync.ListBackups(RequireEntered(sourceDir, Source), RequireExisting(destDir, Dest)).ToList();
         }
 
-        public Task ApplyAsync(string sourceDir, string destDir, SyncMode mode)
+        /// <summary>
+        /// 依確認過的計畫套用，不再重新掃描；確認期間資料夾可能被刪，故再檢查一次存在。
+        /// </summary>
+        public Task ApplyAsync(UpdatePlan plan, SyncMode mode, IProgress<SyncProgress>? progress = null)
         {
-            var source = RequireExisting(sourceDir, Source);
-            var dest = RequireExisting(destDir, Dest);
-            var changes = _diff.GetDiff(source, dest);
-            return _sync.ApplyAsync(changes, source, dest, mode);
+            var source = RequireExisting(plan.來源, Source);
+            var dest = RequireExisting(plan.目標, Dest);
+            return _sync.ApplyAsync(plan.變更, source, dest, mode, progress);
         }
 
-        public Task RollbackAsync(IReadOnlyList<BackupFolder> selected, string destDir, SyncMode mode)
+        public Task RollbackAsync(IReadOnlyList<BackupFolder> selected, string destDir, SyncMode mode, IProgress<SyncProgress>? progress = null)
         {
             var backupDir = RequireSingleBackupPath(selected);
             RequireBackupExists(backupDir);
-            return _sync.RollbackAsync(backupDir, RequireExisting(destDir, Dest), mode);
+            return _sync.RollbackAsync(backupDir, RequireExisting(destDir, Dest), mode, progress);
         }
 
         public void DeleteBackups(IReadOnlyList<BackupFolder> selected)

@@ -24,12 +24,19 @@ namespace FolderSync.Domain.Services
             return _comparer.Compare(source, dest, ignore);
         }
 
-        public List<FileStatus> GetIgnoredDiff(string sourceDir, string destDir)
+        /// <summary>
+        /// 只掃描一次，同時產出要同步的變更與因忽略規則而略過的差異。
+        /// </summary>
+        public UpdatePlan GetPlan(string sourceDir, string destDir)
         {
             var source = _scanner.Scan(sourceDir);
             var dest = _scanner.Scan(destDir);
             var ignore = IgnorePolicy.From(_settings.Current);
-            return _comparer.CompareIgnored(source, dest, ignore);
+            return new UpdatePlan(
+                sourceDir,
+                destDir,
+                _comparer.Compare(source, dest, ignore),
+                _comparer.CompareIgnored(source, dest, ignore));
         }
     }
 }

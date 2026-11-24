@@ -5,7 +5,8 @@
     /// </summary>
     public interface IFileOperations
     {
-        Task CopyAsync(IEnumerable<CopyOperation> operations, string destinationRoot);
-        Task DeleteAsync(IEnumerable<string?> paths);
+        /// <param name="onFileDone">每處理完一個檔案呼叫一次（可並行呼叫），供回報進度。</param>
+        Task CopyAsync(IEnumerable<CopyOperation> operations, string destinationRoot, Action? onFileDone = null);
+        Task DeleteAsync(IEnumerable<string?> paths, Action? onFileDone = null);
     }
 }

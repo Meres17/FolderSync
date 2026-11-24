@@ -8,7 +8,7 @@
         // 限制同時進行的檔案 IO 數，避免大量檔案時塞爆 thread pool 與磁碟爭用。
         private static readonly ParallelOptions Parallelism = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
 
-        public Task CopyAsync(IEnumerable<CopyOperation> operations, string destinationRoot)
+        public Task CopyAsync(IEnumerable<CopyOperation> operations, string destinationRoot, Action? onFileDone = null)
         {
             return Parallel.ForEachAsync(operations, Parallelism, (op, _) =>
             {
@@ -18,11 +18,12 @@
                     EnsureDirectory(Path.GetDirectoryName(destPath));
                     File.Copy(op.Source, destPath, true);
                 }
+                onFileDone?.Invoke();
                 return ValueTask.CompletedTask;
             });
         }
 
-        public Task DeleteAsync(IEnumerable<string?> paths)
+        public Task DeleteAsync(IEnumerable<string?> paths, Action? onFileDone = null)
         {
             return Parallel.ForEachAsync(paths, Parallelism, (path, _) =>
             {
@@ -30,6 +31,7 @@
                 {
                     File.Delete(path);
                 }
+                onFileDone?.Invoke();
                 return ValueTask.CompletedTask;
             });
         }
