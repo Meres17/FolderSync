@@ -147,7 +147,7 @@ namespace FolderSyncForm.Forms
             btnCompare.Name = "btnCompare";
             btnCompare.Size = new Size(110, 30);
             btnCompare.TabIndex = 7;
-            btnCompare.Text = "比對";
+            btnCompare.Text = "預覽差異";
             toolTip.SetToolTip(btnCompare, "比較 檔案 差異");
             btnCompare.Click += btnCompare_Click;
             // 

@@ -8,7 +8,7 @@
         private System.ComponentModel.IContainer components = null;
         private Label lblMessage;
         private TextBox txtList;
-        private Button btnOK;
+        private Button btnConfirmOverwrite;
         private Button btnCancel;
 
         /// <summary>
@@ -34,7 +34,7 @@
         {
             lblMessage = new Label();
             txtList = new TextBox();
-            btnOK = new Button();
+            btnConfirmOverwrite = new Button();
             btnCancel = new Button();
             SuspendLayout();
             //
@@ -59,15 +59,15 @@
             txtList.TabIndex = 1;
             txtList.WordWrap = false;
             //
-            // btnOK
+            // btnConfirmOverwrite
             //
-            btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.DialogResult = DialogResult.OK;
-            btnOK.Location = new Point(468, 418);
-            btnOK.Name = "btnOK";
-            btnOK.Size = new Size(107, 34);
-            btnOK.TabIndex = 2;
-            btnOK.Text = "確定更新";
+            btnConfirmOverwrite.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnConfirmOverwrite.DialogResult = DialogResult.OK;
+            btnConfirmOverwrite.Location = new Point(468, 418);
+            btnConfirmOverwrite.Name = "btnConfirmOverwrite";
+            btnConfirmOverwrite.Size = new Size(107, 34);
+            btnConfirmOverwrite.TabIndex = 2;
+            btnConfirmOverwrite.Text = "確定更新";
             //
             // btnCancel
             //
@@ -85,7 +85,7 @@
             ClientSize = new Size(700, 464);
             Controls.Add(lblMessage);
             Controls.Add(txtList);
-            Controls.Add(btnOK);
+            Controls.Add(btnConfirmOverwrite);
             Controls.Add(btnCancel);
             MaximizeBox = false;
             MinimizeBox = false;

@@ -20,8 +20,8 @@ namespace FolderSyncForm.Helpers
         // 按鈕角色色（同一套柔和冷色系，統一明度與彩度以求協調）
         private static readonly Color Primary = Color.FromArgb(61, 126, 187);  // 選擇/儲存（藍）
         private static readonly Color Success = Color.FromArgb(63, 167, 150);  // 檢視/列表（青）
-        private static readonly Color Danger = Color.FromArgb(214, 99, 107);   // 更新/還原（珊瑚）
-        private static readonly Color Neutral = Color.FromArgb(116, 129, 150); // 設定/刪除/取消（石板灰）
+        private static readonly Color Danger = Color.FromArgb(214, 99, 107);   // 更新/還原/刪除備份（珊瑚）
+        private static readonly Color Neutral = Color.FromArgb(116, 129, 150); // 設定/取消（石板灰）
 
         // 表格色（中性灰，與按鈕冷色系一致）
         private static readonly Color HeaderBack = Color.FromArgb(244, 246, 249);
@@ -82,9 +82,9 @@ namespace FolderSyncForm.Helpers
         {
             return name switch
             {
-                "btnOverwrite" or "btnRestore" => Danger,
+                "btnOverwrite" or "btnRestore" or "btnDeleteBackup" or "btnConfirmOverwrite" => Danger,
                 "btnCompare" or "btnBackupList" => Success,
-                "btnDeleteBackup" or "btnCancel" or "btnOpenSettings" => Neutral,
+                "btnCancel" or "btnOpenSettings" => Neutral,
                 _ => Primary, // btnSource / btnDest / btnSave / btnOK
             };
         }
