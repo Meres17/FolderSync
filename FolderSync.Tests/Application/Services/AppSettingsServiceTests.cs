@@ -121,6 +121,23 @@ namespace FolderSync.Tests.Application.Services
             mock.DidNotReceive().Save(Arg.Any<AppSettings>());
         }
 
+        [Fact]
+        public void Save_忽略規則含前後空白或空白行_去空白後儲存()
+        {
+            // arrange
+            var mock = CreateRepository();
+            var sut = CreateService(mock);
+            var ignoreFolders = $" logs {Environment.NewLine}   {Environment.NewLine}\tbin";
+
+            // act
+            sut.Save("", "", ignoreFolders, " web.config ", "0");
+
+            // assert
+            mock.Received(1).Save(Arg.Is<AppSettings>(s =>
+                s.IgnoreFolders.SequenceEqual(new[] { "logs", "bin" }) &&
+                s.IgnoreFiles.SequenceEqual(new[] { "web.config" })));
+        }
+
         private static IAppSettingsRepository CreateRepository()
         {
             var repository = Substitute.For<IAppSettingsRepository>();

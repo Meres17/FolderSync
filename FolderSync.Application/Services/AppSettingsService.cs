@@ -75,7 +75,8 @@ namespace FolderSync.Application.Services
 
         private static string[] SplitLines(string nameString)
         {
-            return nameString.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            // 去掉前後空白，否則「logs 」這類肉眼看不出的尾端空白會比對不到。
+            return nameString.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         }
     }
 }
