@@ -21,6 +21,7 @@ namespace FolderSyncForm.Composition
             services.AddSingleton(TimeProvider.System);
             services.AddSingleton<IAppSettingsRepository, JsonAppSettingsRepository>();
             services.AddSingleton<IAuditLog>(sp => new FileAuditLog(clock: sp.GetRequiredService<TimeProvider>()));
+            services.AddSingleton(sp => new EnvironmentReport(sp.GetRequiredService<TimeProvider>()));
             services.AddSingleton<IDirectoryProbe, FileSystemDirectoryProbe>();
             services.AddSingleton<IFolderScanner, FolderScanner>();
             services.AddSingleton<IFileOperations, FileOperations>();

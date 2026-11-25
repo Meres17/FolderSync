@@ -17,6 +17,7 @@ namespace FolderSyncForm
             ApplicationConfiguration.Initialize();
 
             using var provider = new ServiceCollection().AddFolderSync().BuildServiceProvider();
+            provider.GetRequiredService<EnvironmentReport>().Write();
             Application.Run(provider.GetRequiredService<Forms.FolderSyncForm>());
         }
     }
